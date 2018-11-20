@@ -258,7 +258,7 @@ void doTheHistos(TString inputFileName, TString label){
   TH1F* hist_theta_xz_mum    = new TH1F("hist_theta_xz_mum", "hist_theta_xz_mum", 100,-0.025,0.025); //[rad]
   TH1F* hist_InvMass_mupmum  = new TH1F("hist_InvMass_mupmum", "hist_InvMass_mupmum", 100,100.,300.);
 
-  TH1F* hist_xcross = new TH1F("hist_xcross", "hist_xcross", 30,-30.,30.);    // [mm]
+  TH1F* hist_xcross = new TH1F("hist_xcross", "hist_xcross", 15,-30.,30.);    // [mm]
   TH1F* hist_zcross = new TH1F("hist_zcross", "hist_zcross", 50,2000.,7000.); // [mm]
 
   TH1F* hist_npos = new TH1F("hist_npos", "N positrons", 11, -0.5, 10.5);
@@ -271,20 +271,25 @@ void doTheHistos(TString inputFileName, TString label){
 
     inputTree->GetEntry(z);
 
-    // Call function to fill positron tracks info --------------------------
-    // Max 10 positrons tracks allowed
-    Double_t xpatz[10], thatz[10];
-    Double_t zpos(454.9+3); //Z position exit face of the Be target
-    Int_t nxbe = ReturnBeamInfo(subdet, xh, zh, nhits, zpos, xpatz, thatz);
-    hist_npos->Fill(nxbe);
-    for(Int_t j=0; j<nxbe; j++){
-      hist_xbe_positrons->Fill(xpatz[j]);
-      hist_the_positrons->Fill(thatz[j]*1e6);
-    }
-    // ----------------------------------------------------------------------
-
+    
+    // --- condition for candidate events
     if( p_mup > 0. && p_mum > 0. ) {
 
+
+      // Call function to fill positron tracks info --------------------------
+      // Max 10 positrons tracks allowed
+      Double_t xpatz[10], thatz[10];
+      Double_t zpos(454.9+3); //Z position exit face of the Be target
+      Int_t nxbe = ReturnBeamInfo(subdet, xh, zh, nhits, zpos, xpatz, thatz);
+      hist_npos->Fill(nxbe);
+      for(Int_t j=0; j<nxbe; j++){
+        hist_xbe_positrons->Fill(xpatz[j]);
+        hist_the_positrons->Fill(thatz[j]*1e6);
+      }
+      // ----------------------------------------------------------------------
+
+
+      // --- fill momentum histos 
       hist_pMuPlus->Fill(p_mup);      //momentum for mu plus
       hist_chi2MuPlus->Fill(chi2p);   //chi2 for mu plus tracks
 
@@ -294,23 +299,26 @@ void doTheHistos(TString inputFileName, TString label){
       hist_pTot->Fill(p_mum + p_mup); //total momentum 
 
       // total momentum with smearing
+      // -- gen_pos_mum[3] = px (MC)
+      // -- gen_pos_mum[4] = py (MC)
+      // -- gen_pos_mum[5] = pz (MC)
       if(isMC){  
         TRandom3* r0= new TRandom3(0);
         Float_t pSum0=0;
-        pSum0+=gen_pos_mum[6]*(1+r0->Gaus(0.,0.03));
-        pSum0+=gen_pos_mup[6]*(1+r0->Gaus(0.,0.03));
+        pSum0+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(1+r0->Gaus(0.,0.03));
+        pSum0+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(1+r0->Gaus(0.,0.03));
         hist_pTot_smear03_bias000->Fill(pSum0);
 
         TRandom3* r1= new TRandom3(0);
         Float_t pSum1=0;
-        pSum1+=gen_pos_mum[6]*(r1->Gaus(0.99,0.03));
-        pSum1+=gen_pos_mup[6]*(r1->Gaus(0.99,0.03));
+        pSum1+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(r1->Gaus(0.99,0.03));
+        pSum1+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(r1->Gaus(0.99,0.03));
         hist_pTot_smear03_bias099->Fill(pSum1);
         
         TRandom3* r2= new TRandom3(0);
         Float_t pSum2=0;
-        pSum2+=gen_pos_mum[6]*(r2->Gaus(1.01,0.03));
-        pSum2+=gen_pos_mup[6]*(r2->Gaus(1.01,0.03));
+        pSum2+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(r2->Gaus(1.01,0.03));
+        pSum2+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(r2->Gaus(1.01,0.03));
         hist_pTot_smear03_bias101->Fill(pSum2);
       }
 
