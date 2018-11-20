@@ -3,8 +3,9 @@
 // author: Alessandra Cappati
 //         13/11/2018
 // 
-// usage: specify the input files (Data and MC) and the 
-//        output directory at the end of the script
+// usage: specify the input files (Data and MC), 
+//        the output directory, and other options 
+//        at the end of the script
 //
 // run with:
 //        root -l -b -q plotVariables_BeamInfo.C++
@@ -506,7 +507,7 @@ void doTheHistos(TString inputFileName, TString label){
 
 
 // data MC comparison function
-void dataMCComparison(TString plotDataMCOutputPath){
+void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption){
   
   // read data file 
   TFile *inFile_Data = TFile::Open("plotVariables_DATA.root");
@@ -624,17 +625,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // pMuPlus plot
   TCanvas* c_pMuPlus = new TCanvas("c_pMuPlus","c_pMuPlus");
   c_pMuPlus->cd();
+  Double_t normMC_pMuPlus   = 1.;
+  Double_t normDATA_pMuPlus = 1.;
+  TString  yaxLabel_pMuPlus = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_pMuPlus   = hist_pMuPlus_Data->Integral() / hist_pMuPlus_MC->Integral(); // normalize MC to Data
+    normDATA_pMuPlus = 1.;   // normalization of Data remains invariate
+    yaxLabel_pMuPlus = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_pMuPlus   = 1. / hist_pMuPlus_MC->Integral();   // normalize MC to 1.
+    normDATA_pMuPlus = 1. / hist_pMuPlus_Data->Integral(); // normalize Data to 1.
+    yaxLabel_pMuPlus = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_pMuPlus   = 1.; // normalization of MC remains invariate
+    normDATA_pMuPlus = 1.; // normalization of Data remains invariate
+    yaxLabel_pMuPlus = "events"; 
+  }
   hist_pMuPlus_MC->SetTitle("p #mu^{+}");
   hist_pMuPlus_MC->GetXaxis()->SetTitle("p #mu^{+} [MeV]");
-  hist_pMuPlus_MC->GetYaxis()->SetTitle("events");
+  hist_pMuPlus_MC->GetYaxis()->SetTitle(yaxLabel_pMuPlus);
   hist_pMuPlus_MC->SetLineColor(kRed);
   hist_pMuPlus_MC->SetFillColor(kRed-10);
-  hist_pMuPlus_MC->Scale(hist_pMuPlus_Data->Integral() / hist_pMuPlus_MC->Integral()); //normalize MC to Data
-  hist_pMuPlus_MC->SetMaximum(1.5 * max(hist_pMuPlus_MC->GetMaximum(),hist_pMuPlus_Data->GetMaximum()));
-  hist_pMuPlus_MC->Draw("hist");
   hist_pMuPlus_Data->SetMarkerStyle(20);
   hist_pMuPlus_Data->SetMarkerColor(kRed);
   hist_pMuPlus_Data->SetLineColor(kBlack);
+  hist_pMuPlus_Data->Scale(normDATA_pMuPlus); // normalize Data hist
+  hist_pMuPlus_MC->Scale(normMC_pMuPlus);     // normalize MC hist
+  hist_pMuPlus_MC->SetMaximum(1.5 * max(hist_pMuPlus_MC->GetMaximum(),hist_pMuPlus_Data->GetMaximum()));
+  hist_pMuPlus_MC->Draw("hist");
   hist_pMuPlus_Data->Draw("samepe");
   TLegend* l_pMuPlus = new TLegend(0.72,0.67,0.98,0.97);
   l_pMuPlus->AddEntry(hist_pMuPlus_MC,"MC #mu^{+}","f");
@@ -654,17 +674,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // pMuMinus plot
   TCanvas* c_pMuMinus = new TCanvas("c_pMuMinus","c_pMuMinus");
   c_pMuMinus->cd();
+  Double_t normMC_pMuMinus   = 1.;
+  Double_t normDATA_pMuMinus = 1.;
+  TString  yaxLabel_pMuMinus = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_pMuMinus   = hist_pMuMinus_Data->Integral() / hist_pMuMinus_MC->Integral(); // normalize MC to Data
+    normDATA_pMuMinus = 1.;   // normalization of Data remains invariate
+    yaxLabel_pMuMinus = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_pMuMinus   = 1. / hist_pMuMinus_MC->Integral();   // normalize MC to 1.
+    normDATA_pMuMinus = 1. / hist_pMuMinus_Data->Integral(); // normalize Data to 1.
+    yaxLabel_pMuMinus = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_pMuMinus   = 1.; // normalization of MC remains invariate
+    normDATA_pMuMinus = 1.; // normalization of Data remains invariate
+    yaxLabel_pMuMinus = "events"; 
+  }
   hist_pMuMinus_MC->SetTitle("p #mu^{-}");
   hist_pMuMinus_MC->GetXaxis()->SetTitle("p #mu^{-} [MeV]");
-  hist_pMuMinus_MC->GetYaxis()->SetTitle("events");
+  hist_pMuMinus_MC->GetYaxis()->SetTitle(yaxLabel_pMuMinus);
   hist_pMuMinus_MC->SetLineColor(kBlue);
   hist_pMuMinus_MC->SetFillColor(kBlue-10);
-  hist_pMuMinus_MC->Scale(hist_pMuMinus_Data->Integral() / hist_pMuMinus_MC->Integral()); //normalize MC to Data
-  hist_pMuMinus_MC->SetMaximum(1.5 * max(hist_pMuMinus_MC->GetMaximum(),hist_pMuMinus_Data->GetMaximum()));
-  hist_pMuMinus_MC->Draw("hist");
   hist_pMuMinus_Data->SetMarkerStyle(20);
   hist_pMuMinus_Data->SetMarkerColor(kBlue);
   hist_pMuMinus_Data->SetLineColor(kBlack);
+  hist_pMuMinus_Data->Scale(normDATA_pMuMinus); // normalize Data hist
+  hist_pMuMinus_MC->Scale(normMC_pMuMinus);     // normalize MC hist
+  hist_pMuMinus_MC->SetMaximum(1.5 * max(hist_pMuMinus_MC->GetMaximum(),hist_pMuMinus_Data->GetMaximum()));
+  hist_pMuMinus_MC->Draw("hist");
   hist_pMuMinus_Data->Draw("samepe");
   TLegend* l_pMuMinus = new TLegend(0.72,0.67,0.98,0.97);
   l_pMuMinus->AddEntry(hist_pMuMinus_MC,"MC #mu^{-}","f");
@@ -681,24 +720,44 @@ void dataMCComparison(TString plotDataMCOutputPath){
   c_pMuMinus->Update();
   c_pMuMinus->SaveAs((plotDataMCOutputPath + "/" + c_pMuMinus->GetName() + ".png"));
  
+  // pTot
   TCanvas* c_pTot = new TCanvas("c_pTot","c_pTot");
   c_pTot->cd();
+  Double_t normMC_pTot       = 1.;
+  Double_t normMC_pTot_smear = 1.;
+  Double_t normDATA_pTot     = 1.;
+  TString  yaxLabel_pTot     = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_pTot       = hist_pTot_Data->Integral() / hist_pTot_MC->Integral(); // normalize MC to Data
+    normMC_pTot_smear = hist_pTot_Data->Integral() / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to Data
+    normDATA_pTot     = 1.;   // normalization of Data remains invariate
+    yaxLabel_pTot = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_pTot       = 1. / hist_pTot_MC->Integral();   // normalize MC to 1.
+    normMC_pTot_smear = 1. / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to 1.
+    normDATA_pTot     = 1. / hist_pTot_Data->Integral(); // normalize Data to 1.
+    yaxLabel_pTot = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_pTot       = 1.; // normalization of MC remains invariate
+    normMC_pTot_smear = 1.; // normalization of MC smear remains invariate
+    normDATA_pTot     = 1.; // normalization of Data remains invariate
+    yaxLabel_pTot = "events"; 
+  }
   hist_pTot_MC->SetTitle("p #mu^{+} + p #mu^{-}");
   hist_pTot_MC->GetXaxis()->SetTitle("p #mu^{+} + p #mu^{-} [MeV]");
-  hist_pTot_MC->GetYaxis()->SetTitle("events");
+  hist_pTot_MC->GetYaxis()->SetTitle(yaxLabel_pTot);
   hist_pTot_MC->SetLineColor(kViolet+1);
   hist_pTot_MC->SetLineWidth(2);
-  //hist_pTot_MC->SetLineColor(kViolet-6);
-  //hist_pTot_MC->SetFillColorAlpha(kViolet-4, 0.571);
-  hist_pTot_MC->Scale(hist_pTot_Data->Integral() / hist_pTot_MC->Integral()); //normalize MC to Data
   hist_pTot_smear03_bias000_MC->SetLineColor(kOrange+7);
   hist_pTot_smear03_bias000_MC->SetLineWidth(2);
-  //hist_pTot_smear03_bias000_MC->SetLineColor(kOrange+7);
-  //hist_pTot_smear03_bias000_MC->SetFillColorAlpha(kOrange-3, 0.571);
-  hist_pTot_smear03_bias000_MC->Scale(hist_pTot_Data->Integral() / hist_pTot_smear03_bias000_MC->Integral()); //normalize MC to Data
   hist_pTot_Data->SetMarkerStyle(20);
   hist_pTot_Data->SetMarkerColor(kBlack);
   hist_pTot_Data->SetLineColor(kBlack);
+  hist_pTot_Data->Scale(normDATA_pTot); //normalize Data hist
+  hist_pTot_MC->Scale(normMC_pTot);     //normalize MC hist
+  hist_pTot_smear03_bias000_MC->Scale(normMC_pTot_smear); //normalize MC smear hist
   hist_pTot_MC->SetMaximum(1.2 * max(max(hist_pTot_MC->GetMaximum(),hist_pTot_smear03_bias000_MC->GetMaximum()),hist_pTot_Data->GetMaximum()));
   hist_pTot_MC->Draw("hist");
   hist_pTot_smear03_bias000_MC->Draw("histsame");
@@ -725,27 +784,48 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_pTot_smear = new TCanvas("c_pTot_smear","c_pTot_smear");
   c_pTot_smear->cd();
+  Double_t normMC_pTot_smear03_bias099 = 1.;
+  Double_t normMC_pTot_smear03_bias000 = 1.;
+  Double_t normMC_pTot_smear03_bias101 = 1.;
+  Double_t normDATA_pTot_smear = 1.;
+  TString  yaxLabel_pTot_smear = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_pTot_smear03_bias099 = hist_pTot_Data->Integral() / hist_pTot_smear03_bias099_MC->Integral(); //normalize MC smear to Data
+    normMC_pTot_smear03_bias000 = hist_pTot_Data->Integral() / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to Data
+    normMC_pTot_smear03_bias101 = hist_pTot_Data->Integral() / hist_pTot_smear03_bias101_MC->Integral(); //normalize MC smear to Data
+    normDATA_pTot_smear = 1.;   // normalization of Data remains invariate
+    yaxLabel_pTot_smear = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_pTot_smear03_bias099 = 1. / hist_pTot_smear03_bias099_MC->Integral(); //normalize MC smear to 1.
+    normMC_pTot_smear03_bias000 = 1. / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to 1.
+    normMC_pTot_smear03_bias101 = 1. / hist_pTot_smear03_bias101_MC->Integral(); //normalize MC smear to 1.
+    normDATA_pTot_smear = 1. / hist_pTot_Data->Integral(); // normalize Data to 1.
+    yaxLabel_pTot_smear = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_pTot_smear03_bias099 = 1.; // normalization of MC smear remains invariate
+    normMC_pTot_smear03_bias000 = 1.; // normalization of MC smear remains invariate
+    normMC_pTot_smear03_bias101 = 1.; // normalization of MC smear remains invariate
+    normDATA_pTot_smear = 1.; // normalization of Data remains invariate
+    yaxLabel_pTot_smear = "events"; 
+  }
   hist_pTot_smear03_bias099_MC->SetTitle("p #mu^{+} + p #mu^{-}");
   hist_pTot_smear03_bias099_MC->GetXaxis()->SetTitle("p #mu^{+} + p #mu^{-} [MeV]");
-  hist_pTot_smear03_bias099_MC->GetYaxis()->SetTitle("events");
+  hist_pTot_smear03_bias099_MC->GetYaxis()->SetTitle(yaxLabel_pTot_smear);
   hist_pTot_smear03_bias099_MC->SetLineColor(kGreen+1);
   hist_pTot_smear03_bias099_MC->SetLineWidth(2);
-  //hist_pTot_smear03_bias099_MC->SetLineColor(kGreen+3);
-  //hist_pTot_smear03_bias099_MC->SetFillColorAlpha(kGreen-9, 0.571);
-  hist_pTot_smear03_bias099_MC->Scale(hist_pTot_Data->Integral() / hist_pTot_smear03_bias099_MC->Integral()); //normalize MC to Data
   hist_pTot_smear03_bias101_MC->SetLineColor(kAzure-3);
   hist_pTot_smear03_bias101_MC->SetLineWidth(2);
-  //hist_pTot_smear03_bias101_MC->SetLineColor(kAzure+2);
-  //hist_pTot_smear03_bias101_MC->SetFillColorAlpha(kAzure+6, 0.571);
-  hist_pTot_smear03_bias101_MC->Scale(hist_pTot_Data->Integral() / hist_pTot_smear03_bias101_MC->Integral()); //normalize MC to Data
   hist_pTot_smear03_bias000_MC->SetLineColor(kOrange+7);
   hist_pTot_smear03_bias000_MC->SetLineWidth(2);
-  //hist_pTot_smear03_bias000_MC->SetLineColor(kOrange+7);
-  //hist_pTot_smear03_bias000_MC->SetFillColorAlpha(kOrange-3, 0.571);
-  hist_pTot_smear03_bias000_MC->Scale(hist_pTot_Data->Integral() / hist_pTot_smear03_bias000_MC->Integral()); //normalize MC to Data
   hist_pTot_Data->SetMarkerStyle(20);
   hist_pTot_Data->SetMarkerColor(kBlack);
   hist_pTot_Data->SetLineColor(kBlack);
+  hist_pTot_Data->Scale(normDATA_pTot_smear); //normalize data hist
+  hist_pTot_smear03_bias099_MC->Scale(normMC_pTot_smear03_bias099); //normalize MC smear hist
+  hist_pTot_smear03_bias101_MC->Scale(normMC_pTot_smear03_bias101); //normalize MC smear hist
+  hist_pTot_smear03_bias000_MC->Scale(normMC_pTot_smear03_bias000); //normalize MC smear hist
   hist_pTot_smear03_bias099_MC->SetMaximum(1.2 * max(max(hist_pTot_smear03_bias099_MC->GetMaximum(),hist_pTot_smear03_bias101_MC->GetMaximum()),max(hist_pTot_Data->GetMaximum(),hist_pTot_smear03_bias000_MC->GetMaximum())));
   hist_pTot_smear03_bias099_MC->Draw("histsame");
   hist_pTot_smear03_bias101_MC->Draw("histsame");
@@ -779,17 +859,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_chi2MuPlus = new TCanvas("c_chi2MuPlus","c_chi2MuPlus");
   c_chi2MuPlus->cd();
+  Double_t normMC_chi2MuPlus   = 1.;
+  Double_t normDATA_chi2MuPlus = 1.;
+  TString  yaxLabel_chi2MuPlus = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_chi2MuPlus   = hist_chi2MuPlus_Data->Integral() / hist_chi2MuPlus_MC->Integral(); // normalize MC to Data
+    normDATA_chi2MuPlus = 1.;   // normalization of Data remains invariate
+    yaxLabel_chi2MuPlus = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_chi2MuPlus   = 1. / hist_chi2MuPlus_MC->Integral();   // normalize MC to 1.
+    normDATA_chi2MuPlus = 1. / hist_chi2MuPlus_Data->Integral(); // normalize Data to 1.
+    yaxLabel_chi2MuPlus = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_chi2MuPlus   = 1.; // normalization of MC remains invariate
+    normDATA_chi2MuPlus = 1.; // normalization of Data remains invariate
+    yaxLabel_chi2MuPlus = "events"; 
+  }
   hist_chi2MuPlus_MC->SetTitle("#Chi^{2} #mu^{+}");
   hist_chi2MuPlus_MC->GetXaxis()->SetTitle("#Chi^{2} #mu^{+}");
-  hist_chi2MuPlus_MC->GetYaxis()->SetTitle("events");
+  hist_chi2MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_chi2MuPlus);
   hist_chi2MuPlus_MC->SetLineColor(kRed);   
   hist_chi2MuPlus_MC->SetFillColor(kRed-10);
-  hist_chi2MuPlus_MC->Scale(hist_chi2MuPlus_Data->Integral() / hist_chi2MuPlus_MC->Integral()); //normalize MC to Data
-  hist_chi2MuPlus_MC->SetMaximum(1.2 * max(hist_chi2MuPlus_MC->GetMaximum(),hist_chi2MuPlus_Data->GetMaximum()));
-  hist_chi2MuPlus_MC->Draw("hist");
   hist_chi2MuPlus_Data->SetMarkerStyle(20);  
   hist_chi2MuPlus_Data->SetMarkerColor(kRed);
   hist_chi2MuPlus_Data->SetLineColor(kBlack);
+  hist_chi2MuPlus_Data->Scale(normDATA_chi2MuPlus); //normalize Data hist
+  hist_chi2MuPlus_MC->Scale(normMC_chi2MuPlus);     //normalize MC hist
+  hist_chi2MuPlus_MC->SetMaximum(1.2 * max(hist_chi2MuPlus_MC->GetMaximum(),hist_chi2MuPlus_Data->GetMaximum()));
+  hist_chi2MuPlus_MC->Draw("hist");
   hist_chi2MuPlus_Data->Draw("samepe");
   TLegend* l_chi2MuPlus = new TLegend(0.72,0.67,0.98,0.97);
   l_chi2MuPlus->AddEntry(hist_chi2MuPlus_MC,"MC","f");
@@ -809,17 +908,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_chi2MuMinus = new TCanvas("c_chi2MuMinus","c_chi2MuMinus");
   c_chi2MuMinus->cd();
+  Double_t normMC_chi2MuMinus   = 1.;
+  Double_t normDATA_chi2MuMinus = 1.;
+  TString  yaxLabel_chi2MuMinus = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_chi2MuMinus   = hist_chi2MuMinus_Data->Integral() / hist_chi2MuMinus_MC->Integral(); // normalize MC to Data
+    normDATA_chi2MuMinus = 1.;   // normalization of Data remains invariate
+    yaxLabel_chi2MuMinus = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_chi2MuMinus   = 1. / hist_chi2MuMinus_MC->Integral();   // normalize MC to 1.
+    normDATA_chi2MuMinus = 1. / hist_chi2MuMinus_Data->Integral(); // normalize Data to 1.
+    yaxLabel_chi2MuMinus = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_chi2MuMinus   = 1.; // normalization of MC remains invariate
+    normDATA_chi2MuMinus = 1.; // normalization of Data remains invariate
+    yaxLabel_chi2MuMinus = "events"; 
+  }
   hist_chi2MuMinus_MC->SetTitle("#Chi^{2} #mu^{-}");
   hist_chi2MuMinus_MC->GetXaxis()->SetTitle("#Chi^{2} #mu^{-}");
-  hist_chi2MuMinus_MC->GetYaxis()->SetTitle("events");
+  hist_chi2MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_chi2MuMinus);
   hist_chi2MuMinus_MC->SetLineColor(kBlue);   
   hist_chi2MuMinus_MC->SetFillColor(kBlue-10);
-  hist_chi2MuMinus_MC->Scale(hist_chi2MuMinus_Data->Integral() / hist_chi2MuMinus_MC->Integral()); //normalize MC to Data
-  hist_chi2MuMinus_MC->SetMaximum(1.2 * max(hist_chi2MuMinus_MC->GetMaximum(),hist_chi2MuMinus_Data->GetMaximum()));
-  hist_chi2MuMinus_MC->Draw("hist");
   hist_chi2MuMinus_Data->SetMarkerStyle(20);  
   hist_chi2MuMinus_Data->SetMarkerColor(kBlue);
   hist_chi2MuMinus_Data->SetLineColor(kBlack);
+  hist_chi2MuMinus_Data->Scale(normDATA_chi2MuMinus); //normalize Data hist
+  hist_chi2MuMinus_MC->Scale(normMC_chi2MuMinus);     //normalize MC hist
+  hist_chi2MuMinus_MC->SetMaximum(1.2 * max(hist_chi2MuMinus_MC->GetMaximum(),hist_chi2MuMinus_Data->GetMaximum()));
+  hist_chi2MuMinus_MC->Draw("hist");
   hist_chi2MuMinus_Data->Draw("samepe");
   TLegend* l_chi2MuMinus = new TLegend(0.72,0.67,0.98,0.97);
   l_chi2MuMinus->AddEntry(hist_chi2MuMinus_MC,"MC","f");
@@ -839,17 +957,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
   
   TCanvas* c_theta_xz_mup = new TCanvas("c_theta_xz_mup","c_theta_xz_mup");
   c_theta_xz_mup->cd();
+  Double_t normMC_theta_xz_mup   = 1.;
+  Double_t normDATA_theta_xz_mup = 1.;
+  TString  yaxLabel_theta_xz_mup = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_theta_xz_mup   = hist_theta_xz_mup_Data->Integral() / hist_theta_xz_mup_MC->Integral(); // normalize MC to Data
+    normDATA_theta_xz_mup = 1.;   // normalization of Data remains invariate
+    yaxLabel_theta_xz_mup = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_theta_xz_mup   = 1. / hist_theta_xz_mup_MC->Integral();   // normalize MC to 1.
+    normDATA_theta_xz_mup = 1. / hist_theta_xz_mup_Data->Integral(); // normalize Data to 1.
+    yaxLabel_theta_xz_mup = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_theta_xz_mup   = 1.; // normalization of MC remains invariate
+    normDATA_theta_xz_mup = 1.; // normalization of Data remains invariate
+    yaxLabel_theta_xz_mup = "events"; 
+  }
   hist_theta_xz_mup_MC->SetTitle("#theta xz #mu^{+}");
   hist_theta_xz_mup_MC->GetXaxis()->SetTitle("#theta [rad]");
-  hist_theta_xz_mup_MC->GetYaxis()->SetTitle("events");
+  hist_theta_xz_mup_MC->GetYaxis()->SetTitle(yaxLabel_theta_xz_mup);
   hist_theta_xz_mup_MC->SetLineColor(kRed);   
   hist_theta_xz_mup_MC->SetFillColor(kRed-10);
-  hist_theta_xz_mup_MC->Scale(hist_theta_xz_mup_Data->Integral() / hist_theta_xz_mup_MC->Integral()); //normalize MC to Data
-  hist_theta_xz_mup_MC->SetMaximum(1.2 * max(hist_theta_xz_mup_MC->GetMaximum(),hist_theta_xz_mup_Data->GetMaximum()));
-  hist_theta_xz_mup_MC->Draw("hist");
   hist_theta_xz_mup_Data->SetMarkerStyle(20);  
   hist_theta_xz_mup_Data->SetMarkerColor(kBlack);
   hist_theta_xz_mup_Data->SetLineColor(kBlack);
+  hist_theta_xz_mup_Data->Scale(normDATA_theta_xz_mup); //normalize Data hist
+  hist_theta_xz_mup_MC->Scale(normMC_theta_xz_mup);     //normalize MC hist
+  hist_theta_xz_mup_MC->SetMaximum(1.2 * max(hist_theta_xz_mup_MC->GetMaximum(),hist_theta_xz_mup_Data->GetMaximum()));
+  hist_theta_xz_mup_MC->Draw("hist");
   hist_theta_xz_mup_Data->Draw("samepe");
   TLegend* l_theta_xz_mup = new TLegend(0.75,0.67,0.98,0.95);
   l_theta_xz_mup->AddEntry(hist_theta_xz_mup_MC,"MC","f");
@@ -869,17 +1006,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_theta_xz_mum = new TCanvas("c_theta_xz_mum","c_theta_xz_mum");
   c_theta_xz_mum->cd();
+  Double_t normMC_theta_xz_mum   = 1.;
+  Double_t normDATA_theta_xz_mum = 1.;
+  TString  yaxLabel_theta_xz_mum = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_theta_xz_mum   = hist_theta_xz_mum_Data->Integral() / hist_theta_xz_mum_MC->Integral(); // normalize MC to Data
+    normDATA_theta_xz_mum = 1.;   // normalization of Data remains invariate
+    yaxLabel_theta_xz_mum = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_theta_xz_mum   = 1. / hist_theta_xz_mum_MC->Integral();   // normalize MC to 1.
+    normDATA_theta_xz_mum = 1. / hist_theta_xz_mum_Data->Integral(); // normalize Data to 1.
+    yaxLabel_theta_xz_mum = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_theta_xz_mum   = 1.; // normalization of MC remains invariate
+    normDATA_theta_xz_mum = 1.; // normalization of Data remains invariate
+    yaxLabel_theta_xz_mum = "events"; 
+  }
   hist_theta_xz_mum_MC->SetTitle("#theta xz #mu^{-}");
   hist_theta_xz_mum_MC->GetXaxis()->SetTitle("#theta [rad]");
-  hist_theta_xz_mum_MC->GetYaxis()->SetTitle("events");
+  hist_theta_xz_mum_MC->GetYaxis()->SetTitle(yaxLabel_theta_xz_mum);
   hist_theta_xz_mum_MC->SetLineColor(kBlue);   
   hist_theta_xz_mum_MC->SetFillColor(kBlue-10);
-  hist_theta_xz_mum_MC->Scale(hist_theta_xz_mum_Data->Integral() / hist_theta_xz_mum_MC->Integral()); //normalize MC to Data
-  hist_theta_xz_mum_MC->SetMaximum(1.2 * max(hist_theta_xz_mum_MC->GetMaximum(),hist_theta_xz_mum_Data->GetMaximum()));
-  hist_theta_xz_mum_MC->Draw("hist");
   hist_theta_xz_mum_Data->SetMarkerStyle(20);  
   hist_theta_xz_mum_Data->SetMarkerColor(kBlack);
   hist_theta_xz_mum_Data->SetLineColor(kBlack);
+  hist_theta_xz_mum_Data->Scale(normDATA_theta_xz_mum); //normalize Data hist
+  hist_theta_xz_mum_MC->Scale(normMC_theta_xz_mum);     //normalize MC hist
+  hist_theta_xz_mum_MC->SetMaximum(1.2 * max(hist_theta_xz_mum_MC->GetMaximum(),hist_theta_xz_mum_Data->GetMaximum()));
+  hist_theta_xz_mum_MC->Draw("hist");
   hist_theta_xz_mum_Data->Draw("samepe");
   TLegend* l_theta_xz_mum = new TLegend(0.75,0.67,0.98,0.95);
   l_theta_xz_mum->AddEntry(hist_theta_xz_mum_MC,"MC","f");
@@ -900,17 +1056,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_InvMass_mupmum = new TCanvas("c_InvMass_mupmum","c_InvMass_mupmum");
   c_InvMass_mupmum->cd();
+  Double_t normMC_InvMass_mupmum   = 1.;
+  Double_t normDATA_InvMass_mupmum = 1.;
+  TString  yaxLabel_InvMass_mupmum = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_InvMass_mupmum   = hist_InvMass_mupmum_Data->Integral() / hist_InvMass_mupmum_MC->Integral(); // normalize MC to Data
+    normDATA_InvMass_mupmum = 1.;   // normalization of Data remains invariate
+    yaxLabel_InvMass_mupmum = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_InvMass_mupmum   = 1. / hist_InvMass_mupmum_MC->Integral();   // normalize MC to 1.
+    normDATA_InvMass_mupmum = 1. / hist_InvMass_mupmum_Data->Integral(); // normalize Data to 1.
+    yaxLabel_InvMass_mupmum = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_InvMass_mupmum   = 1.; // normalization of MC remains invariate
+    normDATA_InvMass_mupmum = 1.; // normalization of Data remains invariate
+    yaxLabel_InvMass_mupmum = "events"; 
+  }
   hist_InvMass_mupmum_MC->SetTitle("Invariant Mass #mu^{+} #mu^{-}");
   hist_InvMass_mupmum_MC->GetXaxis()->SetTitle("m #mu^{+} #mu^{-} [MeV]");
-  hist_InvMass_mupmum_MC->GetYaxis()->SetTitle("events");
+  hist_InvMass_mupmum_MC->GetYaxis()->SetTitle(yaxLabel_InvMass_mupmum);
   hist_InvMass_mupmum_MC->SetLineColor(kGreen+2);   
   hist_InvMass_mupmum_MC->SetFillColor(kGreen-9);
-  hist_InvMass_mupmum_MC->Scale(hist_InvMass_mupmum_Data->Integral() / hist_InvMass_mupmum_MC->Integral()); //normalize MC to Data
-  hist_InvMass_mupmum_MC->SetMaximum(1.2 * max(hist_InvMass_mupmum_MC->GetMaximum(),hist_InvMass_mupmum_Data->GetMaximum()));
-  hist_InvMass_mupmum_MC->Draw("hist");
   hist_InvMass_mupmum_Data->SetMarkerStyle(20);  
   hist_InvMass_mupmum_Data->SetMarkerColor(kBlack);
   hist_InvMass_mupmum_Data->SetLineColor(kBlack);
+  hist_InvMass_mupmum_Data->Scale(normDATA_InvMass_mupmum); //normalize Data hist
+  hist_InvMass_mupmum_MC->Scale(normMC_InvMass_mupmum);     //normalize MC hist
+  hist_InvMass_mupmum_MC->SetMaximum(1.2 * max(hist_InvMass_mupmum_MC->GetMaximum(),hist_InvMass_mupmum_Data->GetMaximum()));
+  hist_InvMass_mupmum_MC->Draw("hist");
   hist_InvMass_mupmum_Data->Draw("samepe");
   TLegend* l_InvMass_mupmum = new TLegend(0.75,0.67,0.98,0.95);
   l_InvMass_mupmum->AddEntry(hist_InvMass_mupmum_MC,"MC","f");
@@ -930,17 +1105,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_xcross = new TCanvas("c_xcross","c_xcross");
   c_xcross->cd();
+  Double_t normMC_xcross   = 1.;
+  Double_t normDATA_xcross = 1.;
+  TString  yaxLabel_xcross = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_xcross   = hist_xcross_Data->Integral() / hist_xcross_MC->Integral(); // normalize MC to Data
+    normDATA_xcross = 1.;   // normalization of Data remains invariate
+    yaxLabel_xcross = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_xcross   = 1. / hist_xcross_MC->Integral();   // normalize MC to 1.
+    normDATA_xcross = 1. / hist_xcross_Data->Integral(); // normalize Data to 1.
+    yaxLabel_xcross = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_xcross   = 1.; // normalization of MC remains invariate
+    normDATA_xcross = 1.; // normalization of Data remains invariate
+    yaxLabel_xcross = "events"; 
+  }
   hist_xcross_MC->SetTitle("x Primary Vertex");
   hist_xcross_MC->GetXaxis()->SetTitle("x cross [mm]");
-  hist_xcross_MC->GetYaxis()->SetTitle("events");
+  hist_xcross_MC->GetYaxis()->SetTitle(yaxLabel_xcross);
   hist_xcross_MC->SetLineColor(kOrange+7);   
   hist_xcross_MC->SetFillColor(kOrange-3);
-  hist_xcross_MC->Scale(hist_xcross_Data->Integral() / hist_xcross_MC->Integral()); //normalize MC to Data
-  hist_xcross_MC->SetMaximum(1.2 * max(hist_xcross_MC->GetMaximum(),hist_xcross_Data->GetMaximum()));
-  hist_xcross_MC->Draw("hist");
   hist_xcross_Data->SetMarkerStyle(20);  
   hist_xcross_Data->SetMarkerColor(kBlack);
   hist_xcross_Data->SetLineColor(kBlack);
+  hist_xcross_Data->Scale(normDATA_xcross); //normalize Data hist
+  hist_xcross_MC->Scale(normMC_xcross);     //normalize MC hist
+  hist_xcross_MC->SetMaximum(1.2 * max(hist_xcross_MC->GetMaximum(),hist_xcross_Data->GetMaximum()));
+  hist_xcross_MC->Draw("hist");
   hist_xcross_Data->Draw("samepe");
   TLegend* l_xcross = new TLegend(0.75,0.67,0.98,0.95);
   l_xcross->AddEntry(hist_xcross_MC,"MC","f");
@@ -960,17 +1154,36 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_zcross = new TCanvas("c_zcross","c_zcross");
   c_zcross->cd();
+  Double_t normMC_zcross   = 1.;
+  Double_t normDATA_zcross = 1.;
+  TString  yaxLabel_zcross = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_zcross   = hist_zcross_Data->Integral() / hist_zcross_MC->Integral(); // normalize MC to Data
+    normDATA_zcross = 1.;   // normalization of Data remains invariate
+    yaxLabel_zcross = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_zcross   = 1. / hist_zcross_MC->Integral();   // normalize MC to 1.
+    normDATA_zcross = 1. / hist_zcross_Data->Integral(); // normalize Data to 1.
+    yaxLabel_zcross = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_zcross   = 1.; // normalization of MC remains invariate
+    normDATA_zcross = 1.; // normalization of Data remains invariate
+    yaxLabel_zcross = "events"; 
+  }
   hist_zcross_MC->SetTitle("z Primary Vertex");
   hist_zcross_MC->GetXaxis()->SetTitle("z cross [mm]");
-  hist_zcross_MC->GetYaxis()->SetTitle("events");
+  hist_zcross_MC->GetYaxis()->SetTitle(yaxLabel_zcross);
   hist_zcross_MC->SetLineColor(kOrange+7);   
   hist_zcross_MC->SetFillColor(kOrange-3);
-  hist_zcross_MC->Scale(hist_zcross_Data->Integral() / hist_zcross_MC->Integral()); //normalize MC to Data
-  hist_zcross_MC->SetMaximum(1.2 * max(hist_zcross_MC->GetMaximum(),hist_zcross_Data->GetMaximum()));
-  hist_zcross_MC->Draw("hist");
   hist_zcross_Data->SetMarkerStyle(20);  
   hist_zcross_Data->SetMarkerColor(kBlack);
   hist_zcross_Data->SetLineColor(kBlack);
+  hist_zcross_Data->Scale(normDATA_zcross); //normalize Data hist
+  hist_zcross_MC->Scale(normMC_zcross);     //normalize MC to Data
+  hist_zcross_MC->SetMaximum(1.2 * max(hist_zcross_MC->GetMaximum(),hist_zcross_Data->GetMaximum()));
+  hist_zcross_MC->Draw("hist");
   hist_zcross_Data->Draw("samepe");
   TLegend* l_zcross = new TLegend(0.75,0.67,0.98,0.95);
   l_zcross->AddEntry(hist_zcross_MC,"MC","f");
@@ -995,24 +1208,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // xh in det30
   TCanvas* c_det30 = new TCanvas("c_det30","c_det30");
   c_det30->cd();
+  Double_t normDATA_xh_det30_MuPlus  = 1.;
+  Double_t normDATA_xh_det30_MuMinus = 1.;
+  Double_t normMC_xh_det30_MuPlus    = 1.;
+  Double_t normMC_xh_det30_MuMinus   = 1.;
+  TString  yaxLabel_det30 = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det30_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det30_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det30_MuPlus    = hist_xh_det30_MuPlus_Data->Integral() / hist_xh_det30_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det30_MuMinus   = hist_xh_det30_MuMinus_Data->Integral() / hist_xh_det30_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det30 = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det30_MuPlus  = 1. / hist_xh_det30_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det30_MuMinus = 1. / hist_xh_det30_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det30_MuPlus    = 1. / hist_xh_det30_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det30_MuMinus   = 1. / hist_xh_det30_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det30 = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det30_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det30_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det30_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det30_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det30 = "events"; 
+  }
   hist_xh_det30_MuMinus_MC->SetTitle("xh in det30");
   hist_xh_det30_MuMinus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det30_MuMinus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det30_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det30);
   hist_xh_det30_MuMinus_MC->SetLineColor(kBlue);
-  //hist_xh_det30_MuMinus_MC->SetFillColorAlpha(kBlue-10, 0.571);
   hist_xh_det30_MuMinus_MC->SetFillColor(kBlue-10);
-  hist_xh_det30_MuMinus_MC->Scale(hist_xh_det30_MuMinus_Data->Integral() / hist_xh_det30_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det30_MuPlus_MC->SetTitle("");
   hist_xh_det30_MuPlus_MC->SetLineColor(kRed);
-  //hist_xh_det30_MuPlus_MC->SetFillColorAlpha(kRed-10, 0.571);
   hist_xh_det30_MuPlus_MC->SetFillColor(kRed-10);
-  hist_xh_det30_MuPlus_MC->Scale(hist_xh_det30_MuPlus_Data->Integral() / hist_xh_det30_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det30_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det30_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det30_MuMinus_Data->SetLineColor(kBlack);
   hist_xh_det30_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det30_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det30_MuPlus_Data->SetLineColor(kBlack);
+  hist_xh_det30_MuPlus_Data->Scale(normDATA_xh_det30_MuPlus);   //normalize data hist
+  hist_xh_det30_MuMinus_Data->Scale(normDATA_xh_det30_MuMinus); //normalize data hist
+  hist_xh_det30_MuPlus_MC->Scale(normMC_xh_det30_MuPlus);       //normalize MC hist
+  hist_xh_det30_MuMinus_MC->Scale(normMC_xh_det30_MuMinus);     //normalize MC hist
   hist_xh_det30_MuMinus_MC->SetMaximum(1.5 * max(max(hist_xh_det30_MuMinus_MC->GetMaximum(),hist_xh_det30_MuMinus_Data->GetMaximum()),max(hist_xh_det30_MuPlus_MC->GetMaximum(),hist_xh_det30_MuPlus_Data->GetMaximum())));
   hist_xh_det30_MuMinus_MC->Draw("hist");  
   hist_xh_det30_MuPlus_MC->Draw("histsame");
@@ -1043,24 +1282,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // xh in det31
   TCanvas* c_det31 = new TCanvas("c_det31","c_det31");
   c_det31->cd();
+  Double_t normDATA_xh_det31_MuPlus  = 1.;
+  Double_t normDATA_xh_det31_MuMinus = 1.;
+  Double_t normMC_xh_det31_MuPlus    = 1.;
+  Double_t normMC_xh_det31_MuMinus   = 1.;
+  TString  yaxLabel_det31 = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det31_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det31_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det31_MuPlus    = hist_xh_det31_MuPlus_Data->Integral() / hist_xh_det31_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det31_MuMinus   = hist_xh_det31_MuMinus_Data->Integral() / hist_xh_det31_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det31 = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det31_MuPlus  = 1. / hist_xh_det31_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det31_MuMinus = 1. / hist_xh_det31_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det31_MuPlus    = 1. / hist_xh_det31_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det31_MuMinus   = 1. / hist_xh_det31_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det31 = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det31_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det31_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det31_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det31_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det31 = "events"; 
+  }
   hist_xh_det31_MuMinus_MC->SetTitle("xh in det31");
   hist_xh_det31_MuMinus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det31_MuMinus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det31_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det31);
   hist_xh_det31_MuMinus_MC->SetLineColor(kBlue);
-  //hist_xh_det31_MuMinus_MC->SetFillColorAlpha(kBlue-10, 0.571);
   hist_xh_det31_MuMinus_MC->SetFillColor(kBlue-10);
-  hist_xh_det31_MuMinus_MC->Scale(hist_xh_det31_MuMinus_Data->Integral() / hist_xh_det31_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det31_MuPlus_MC->SetTitle("");
   hist_xh_det31_MuPlus_MC->SetLineColor(kRed);
-  //hist_xh_det31_MuPlus_MC->SetFillColorAlpha(kRed-10, 0.571);
   hist_xh_det31_MuPlus_MC->SetFillColor(kRed-10);
-  hist_xh_det31_MuPlus_MC->Scale(hist_xh_det31_MuPlus_Data->Integral() / hist_xh_det31_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det31_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det31_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det31_MuMinus_Data->SetLineColor(kBlack);
   hist_xh_det31_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det31_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det31_MuPlus_Data->SetLineColor(kBlack);
+  hist_xh_det31_MuPlus_Data->Scale(normDATA_xh_det31_MuPlus);   //normalize Data hist
+  hist_xh_det31_MuMinus_Data->Scale(normDATA_xh_det31_MuMinus); //normalize Data hist
+  hist_xh_det31_MuPlus_MC->Scale(normMC_xh_det31_MuPlus);       //normalize MC hist
+  hist_xh_det31_MuMinus_MC->Scale(normMC_xh_det31_MuMinus);     //normalize MC hist
   hist_xh_det31_MuMinus_MC->SetMaximum(1.5 * max(max(hist_xh_det31_MuMinus_MC->GetMaximum(),hist_xh_det31_MuMinus_Data->GetMaximum()),max(hist_xh_det31_MuPlus_MC->GetMaximum(),hist_xh_det31_MuPlus_Data->GetMaximum())));
   hist_xh_det31_MuMinus_MC->Draw("hist");  
   hist_xh_det31_MuPlus_MC->Draw("histsame");
@@ -1091,22 +1356,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // xh in det32
   TCanvas* c_det32 = new TCanvas("c_det32","c_det32");
   c_det32->cd();
+  Double_t normDATA_xh_det32_MuPlus  = 1.;
+  Double_t normDATA_xh_det32_MuMinus = 1.;
+  Double_t normMC_xh_det32_MuPlus    = 1.;
+  Double_t normMC_xh_det32_MuMinus   = 1.;
+  TString  yaxLabel_det32 = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det32_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det32_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det32_MuPlus    = hist_xh_det32_MuPlus_Data->Integral() / hist_xh_det32_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det32_MuMinus   = hist_xh_det32_MuMinus_Data->Integral() / hist_xh_det32_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det32 = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det32_MuPlus  = 1. / hist_xh_det32_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det32_MuMinus = 1. / hist_xh_det32_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det32_MuPlus    = 1. / hist_xh_det32_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det32_MuMinus   = 1. / hist_xh_det32_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det32 = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det32_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det32_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det32_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det32_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det32 = "events"; 
+  }
   hist_xh_det32_MuMinus_MC->SetTitle("xh in det32");
   hist_xh_det32_MuMinus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det32_MuMinus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det32_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det32);
   hist_xh_det32_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det32_MuMinus_MC->SetFillColor(kBlue-10);
-  hist_xh_det32_MuMinus_MC->Scale(hist_xh_det32_MuMinus_Data->Integral() / hist_xh_det32_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det32_MuPlus_MC->SetTitle("");
   hist_xh_det32_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det32_MuPlus_MC->SetFillColor(kRed-10);
-  //hist_xh_det32_MuPlus_MC->Scale(hist_xh_det32_MuPlus_Data->Integral() / hist_xh_det32_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det32_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det32_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det32_MuMinus_Data->SetLineColor(kBlack);  
   hist_xh_det32_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det32_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det32_MuPlus_Data->SetLineColor(kBlack);
+  //hist_xh_det32_MuPlus_Data->Scale(normDATA_xh_det32_MuPlus); //normalize Data hist
+  hist_xh_det32_MuMinus_Data->Scale(normDATA_xh_det32_MuMinus); //normalize Data hist
+  //hist_xh_det32_MuPlus_MC->Scale(normMC_xh_det32_MuPlus);     //normalize MC hist
+  hist_xh_det32_MuMinus_MC->Scale(normMC_xh_det32_MuMinus);     //normalize MC hist
   hist_xh_det32_MuMinus_MC->SetMaximum(1.5 * max(max(hist_xh_det32_MuMinus_MC->GetMaximum(),hist_xh_det32_MuMinus_Data->GetMaximum()),max(hist_xh_det32_MuPlus_MC->GetMaximum(),hist_xh_det32_MuPlus_Data->GetMaximum())));
   hist_xh_det32_MuMinus_MC->Draw("hist");
   hist_xh_det32_MuPlus_MC->Draw("histsame");
@@ -1136,22 +1429,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // xh in det33
   TCanvas* c_det33 = new TCanvas("c_det33","c_det33");
   c_det33->cd();
+  Double_t normDATA_xh_det33_MuPlus  = 1.;
+  Double_t normDATA_xh_det33_MuMinus = 1.;
+  Double_t normMC_xh_det33_MuPlus    = 1.;
+  Double_t normMC_xh_det33_MuMinus   = 1.;
+  TString  yaxLabel_det33 = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det33_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det33_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det33_MuPlus    = hist_xh_det33_MuPlus_Data->Integral() / hist_xh_det33_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det33_MuMinus   = hist_xh_det33_MuMinus_Data->Integral() / hist_xh_det33_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det33 = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det33_MuPlus  = 1. / hist_xh_det33_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det33_MuMinus = 1. / hist_xh_det33_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det33_MuPlus    = 1. / hist_xh_det33_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det33_MuMinus   = 1. / hist_xh_det33_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det33 = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det33_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det33_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det33_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det33_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det33 = "events"; 
+  }
   hist_xh_det33_MuPlus_MC->SetTitle("xh in det33");
   hist_xh_det33_MuPlus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det33_MuPlus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det33_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_det33);
   hist_xh_det33_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det33_MuPlus_MC->SetFillColor(kRed-10);
-  hist_xh_det33_MuPlus_MC->Scale(hist_xh_det33_MuPlus_Data->Integral() / hist_xh_det33_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det33_MuMinus_MC->SetTitle("");
   hist_xh_det33_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det33_MuMinus_MC->SetFillColor(kBlue-10);
-  //hist_xh_det33_MuMinus_MC->Scale(hist_xh_det33_MuMinus_Data->Integral() / hist_xh_det33_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det33_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det33_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det33_MuPlus_Data->SetLineColor(kBlack);
   hist_xh_det33_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det33_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det33_MuMinus_Data->SetLineColor(kBlack);
+  hist_xh_det33_MuPlus_Data->Scale(normDATA_xh_det33_MuPlus);     //normalize Data hist
+  //hist_xh_det33_MuMinus_Data->Scale(normDATA_xh_det33_MuMinus); //normalize Data hist
+  hist_xh_det33_MuPlus_MC->Scale(normMC_xh_det33_MuPlus);         //normalize MC hist
+  //hist_xh_det33_MuMinus_MC->Scale(normMC_xh_det33_MuMinus);     //normalize MC hist
   hist_xh_det33_MuPlus_MC->SetMaximum(1.5 * max(max(hist_xh_det33_MuMinus_MC->GetMaximum(),hist_xh_det33_MuMinus_Data->GetMaximum()),max(hist_xh_det33_MuPlus_MC->GetMaximum(),hist_xh_det33_MuPlus_Data->GetMaximum())));
   hist_xh_det33_MuPlus_MC->Draw("hist");
   hist_xh_det33_MuMinus_MC->Draw("histsame");
@@ -1181,22 +1502,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // xh in det34
   TCanvas* c_det34 = new TCanvas("c_det34","c_det34");
   c_det34->cd();
+  Double_t normDATA_xh_det34_MuPlus  = 1.;
+  Double_t normDATA_xh_det34_MuMinus = 1.;
+  Double_t normMC_xh_det34_MuPlus    = 1.;
+  Double_t normMC_xh_det34_MuMinus   = 1.;
+  TString  yaxLabel_det34 = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det34_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det34_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det34_MuPlus    = hist_xh_det34_MuPlus_Data->Integral() / hist_xh_det34_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det34_MuMinus   = hist_xh_det34_MuMinus_Data->Integral() / hist_xh_det34_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det34 = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det34_MuPlus  = 1. / hist_xh_det34_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det34_MuMinus = 1. / hist_xh_det34_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det34_MuPlus    = 1. / hist_xh_det34_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det34_MuMinus   = 1. / hist_xh_det34_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det34 = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det34_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det34_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det34_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det34_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det34 = "events"; 
+  }
   hist_xh_det34_MuMinus_MC->SetTitle("xh in det34");
   hist_xh_det34_MuMinus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det34_MuMinus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det34_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det34);
   hist_xh_det34_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det34_MuMinus_MC->SetFillColor(kBlue-10);
-  hist_xh_det34_MuMinus_MC->Scale(hist_xh_det34_MuMinus_Data->Integral() / hist_xh_det34_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det34_MuPlus_MC->SetTitle("");
   hist_xh_det34_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det34_MuPlus_MC->SetFillColor(kRed-10);
-  //hist_xh_det34_MuPlus_MC->Scale(hist_xh_det34_MuPlus_Data->Integral() / hist_xh_det34_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det34_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det34_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det34_MuMinus_Data->SetLineColor(kBlack);
   hist_xh_det34_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det34_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det34_MuPlus_Data->SetLineColor(kBlack);
+  //hist_xh_det34_MuPlus_Data->Scale(normDATA_xh_det34_MuPlus); //normalize Data hist
+  hist_xh_det34_MuMinus_Data->Scale(normDATA_xh_det34_MuMinus); //normalize Data hist
+  //hist_xh_det34_MuPlus_MC->Scale(normMC_xh_det34_MuPlus);     //normalize MC hist
+  hist_xh_det34_MuMinus_MC->Scale(normMC_xh_det34_MuMinus);     //normalize MC hist
   hist_xh_det34_MuMinus_MC->SetMaximum(1.5 * max(max(hist_xh_det34_MuMinus_MC->GetMaximum(),hist_xh_det34_MuMinus_Data->GetMaximum()),max(hist_xh_det34_MuPlus_MC->GetMaximum(),hist_xh_det34_MuPlus_Data->GetMaximum())));
   hist_xh_det34_MuMinus_MC->Draw("hist");
   hist_xh_det34_MuPlus_MC->Draw("histsame");
@@ -1226,22 +1575,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // xh in det35
   TCanvas* c_det35 = new TCanvas("c_det35","c_det35");
   c_det35->cd();
+  Double_t normDATA_xh_det35_MuPlus  = 1.;
+  Double_t normDATA_xh_det35_MuMinus = 1.;
+  Double_t normMC_xh_det35_MuPlus    = 1.;
+  Double_t normMC_xh_det35_MuMinus   = 1.;
+  TString  yaxLabel_det35 = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det35_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det35_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det35_MuPlus    = hist_xh_det35_MuPlus_Data->Integral() / hist_xh_det35_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det35_MuMinus   = hist_xh_det35_MuMinus_Data->Integral() / hist_xh_det35_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det35 = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det35_MuPlus  = 1. / hist_xh_det35_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det35_MuMinus = 1. / hist_xh_det35_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det35_MuPlus    = 1. / hist_xh_det35_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det35_MuMinus   = 1. / hist_xh_det35_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det35 = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det35_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det35_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det35_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det35_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det35 = "events"; 
+  }
   hist_xh_det35_MuPlus_MC->SetTitle("xh in det35");
   hist_xh_det35_MuPlus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det35_MuPlus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det35_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_det35);
   hist_xh_det35_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det35_MuPlus_MC->SetFillColor(kRed-10);
-  hist_xh_det35_MuPlus_MC->Scale(hist_xh_det35_MuPlus_Data->Integral() / hist_xh_det35_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det35_MuMinus_MC->SetTitle("");
   hist_xh_det35_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det35_MuMinus_MC->SetFillColor(kBlue-10);
-  //hist_xh_det35_MuMinus_MC->Scale(hist_xh_det35_MuMinus_Data->Integral() / hist_xh_det35_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det35_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det35_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det35_MuPlus_Data->SetLineColor(kBlack);
   hist_xh_det35_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det35_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det35_MuMinus_Data->SetLineColor(kBlack);
+  hist_xh_det35_MuPlus_Data->Scale(normDATA_xh_det35_MuPlus);     //normalize Data hist
+  //hist_xh_det35_MuMinus_Data->Scale(normDATA_xh_det35_MuMinus); //normalize Data hist
+  hist_xh_det35_MuPlus_MC->Scale(normMC_xh_det35_MuPlus);         //normalize MC hist
+  //hist_xh_det35_MuMinus_MC->Scale(normMC_xh_det35_MuMinus);     //normalize MC hist
   hist_xh_det35_MuPlus_MC->SetMaximum(1.5 * max(max(hist_xh_det35_MuMinus_MC->GetMaximum(),hist_xh_det35_MuMinus_Data->GetMaximum()),max(hist_xh_det35_MuPlus_MC->GetMaximum(),hist_xh_det35_MuPlus_Data->GetMaximum())));
   hist_xh_det35_MuPlus_MC->Draw("hist");
   hist_xh_det35_MuMinus_MC->Draw("histsame");
@@ -1271,22 +1648,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // xh in det36
   TCanvas* c_det36 = new TCanvas("c_det36","c_det36");
   c_det36->cd();
+  Double_t normDATA_xh_det36_MuPlus  = 1.;
+  Double_t normDATA_xh_det36_MuMinus = 1.;
+  Double_t normMC_xh_det36_MuPlus    = 1.;
+  Double_t normMC_xh_det36_MuMinus   = 1.;
+  TString  yaxLabel_det36 = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det36_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det36_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det36_MuPlus    = hist_xh_det36_MuPlus_Data->Integral() / hist_xh_det36_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det36_MuMinus   = hist_xh_det36_MuMinus_Data->Integral() / hist_xh_det36_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det36 = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det36_MuPlus  = 1. / hist_xh_det36_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det36_MuMinus = 1. / hist_xh_det36_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det36_MuPlus    = 1. / hist_xh_det36_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det36_MuMinus   = 1. / hist_xh_det36_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det36 = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det36_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det36_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det36_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det36_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det36 = "events"; 
+  }
   hist_xh_det36_MuMinus_MC->SetTitle("xh in det36");
   hist_xh_det36_MuMinus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det36_MuMinus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det36_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det36);
   hist_xh_det36_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det36_MuMinus_MC->SetFillColor(kBlue-10);
-  hist_xh_det36_MuMinus_MC->Scale(hist_xh_det36_MuMinus_Data->Integral() / hist_xh_det36_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det36_MuPlus_MC->SetTitle("");
   hist_xh_det36_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det36_MuPlus_MC->SetFillColor(kRed-10);
-  //hist_xh_det36_MuPlus_MC->Scale(hist_xh_det36_MuPlus_Data->Integral() / hist_xh_det36_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det36_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det36_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det36_MuMinus_Data->SetLineColor(kBlack);
   hist_xh_det36_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det36_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det36_MuPlus_Data->SetLineColor(kBlack);
+  //hist_xh_det36_MuPlus_Data->Scale(normDATA_xh_det36_MuPlus); //normalize Data hist
+  hist_xh_det36_MuMinus_Data->Scale(normDATA_xh_det36_MuMinus); //normalize Data hist
+  //hist_xh_det36_MuPlus_MC->Scale(normMC_xh_det36_MuPlus);     //normalize MC hist
+  hist_xh_det36_MuMinus_MC->Scale(normMC_xh_det36_MuMinus);     //normalize MC hist
   hist_xh_det36_MuMinus_MC->SetMaximum(1.5 * max(max(hist_xh_det36_MuMinus_MC->GetMaximum(),hist_xh_det36_MuMinus_Data->GetMaximum()),max(hist_xh_det36_MuPlus_MC->GetMaximum(),hist_xh_det36_MuPlus_Data->GetMaximum())));
   hist_xh_det36_MuMinus_MC->Draw("hist");
   hist_xh_det36_MuPlus_MC->Draw("histsame");
@@ -1316,22 +1721,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
   // xh in det37
   TCanvas* c_det37 = new TCanvas("c_det37","c_det37");
   c_det37->cd();
+  Double_t normDATA_xh_det37_MuPlus  = 1.;
+  Double_t normDATA_xh_det37_MuMinus = 1.;
+  Double_t normMC_xh_det37_MuPlus    = 1.;
+  Double_t normMC_xh_det37_MuMinus   = 1.;
+  TString  yaxLabel_det37 = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det37_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det37_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det37_MuPlus    = hist_xh_det37_MuPlus_Data->Integral() / hist_xh_det37_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det37_MuMinus   = hist_xh_det37_MuMinus_Data->Integral() / hist_xh_det37_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det37 = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det37_MuPlus  = 1. / hist_xh_det37_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det37_MuMinus = 1. / hist_xh_det37_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det37_MuPlus    = 1. / hist_xh_det37_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det37_MuMinus   = 1. / hist_xh_det37_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det37 = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det37_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det37_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det37_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det37_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det37 = "events"; 
+  }
   hist_xh_det37_MuPlus_MC->SetTitle("xh in det37");
   hist_xh_det37_MuPlus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det37_MuPlus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det37_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_det37);
   hist_xh_det37_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det37_MuPlus_MC->SetFillColor(kRed-10);
-  hist_xh_det37_MuPlus_MC->Scale(hist_xh_det37_MuPlus_Data->Integral() / hist_xh_det37_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det37_MuMinus_MC->SetTitle("");
   hist_xh_det37_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det37_MuMinus_MC->SetFillColor(kBlue-10);
-  //hist_xh_det37_MuMinus_MC->Scale(hist_xh_det37_MuMinus_Data->Integral() / hist_xh_det37_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det37_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det37_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det37_MuPlus_Data->SetLineColor(kBlack);
   hist_xh_det37_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det37_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det37_MuMinus_Data->SetLineColor(kBlack);
+  hist_xh_det37_MuPlus_Data->Scale(normDATA_xh_det37_MuPlus);     //normalize Data hist
+  //hist_xh_det37_MuMinus_Data->Scale(normDATA_xh_det37_MuMinus); //normalize Data hist 
+  hist_xh_det37_MuPlus_MC->Scale(normMC_xh_det37_MuPlus);         //normalize MC hist
+  //hist_xh_det37_MuMinus_MC->Scale(normMC_xh_det37_MuMinus);     //normalize MC hist
   hist_xh_det37_MuPlus_MC->SetMaximum(1.5 * max(max(hist_xh_det37_MuMinus_MC->GetMaximum(),hist_xh_det37_MuMinus_Data->GetMaximum()),max(hist_xh_det37_MuPlus_MC->GetMaximum(),hist_xh_det37_MuPlus_Data->GetMaximum())));
   hist_xh_det37_MuPlus_MC->Draw("hist");
   hist_xh_det37_MuMinus_MC->Draw("histsame");
@@ -1361,22 +1794,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_det6x = new TCanvas("c_det6x","c_det6x");
   c_det6x->cd();
+  Double_t normDATA_xh_det62_MuPlus  = 1.;
+  Double_t normDATA_xh_det61_MuMinus = 1.;
+  Double_t normMC_xh_det62_MuPlus    = 1.;
+  Double_t normMC_xh_det61_MuMinus   = 1.;
+  TString  yaxLabel_det6x = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xh_det62_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det61_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det62_MuPlus    = hist_xh_det62_MuPlus_Data->Integral() / hist_xh_det62_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xh_det61_MuMinus   = hist_xh_det61_MuMinus_Data->Integral() / hist_xh_det61_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_det6x = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xh_det62_MuPlus  = 1. / hist_xh_det62_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xh_det61_MuMinus = 1. / hist_xh_det61_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xh_det62_MuPlus    = 1. / hist_xh_det62_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xh_det61_MuMinus   = 1. / hist_xh_det61_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_det6x = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xh_det62_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xh_det61_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xh_det62_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xh_det61_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_det6x = "events"; 
+  }
   hist_xh_det62_MuPlus_MC->SetTitle("xh in DTs");   
   hist_xh_det62_MuPlus_MC->GetXaxis()->SetTitle("mm");
-  hist_xh_det62_MuPlus_MC->GetYaxis()->SetTitle("events");
+  hist_xh_det62_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_det6x);
   hist_xh_det62_MuPlus_MC->SetLineColor(kRed); 
   hist_xh_det62_MuPlus_MC->SetFillColor(kRed-10);
-  hist_xh_det62_MuPlus_MC->Scale(hist_xh_det62_MuPlus_Data->Integral() / hist_xh_det62_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xh_det61_MuMinus_MC->SetTitle("");	   
   hist_xh_det61_MuMinus_MC->SetLineColor(kBlue);   
   hist_xh_det61_MuMinus_MC->SetFillColor(kBlue-10);
-  hist_xh_det61_MuMinus_MC->Scale(hist_xh_det61_MuMinus_Data->Integral() / hist_xh_det61_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xh_det62_MuPlus_Data->SetMarkerStyle(20);  
   hist_xh_det62_MuPlus_Data->SetMarkerColor(kRed);
   hist_xh_det62_MuPlus_Data->SetLineColor(kBlack);
   hist_xh_det61_MuMinus_Data->SetMarkerStyle(20);  
   hist_xh_det61_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xh_det61_MuMinus_Data->SetLineColor(kBlack);
+  hist_xh_det62_MuPlus_Data->Scale(normDATA_xh_det62_MuPlus);   //normalize Data hist
+  hist_xh_det61_MuMinus_Data->Scale(normDATA_xh_det61_MuMinus); //normalize Data hist
+  hist_xh_det62_MuPlus_MC->Scale(normMC_xh_det62_MuPlus);       //normalize MC hist
+  hist_xh_det61_MuMinus_MC->Scale(normMC_xh_det61_MuMinus);     //normalize MC hist
   hist_xh_det62_MuPlus_MC->SetMaximum(1.5 * max(max(hist_xh_det61_MuMinus_MC->GetMaximum(),hist_xh_det61_MuMinus_Data->GetMaximum()),max(hist_xh_det62_MuPlus_MC->GetMaximum(),hist_xh_det62_MuPlus_Data->GetMaximum())));
   hist_xh_det62_MuPlus_MC->Draw("hist");
   hist_xh_det61_MuMinus_MC->Draw("samehist");
@@ -1423,22 +1884,50 @@ void dataMCComparison(TString plotDataMCOutputPath){
 
   TCanvas* c_xext = new TCanvas("c_xext","c_xext");
   c_xext->cd();
+  Double_t normDATA_xext_MuPlus  = 1.;
+  Double_t normDATA_xext_MuMinus = 1.;
+  Double_t normMC_xext_MuPlus    = 1.;
+  Double_t normMC_xext_MuMinus   = 1.;
+  TString  yaxLabel_xext = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normDATA_xext_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xext_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xext_MuPlus    = hist_xext_MuPlus_Data->Integral() / hist_xext_MuPlus_MC->Integral();   // normalize MC to Data
+    normMC_xext_MuMinus   = hist_xext_MuMinus_Data->Integral() / hist_xext_MuMinus_MC->Integral(); // normalize MC to Data
+    yaxLabel_xext = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normDATA_xext_MuPlus  = 1. / hist_xext_MuPlus_Data->Integral();  // normalize Data to 1.
+    normDATA_xext_MuMinus = 1. / hist_xext_MuMinus_Data->Integral(); // normalize Data to 1.
+    normMC_xext_MuPlus    = 1. / hist_xext_MuPlus_MC->Integral();    // normalize MC to 1.
+    normMC_xext_MuMinus   = 1. / hist_xext_MuMinus_MC->Integral();   // normalize MC to 1.
+    yaxLabel_xext = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normDATA_xext_MuPlus  = 1.; // normalization of Data remains invariate
+    normDATA_xext_MuMinus = 1.; // normalization of Data remains invariate
+    normMC_xext_MuPlus    = 1.; // normalization of MC remains invariate
+    normMC_xext_MuMinus   = 1.; // normalization of MC remains invariate
+    yaxLabel_xext = "events"; 
+  }
   hist_xext_MuPlus_MC->SetTitle("x ext");
   hist_xext_MuPlus_MC->GetXaxis()->SetTitle("mm");
-  hist_xext_MuPlus_MC->GetYaxis()->SetTitle("events");
+  hist_xext_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_xext);
   hist_xext_MuPlus_MC->SetLineColor(kRed);
   hist_xext_MuPlus_MC->SetFillColor(kRed-10);
-  hist_xext_MuPlus_MC->Scale(hist_xext_MuPlus_Data->Integral() / hist_xext_MuPlus_MC->Integral()); //normalize MC to Data
   hist_xext_MuMinus_MC->SetTitle("");
   hist_xext_MuMinus_MC->SetLineColor(kBlue);
   hist_xext_MuMinus_MC->SetFillColorAlpha(kBlue-10, 0.571); // color with transparency - https://root.cern.ch/doc/master/classTColor.html
-  hist_xext_MuMinus_MC->Scale(hist_xext_MuMinus_Data->Integral() / hist_xext_MuMinus_MC->Integral()); //normalize MC to Data
   hist_xext_MuPlus_Data->SetMarkerStyle(20);  
   hist_xext_MuPlus_Data->SetMarkerColor(kRed);
   hist_xext_MuPlus_Data->SetLineColor(kBlack);
   hist_xext_MuMinus_Data->SetMarkerStyle(20);  
   hist_xext_MuMinus_Data->SetMarkerColor(kBlue);
   hist_xext_MuMinus_Data->SetLineColor(kBlack);
+  hist_xext_MuPlus_Data->Scale(normDATA_xext_MuPlus);   //normalize Data hist
+  hist_xext_MuMinus_Data->Scale(normDATA_xext_MuMinus); //normalize Data hist
+  hist_xext_MuPlus_MC->Scale(normMC_xext_MuPlus);       //normalize MC hist
+  hist_xext_MuMinus_MC->Scale(normMC_xext_MuMinus);     //normalize MC hist
   hist_xext_MuPlus_MC->SetMaximum(1.5 * max(max(hist_xext_MuMinus_MC->GetMaximum(),hist_xext_MuMinus_Data->GetMaximum()),max(hist_xext_MuPlus_MC->GetMaximum(),hist_xext_MuPlus_Data->GetMaximum())));
   hist_xext_MuPlus_MC->Draw("hist");
   hist_xext_MuMinus_MC->Draw("histsame");
@@ -1483,13 +1972,27 @@ void plotVariables_BeamInfo(){
   TString plotDataMCOutputPath = "181119_LemmaVariables_DataMCComparison_reco-333to352";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
-  // call do the histos function
+
+  // --- call do the histos function
   // arguments: input file, label for data or MC
   doTheHistos(inputFile_Data, "DATA");
   doTheHistos(inputFile_MC, "MC");
 
-  // call data/MC comparison function
-  dataMCComparison(plotDataMCOutputPath);
+
+  // --- call data/MC comparison function
+  // arguments: output path for plots, option for histos normalization
+  // - normMCtoDATA
+  // - normMCandDATAto1
+  // - normMCandDATAoutofthebox
+  //
+  // *** IMPORTANT ***: chose the normalization option before running the script
+  //                    uncommenting the chosen option
+  // ---
+  // TString normalizationOption = "normMCtoDATA";
+  TString normalizationOption = "normMCandDATAto1";
+  // TString normalizationOption = "normMCandDATAoutofthebox";
+  // ---
+  dataMCComparison(plotDataMCOutputPath,normalizationOption);
 
 
 }
