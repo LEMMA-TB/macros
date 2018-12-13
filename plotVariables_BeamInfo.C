@@ -182,10 +182,10 @@ void doTheHistos(TString inputFileName, TString label){
   Int_t    nhits;
   Double_t Calo_EnDep[25];
   Int_t    event_type;
-  Double_t gen_pos_mum[7]; // used for MC only
-  Double_t gen_pos_mup[7]; // used for MC only
+  Double_t gen_pos_mum[12]; // used for MC only
+  Double_t gen_pos_mup[12]; // used for MC only
 
-  TFile* inputFile = TFile::Open(inputFileName);
+  TFile* inputFile = new TFile(inputFileName);
   TTree* inputTree = (TTree*)inputFile->Get("lemma");
 
   inputTree->SetBranchAddress("chi2m",	        &chi2m);	     
@@ -268,7 +268,7 @@ void doTheHistos(TString inputFileName, TString label){
 
   // loop over tree entries 
   Long64_t entries = inputTree->GetEntries();
-  for(Long64_t z=0; z<entries; ++z){
+  for(Long64_t z=0; z<entries; z++){
 
     inputTree->GetEntry(z);
 
@@ -309,18 +309,21 @@ void doTheHistos(TString inputFileName, TString label){
         pSum0+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(1+r0->Gaus(0.,0.03));
         pSum0+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(1+r0->Gaus(0.,0.03));
         hist_pTot_smear03_bias000->Fill(pSum0);
+        delete r0;
 
         TRandom3* r1= new TRandom3(0);
         Float_t pSum1=0;
         pSum1+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(r1->Gaus(0.99,0.03));
         pSum1+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(r1->Gaus(0.99,0.03));
         hist_pTot_smear03_bias099->Fill(pSum1);
+        delete r1;
         
         TRandom3* r2= new TRandom3(0);
         Float_t pSum2=0;
         pSum2+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(r2->Gaus(1.01,0.03));
         pSum2+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(r2->Gaus(1.01,0.03));
         hist_pTot_smear03_bias101->Fill(pSum2);
+        delete r2;
       }
 
       // histos for DTs
@@ -445,60 +448,61 @@ void doTheHistos(TString inputFileName, TString label){
   TFile* fOutHistos = new TFile(outFileName,"recreate");
   fOutHistos->cd();
 
-  hist_pMuPlus->Write(hist_pMuPlus->GetName());
-  hist_pMuMinus->Write(hist_pMuMinus->GetName());
-  hist_pTot->Write(hist_pTot->GetName());  
+  hist_pMuPlus->Write(hist_pMuPlus->GetName());   delete hist_pMuPlus;
+  hist_pMuMinus->Write(hist_pMuMinus->GetName()); delete hist_pMuMinus;
+  hist_pTot->Write(hist_pTot->GetName());         delete hist_pTot;
   if(isMC){
-    hist_pTot_smear03_bias000->Write(hist_pTot_smear03_bias000->GetName());
-    hist_pTot_smear03_bias099->Write(hist_pTot_smear03_bias099->GetName());
-    hist_pTot_smear03_bias101->Write(hist_pTot_smear03_bias101->GetName());
+    hist_pTot_smear03_bias000->Write(hist_pTot_smear03_bias000->GetName());  delete hist_pTot_smear03_bias000;
+    hist_pTot_smear03_bias099->Write(hist_pTot_smear03_bias099->GetName());  delete hist_pTot_smear03_bias099;
+    hist_pTot_smear03_bias101->Write(hist_pTot_smear03_bias101->GetName());  delete hist_pTot_smear03_bias101;
   }    
-  hist_chi2MuPlus->Write(hist_chi2MuPlus->GetName());
-  hist_chi2MuMinus->Write(hist_chi2MuMinus->GetName());
+  hist_chi2MuPlus->Write(hist_chi2MuPlus->GetName());   delete hist_chi2MuPlus;
+  hist_chi2MuMinus->Write(hist_chi2MuMinus->GetName()); delete hist_chi2MuMinus;
 
-  hist_theta_xz_mup->Write(hist_theta_xz_mup->GetName());
-  hist_theta_xz_mum->Write(hist_theta_xz_mum->GetName());
-  hist_InvMass_mupmum->Write(hist_InvMass_mupmum->GetName());
+  hist_theta_xz_mup->Write(hist_theta_xz_mup->GetName());     delete hist_theta_xz_mup;
+  hist_theta_xz_mum->Write(hist_theta_xz_mum->GetName());     delete hist_theta_xz_mum;
+  hist_InvMass_mupmum->Write(hist_InvMass_mupmum->GetName()); delete hist_InvMass_mupmum;
 
-  hist_xcross->Write(hist_xcross->GetName());
-  hist_zcross->Write(hist_zcross->GetName());
+  hist_xcross->Write(hist_xcross->GetName()); delete hist_xcross;
+  hist_zcross->Write(hist_zcross->GetName()); delete hist_zcross;
                                 
-  hist_xh_det10_MuPlus->Write(hist_xh_det10_MuPlus->GetName());
-  hist_xh_det20_MuPlus->Write(hist_xh_det20_MuPlus->GetName());
-  hist_xh_det30_MuPlus->Write(hist_xh_det30_MuPlus->GetName());
-  hist_xh_det31_MuPlus->Write(hist_xh_det31_MuPlus->GetName());
-  hist_xh_det32_MuPlus->Write(hist_xh_det32_MuPlus->GetName());
-  hist_xh_det33_MuPlus->Write(hist_xh_det33_MuPlus->GetName());
-  hist_xh_det34_MuPlus->Write(hist_xh_det34_MuPlus->GetName());
-  hist_xh_det35_MuPlus->Write(hist_xh_det35_MuPlus->GetName());
-  hist_xh_det36_MuPlus->Write(hist_xh_det36_MuPlus->GetName());
-  hist_xh_det37_MuPlus->Write(hist_xh_det37_MuPlus->GetName());
+  hist_xh_det10_MuPlus->Write(hist_xh_det10_MuPlus->GetName()); delete hist_xh_det10_MuPlus;
+  hist_xh_det20_MuPlus->Write(hist_xh_det20_MuPlus->GetName()); delete hist_xh_det20_MuPlus;
+  hist_xh_det30_MuPlus->Write(hist_xh_det30_MuPlus->GetName()); delete hist_xh_det30_MuPlus;
+  hist_xh_det31_MuPlus->Write(hist_xh_det31_MuPlus->GetName()); delete hist_xh_det31_MuPlus;
+  hist_xh_det32_MuPlus->Write(hist_xh_det32_MuPlus->GetName()); delete hist_xh_det32_MuPlus;
+  hist_xh_det33_MuPlus->Write(hist_xh_det33_MuPlus->GetName()); delete hist_xh_det33_MuPlus;
+  hist_xh_det34_MuPlus->Write(hist_xh_det34_MuPlus->GetName()); delete hist_xh_det34_MuPlus;
+  hist_xh_det35_MuPlus->Write(hist_xh_det35_MuPlus->GetName()); delete hist_xh_det35_MuPlus;
+  hist_xh_det36_MuPlus->Write(hist_xh_det36_MuPlus->GetName()); delete hist_xh_det36_MuPlus;
+  hist_xh_det37_MuPlus->Write(hist_xh_det37_MuPlus->GetName()); delete hist_xh_det37_MuPlus;
                               
-  hist_xh_det10_MuMinus->Write(hist_xh_det10_MuMinus->GetName()); 
-  hist_xh_det20_MuMinus->Write(hist_xh_det20_MuMinus->GetName()); 
-  hist_xh_det30_MuMinus->Write(hist_xh_det30_MuMinus->GetName()); 
-  hist_xh_det31_MuMinus->Write(hist_xh_det31_MuMinus->GetName()); 
-  hist_xh_det32_MuMinus->Write(hist_xh_det32_MuMinus->GetName()); 
-  hist_xh_det33_MuMinus->Write(hist_xh_det33_MuMinus->GetName()); 
-  hist_xh_det34_MuMinus->Write(hist_xh_det34_MuMinus->GetName()); 
-  hist_xh_det35_MuMinus->Write(hist_xh_det35_MuMinus->GetName()); 
-  hist_xh_det36_MuMinus->Write(hist_xh_det36_MuMinus->GetName()); 
-  hist_xh_det37_MuMinus->Write(hist_xh_det37_MuMinus->GetName()); 
+  hist_xh_det10_MuMinus->Write(hist_xh_det10_MuMinus->GetName()); delete hist_xh_det10_MuMinus; 
+  hist_xh_det20_MuMinus->Write(hist_xh_det20_MuMinus->GetName()); delete hist_xh_det20_MuMinus;
+  hist_xh_det30_MuMinus->Write(hist_xh_det30_MuMinus->GetName()); delete hist_xh_det30_MuMinus;
+  hist_xh_det31_MuMinus->Write(hist_xh_det31_MuMinus->GetName()); delete hist_xh_det31_MuMinus;
+  hist_xh_det32_MuMinus->Write(hist_xh_det32_MuMinus->GetName()); delete hist_xh_det32_MuMinus;
+  hist_xh_det33_MuMinus->Write(hist_xh_det33_MuMinus->GetName()); delete hist_xh_det33_MuMinus;
+  hist_xh_det34_MuMinus->Write(hist_xh_det34_MuMinus->GetName()); delete hist_xh_det34_MuMinus;
+  hist_xh_det35_MuMinus->Write(hist_xh_det35_MuMinus->GetName()); delete hist_xh_det35_MuMinus;
+  hist_xh_det36_MuMinus->Write(hist_xh_det36_MuMinus->GetName()); delete hist_xh_det36_MuMinus;
+  hist_xh_det37_MuMinus->Write(hist_xh_det37_MuMinus->GetName()); delete hist_xh_det37_MuMinus;
                               
-  hist_xh_det62_MuPlus->Write(hist_xh_det62_MuPlus->GetName());  
-  hist_xh_det61_MuMinus->Write(hist_xh_det61_MuMinus->GetName()); 
+  hist_xh_det62_MuPlus->Write(hist_xh_det62_MuPlus->GetName());   delete hist_xh_det62_MuPlus;
+  hist_xh_det61_MuMinus->Write(hist_xh_det61_MuMinus->GetName()); delete hist_xh_det61_MuMinus;
                               
-  hist_xext_MuMinus->Write(hist_xext_MuMinus->GetName());
-  hist_xext_MuPlus->Write(hist_xext_MuPlus->GetName()); 
+  hist_xext_MuMinus->Write(hist_xext_MuMinus->GetName()); delete hist_xext_MuMinus;
+  hist_xext_MuPlus->Write(hist_xext_MuPlus->GetName());   delete hist_xext_MuPlus;
 
   // save some positron beam info
-  hist_npos->Write(hist_npos->GetName());
-  hist_xbe_positrons->Write(hist_xbe_positrons->GetName());
-  hist_the_positrons->Write(hist_the_positrons->GetName());
+  hist_npos->Write(hist_npos->GetName());                   delete hist_npos;
+  hist_xbe_positrons->Write(hist_xbe_positrons->GetName()); delete hist_xbe_positrons;
+  hist_the_positrons->Write(hist_the_positrons->GetName()); delete hist_the_positrons;
   //
 
   fOutHistos->Close();
   delete fOutHistos;
+  delete inputFile;
 
   cout<<" root file filled and created!"<<endl;
 
@@ -1969,7 +1973,7 @@ void plotVariables_BeamInfo(){
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
 
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "181119_LemmaVariables_DataMCComparison_reco-333to352";
+  TString plotDataMCOutputPath = "181212_LemmaVariables_DataMCComparison_reco-333to352";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
