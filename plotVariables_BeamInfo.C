@@ -24,6 +24,7 @@
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "TMath.h"
 #include "TStyle.h"
 #include "TSystem.h"
@@ -184,6 +185,8 @@ void doTheHistos(TString inputFileName, TString label){
   Int_t    event_type;
   Double_t gen_pos_mum[12]; // used for MC only
   Double_t gen_pos_mup[12]; // used for MC only
+  Double_t gen_vtx_mum[7];  // used for MC only
+  Double_t gen_vtx_mup[7];  // used for MC only
 
   TFile* inputFile = new TFile(inputFileName);
   TTree* inputTree = (TTree*)inputFile->Get("lemma");
@@ -213,6 +216,8 @@ void doTheHistos(TString inputFileName, TString label){
   if(isMC){
     inputTree->SetBranchAddress("gen_pos_mum", &gen_pos_mum[0]);
     inputTree->SetBranchAddress("gen_pos_mup", &gen_pos_mup[0]); 
+    inputTree->SetBranchAddress("gen_vtx_mum", &gen_vtx_mum[0]);
+    inputTree->SetBranchAddress("gen_vtx_mup", &gen_vtx_mup[0]); 
   }    
 
   // def histos 
@@ -266,7 +271,13 @@ void doTheHistos(TString inputFileName, TString label){
   TH1F* hist_xbe_positrons = new TH1F("hist_xbe_positrons", "Positron: Be exit point (mm)", 100, -15.0, 15.0);
   TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)", 100, -500, 500);
 
-  // loop over tree entries 
+  //2D emittance plots
+  TH2D* hist2D_emittance_x_mup = new TH2D("hist2D_emittance_x_mup","hist2D_emittance_x_mup",200,-3,3,200,-100,100); // only for MC
+  TH2D* hist2D_emittance_x_mum = new TH2D("hist2D_emittance_x_mum","hist2D_emittance_x_mum",200,-3,3,200,-100,100); // only fot MC
+
+
+  // ---------------------------
+  // --- loop over tree entries 
   Long64_t entries = inputTree->GetEntries();
   for(Long64_t z=0; z<entries; z++){
 
@@ -433,7 +444,18 @@ void doTheHistos(TString inputFileName, TString label){
 	  if(subdet[i] == 36) {hist_xh_det36_MuMinus->Fill(xh[i]);}
 	  if(subdet[i] == 37) {hist_xh_det37_MuMinus->Fill(xh[i]);}
         }
-        else continue;
+        
+
+
+        // --- emittance in x 2D histos
+        // x  = x  @det30 - x  @target
+        // x' = x' @det30 - x' @target
+        if(isMC){
+          hist2D_emittance_x_mup->Fill(gen_pos_mup[0] - gen_vtx_mup[0], (gen_pos_mup[3]/gen_pos_mup[0]) - gen_vtx_mup[0]);
+          hist2D_emittance_x_mum->Fill(gen_pos_mum[0] - gen_vtx_mum[0], (gen_pos_mum[3]/gen_pos_mum[0]) - gen_vtx_mum[0]);
+        }        
+                
+
 
       } // end loop over i
 
@@ -499,6 +521,10 @@ void doTheHistos(TString inputFileName, TString label){
   hist_xbe_positrons->Write(hist_xbe_positrons->GetName()); delete hist_xbe_positrons;
   hist_the_positrons->Write(hist_the_positrons->GetName()); delete hist_the_positrons;
   //
+
+  //2D emittance histos 
+  hist2D_emittance_x_mup->Write(hist2D_emittance_x_mup->GetName()); delete hist2D_emittance_x_mup;
+  hist2D_emittance_x_mum->Write(hist2D_emittance_x_mum->GetName()); delete hist2D_emittance_x_mum;
 
   fOutHistos->Close();
   delete fOutHistos;
@@ -1973,7 +1999,7 @@ void plotVariables_BeamInfo(){
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
 
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "181212_LemmaVariables_DataMCComparison_reco-333to352";
+  TString plotDataMCOutputPath = "181218_LemmaVariables_DataMCComparison_reco-333to352";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
