@@ -272,8 +272,8 @@ void doTheHistos(TString inputFileName, TString label){
   TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)", 100, -500, 500);
 
   //2D emittance plots
-  TH2D* hist2D_emittance_x_mup = new TH2D("hist2D_emittance_x_mup","hist2D_emittance_x_mup",200,-3,3,200,-100,100); // only for MC
-  TH2D* hist2D_emittance_x_mum = new TH2D("hist2D_emittance_x_mum","hist2D_emittance_x_mum",200,-3,3,200,-100,100); // only fot MC
+  TH2D* hist2D_emittance_x_mup = new TH2D("hist2D_emittance_x_mup","hist2D_emittance_x_mup",100,-5,5,100,-0.002,0.002); // only for MC
+  TH2D* hist2D_emittance_x_mum = new TH2D("hist2D_emittance_x_mum","hist2D_emittance_x_mum",100,-5,5,100,-0.002,0.002); // only fot MC
 
 
   // ---------------------------
@@ -444,20 +444,34 @@ void doTheHistos(TString inputFileName, TString label){
 	  if(subdet[i] == 36) {hist_xh_det36_MuMinus->Fill(xh[i]);}
 	  if(subdet[i] == 37) {hist_xh_det37_MuMinus->Fill(xh[i]);}
         }
+
+      } // end loop over i
         
 
 
-        // --- emittance in x 2D histos
-        // x  = x  @det30 - x  @target
-        // x' = x' @det30 - x' @target
-        if(isMC){
-          hist2D_emittance_x_mup->Fill(gen_pos_mup[0] - gen_vtx_mup[0], (gen_pos_mup[3]/gen_pos_mup[0]) - gen_vtx_mup[0]);
-          hist2D_emittance_x_mum->Fill(gen_pos_mum[0] - gen_vtx_mum[0], (gen_pos_mum[3]/gen_pos_mum[0]) - gen_vtx_mum[0]);
-        }        
+      // --- emittance in x 2D histos
+      // x  = x  @det30 - x  @target
+      // x' = x' @det30 - x' @target
+      if(isMC){
+        Double_t x_ondet30_mup   = gen_pos_mup[0];
+        Double_t x_ontarget_mup  = gen_vtx_mup[0];
+        Double_t x_emittance_mup = x_ondet30_mup - x_ontarget_mup;
+        Double_t x_prime_ondet30_mup   = gen_pos_mup[3] / (gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5]); 
+        Double_t x_prime_ontarget_mup  = gen_vtx_mup[3];
+        Double_t x_prime_emittance_mup = x_prime_ondet30_mup - x_prime_ontarget_mup;  
+        hist2D_emittance_x_mup->Fill(x_emittance_mup, x_prime_emittance_mup);
+        Double_t x_ondet30_mum   = gen_pos_mum[0];
+        Double_t x_ontarget_mum  = gen_vtx_mum[0];
+        Double_t x_emittance_mum = x_ondet30_mum - x_ontarget_mum;
+        Double_t x_prime_ondet30_mum   = gen_pos_mum[3] / (gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5]); 
+        Double_t x_prime_ontarget_mum  = gen_vtx_mum[3];
+        Double_t x_prime_emittance_mum = x_prime_ondet30_mum - x_prime_ontarget_mum;  
+        hist2D_emittance_x_mum->Fill(x_emittance_mum, x_prime_emittance_mum);
+      }        
                 
 
 
-      } // end loop over i
+      
 
     } // end if (p_mup > 0. && p_mum > 0.)
 
@@ -637,6 +651,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption)
   TH1F* hist_xext_MuMinus_MC = (TH1F*)inFile_MC->Get("hist_xext_MuMinus");
   TH1F* hist_xext_MuPlus_MC  = (TH1F*)inFile_MC->Get("hist_xext_MuPlus"); 
 
+  TH2D* hist2D_emittance_x_mup_MC = (TH2D*)inFile_MC->Get("hist2D_emittance_x_mup");
+  TH2D* hist2D_emittance_x_mum_MC = (TH2D*)inFile_MC->Get("hist2D_emittance_x_mum");
 
   gStyle->SetOptStat(0);
  
@@ -1985,6 +2001,28 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption)
   c_xext->SaveAs((plotDataMCOutputPath + "/" + c_xext->GetName() + ".png"));
 
 
+  // 2D emittance plots
+  gStyle->SetOptStat(1);  //FIXME: remove this if add a legend
+
+  TCanvas* c_x_emittance_mup = new TCanvas("c_x_emittance_mup","c_x_emittance_mup"); 
+  c_x_emittance_mup->cd();
+  hist2D_emittance_x_mup_MC->SetTitle("emittance #mu^{+}");
+  hist2D_emittance_x_mup_MC->GetXaxis()->SetTitle("x [mm]");
+  hist2D_emittance_x_mup_MC->GetYaxis()->SetTitle("x' [rad]");
+  hist2D_emittance_x_mup_MC->GetYaxis()->SetTitleOffset(1.4);
+  hist2D_emittance_x_mup_MC->Draw("COLZ");
+  c_x_emittance_mup->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_mup->GetName() + ".png"));
+
+  TCanvas* c_x_emittance_mum = new TCanvas("c_x_emittance_mum","c_x_emittance_mum"); 
+  c_x_emittance_mum->cd();
+  hist2D_emittance_x_mum_MC->SetTitle("emittance #mu^{-}");
+  hist2D_emittance_x_mum_MC->GetXaxis()->SetTitle("x [mm]");
+  hist2D_emittance_x_mum_MC->GetYaxis()->SetTitle("x' [rad]");
+  hist2D_emittance_x_mum_MC->GetYaxis()->SetTitleOffset(1.4);
+  hist2D_emittance_x_mum_MC->Draw("COLZ");
+  c_x_emittance_mum->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_mum->GetName() + ".png"));
+  
+
   cout<<" Plots done! =) "<<endl; 
 
 
@@ -1999,7 +2037,7 @@ void plotVariables_BeamInfo(){
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
 
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "181218_LemmaVariables_DataMCComparison_reco-333to352";
+  TString plotDataMCOutputPath = "181219_LemmaVariables_DataMCComparison_reco-333to352";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
