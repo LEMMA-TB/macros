@@ -272,8 +272,8 @@ void doTheHistos(TString inputFileName, TString label){
   TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)", 100, -500, 500);
 
   //2D emittance plots
-  TH2D* hist2D_emittance_x_mup = new TH2D("hist2D_emittance_x_mup","hist2D_emittance_x_mup",100,-5,5,100,-0.002,0.002); // only for MC
-  TH2D* hist2D_emittance_x_mum = new TH2D("hist2D_emittance_x_mum","hist2D_emittance_x_mum",100,-5,5,100,-0.002,0.002); // only fot MC
+  TH2D* hist2D_emittance_x_mup = new TH2D("hist2D_emittance_x_mup","hist2D_emittance_x_mup",100,-0.6,0.6,100,-0.002,0.002); // only for MC
+  TH2D* hist2D_emittance_x_mum = new TH2D("hist2D_emittance_x_mum","hist2D_emittance_x_mum",100,-0.6,0.6,100,-0.002,0.002); // only fot MC
 
 
   // ---------------------------
@@ -448,21 +448,35 @@ void doTheHistos(TString inputFileName, TString label){
       } // end loop over i
         
 
-
+      // -----------------------------
       // --- emittance in x 2D histos
+      // -----------------------------
       // x  = x  @det30 - x  @target
       // x' = x' @det30 - x' @target
       if(isMC){
-        Double_t x_ondet30_mup   = gen_pos_mup[0];
-        Double_t x_ontarget_mup  = gen_vtx_mup[0];
-        Double_t x_emittance_mup = x_ondet30_mup - x_ontarget_mup;
+        // estimate is done on a reference plane at the beginning of the target (z_ref_BeginTarget)
+        Double_t z_ref_halfTarget  = 3703.0; // [mm] z ref at middle target
+        Double_t z_ref_beginTarget = z_ref_halfTarget - 30; // [mm] z ref at middle target - half target length (6cm /2 -> Be target) 
+
+        // --- mu+
+        // extrapolation on reference plane: x_det30_atZref_mup = x_onDet30 - (z_onDet30 - z_ref_beginTarget)* px_onDet30 / pz_onDet30
+        Double_t x_det30_atZref_mup = gen_pos_mup[0] - (gen_pos_mup[2] - z_ref_beginTarget)*(gen_pos_mup[3]/gen_pos_mup[5]); 
+        // extrapolation on reference plane: x_vtx_atZref_mup = x_vtx - (z_vtx - z_ref_beginTarget)* Cx_vtx / Cz_vtx
+        Double_t x_vtx_atZref_mup = gen_vtx_mup[0] - (gen_vtx_mup[2] - z_ref_beginTarget)*(gen_vtx_mup[3]/gen_vtx_mup[5]); 
+        Double_t x_emittance_mup = x_det30_atZref_mup - x_vtx_atZref_mup; 
+        // extrapolation on reference plane: the direction remain the same as on det30 or at vtx
         Double_t x_prime_ondet30_mup   = gen_pos_mup[3] / (gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5]); 
         Double_t x_prime_ontarget_mup  = gen_vtx_mup[3];
         Double_t x_prime_emittance_mup = x_prime_ondet30_mup - x_prime_ontarget_mup;  
         hist2D_emittance_x_mup->Fill(x_emittance_mup, x_prime_emittance_mup);
-        Double_t x_ondet30_mum   = gen_pos_mum[0];
-        Double_t x_ontarget_mum  = gen_vtx_mum[0];
-        Double_t x_emittance_mum = x_ondet30_mum - x_ontarget_mum;
+
+        // --- mu-
+        // extrapolation on reference plane: x_det30_atZref_mum = x_onDet30 - (z_onDet30 - z_ref_beginTarget)* px_onDet30 / pz_onDet30
+        Double_t x_det30_atZref_mum = gen_pos_mum[0] - (gen_pos_mum[2] - z_ref_beginTarget)*(gen_pos_mum[3]/gen_pos_mum[5]); 
+        // extrapolation on reference plane: x_vtx_atZref_mum = x_vtx - (z_vtx - z_ref_beginTarget)* Cx_vtx / Cz_vtx
+        Double_t x_vtx_atZref_mum = gen_vtx_mum[0] - (gen_vtx_mum[2] - z_ref_beginTarget)*(gen_vtx_mum[3]/gen_vtx_mum[5]); 
+        Double_t x_emittance_mum = x_det30_atZref_mum - x_vtx_atZref_mum; 
+        // extrapolation on reference plane: the direction remain the same as on det30 or at vtx
         Double_t x_prime_ondet30_mum   = gen_pos_mum[3] / (gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5]); 
         Double_t x_prime_ontarget_mum  = gen_vtx_mum[3];
         Double_t x_prime_emittance_mum = x_prime_ondet30_mum - x_prime_ontarget_mum;  
@@ -2355,7 +2369,7 @@ void plotVariables_BeamInfo(){
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
 
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "190109_LemmaVariables_DataMCComparison_reco-333to352";
+  TString plotDataMCOutputPath = "190122_LemmaVariables_DataMCComparison_reco-333to352";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
