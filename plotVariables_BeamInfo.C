@@ -274,6 +274,11 @@ void doTheHistos(TString inputFileName, TString label){
   //2D emittance plots
   TH2D* hist2D_emittance_x_mup = new TH2D("hist2D_emittance_x_mup","hist2D_emittance_x_mup",100,-0.6,0.6,100,-0.002,0.002); // only for MC
   TH2D* hist2D_emittance_x_mum = new TH2D("hist2D_emittance_x_mum","hist2D_emittance_x_mum",100,-0.6,0.6,100,-0.002,0.002); // only fot MC
+  //1D emittance plots
+  TH1D* hist1D_emittance_x_mup       = new TH1D("hist1D_emittance_x_mup","hist1D_emittance_x_mup",100,-0.6,0.6); // only for MC
+  TH1D* hist1D_emittance_x_prime_mup = new TH1D("hist1D_emittance_x_prime_mup","hist1D_emittance_x_prime_mup",100,-0.002,0.002); // only for MC
+  TH1D* hist1D_emittance_x_mum       = new TH1D("hist1D_emittance_x_mum","hist1D_emittance_x_mum",100,-0.6,0.6); // only for MC
+  TH1D* hist1D_emittance_x_prime_mum = new TH1D("hist1D_emittance_x_prime_mum","hist1D_emittance_x_prime_mum",100,-0.002,0.002); // only for MC
 
 
   // ---------------------------
@@ -449,38 +454,54 @@ void doTheHistos(TString inputFileName, TString label){
         
 
       // -----------------------------
-      // --- emittance in x 2D histos
+      // --- emittance in x 1D and 2D histos
       // -----------------------------
-      // x  = x  @det30 - x  @target
-      // x' = x' @det30 - x' @target
+      // x  = x  @det30 - x  incoming e+
+      // x' = x' @det30 - x' incoming e+
       if(isMC){
         // estimate is done on a reference plane at the beginning of the target (z_ref_BeginTarget)
         Double_t z_ref_halfTarget  = 3703.0; // [mm] z ref at middle target
         Double_t z_ref_beginTarget = z_ref_halfTarget - 30; // [mm] z ref at middle target - half target length (6cm /2 -> Be target) 
 
+
+        // --- e+ incoming
+        // px of e+ = Cx mu- * En of mu- + Cx mu+ * En of mu+ = px of mu- + px of mu+
+        Double_t px_eplus = gen_vtx_mum[3]*gen_vtx_mum[6] + gen_vtx_mup[3]*gen_vtx_mup[6];
+        Double_t py_eplus = gen_vtx_mum[4]*gen_vtx_mum[6] + gen_vtx_mup[4]*gen_vtx_mup[6];
+        Double_t pz_eplus = gen_vtx_mum[5]*gen_vtx_mum[6] + gen_vtx_mup[5]*gen_vtx_mup[6];
+        // x  of e+ (extrapolation on reference plane)  = x_vtx - (z_vtx - z_ref_beginTarget)*(px_e+/pz_e+)
+        // N.B. gen_vtx_mup[0] = gen_vtx_mum[0] and gen_vtx_mup[2] = gen_vtx_mum[2] 
+        Double_t x_atZref_eplus = gen_vtx_mup[0] - (gen_vtx_mup[2] - z_ref_beginTarget)*(px_eplus/pz_eplus);
+        // x' of e+ (extrapolation on reference plane)  = px / p  (the direction remain the same as at vtx)
+        Double_t x_prime_atZref_eplus = px_eplus / sqrt(px_eplus*px_eplus + py_eplus*py_eplus + pz_eplus*pz_eplus);
+
+
         // --- mu+
-        // extrapolation on reference plane: x_det30_atZref_mup = x_onDet30 - (z_onDet30 - z_ref_beginTarget)* px_onDet30 / pz_onDet30
+        // x  (extrapolation on reference plane): x_det30_atZref_mup = x_onDet30 - (z_onDet30 - z_ref_beginTarget)* px_onDet30 / pz_onDet30
         Double_t x_det30_atZref_mup = gen_pos_mup[0] - (gen_pos_mup[2] - z_ref_beginTarget)*(gen_pos_mup[3]/gen_pos_mup[5]); 
-        // extrapolation on reference plane: x_vtx_atZref_mup = x_vtx - (z_vtx - z_ref_beginTarget)* Cx_vtx / Cz_vtx
-        Double_t x_vtx_atZref_mup = gen_vtx_mup[0] - (gen_vtx_mup[2] - z_ref_beginTarget)*(gen_vtx_mup[3]/gen_vtx_mup[5]); 
-        Double_t x_emittance_mup = x_det30_atZref_mup - x_vtx_atZref_mup; 
-        // extrapolation on reference plane: the direction remain the same as on det30 or at vtx
-        Double_t x_prime_ondet30_mup   = gen_pos_mup[3] / (gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5]); 
-        Double_t x_prime_ontarget_mup  = gen_vtx_mup[3];
-        Double_t x_prime_emittance_mup = x_prime_ondet30_mup - x_prime_ontarget_mup;  
+        // x' (extrapolation on reference plane): the direction remain the same as on det30 or at vtx
+        Double_t x_prime_ondet30_mup = gen_pos_mup[3] / sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5]); 
+        
+        // emittance of mu+
+        Double_t x_emittance_mup = x_det30_atZref_mup - x_atZref_eplus;
+        Double_t x_prime_emittance_mup = x_prime_ondet30_mup - x_prime_atZref_eplus;
         hist2D_emittance_x_mup->Fill(x_emittance_mup, x_prime_emittance_mup);
+        hist1D_emittance_x_mup->Fill(x_emittance_mup);
+        hist1D_emittance_x_prime_mup->Fill(x_prime_emittance_mup);
+
 
         // --- mu-
-        // extrapolation on reference plane: x_det30_atZref_mum = x_onDet30 - (z_onDet30 - z_ref_beginTarget)* px_onDet30 / pz_onDet30
+        // x  (extrapolation on reference plane): x_det30_atZref_mum = x_onDet30 - (z_onDet30 - z_ref_beginTarget)* px_onDet30 / pz_onDet30
         Double_t x_det30_atZref_mum = gen_pos_mum[0] - (gen_pos_mum[2] - z_ref_beginTarget)*(gen_pos_mum[3]/gen_pos_mum[5]); 
-        // extrapolation on reference plane: x_vtx_atZref_mum = x_vtx - (z_vtx - z_ref_beginTarget)* Cx_vtx / Cz_vtx
-        Double_t x_vtx_atZref_mum = gen_vtx_mum[0] - (gen_vtx_mum[2] - z_ref_beginTarget)*(gen_vtx_mum[3]/gen_vtx_mum[5]); 
-        Double_t x_emittance_mum = x_det30_atZref_mum - x_vtx_atZref_mum; 
-        // extrapolation on reference plane: the direction remain the same as on det30 or at vtx
-        Double_t x_prime_ondet30_mum   = gen_pos_mum[3] / (gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5]); 
-        Double_t x_prime_ontarget_mum  = gen_vtx_mum[3];
-        Double_t x_prime_emittance_mum = x_prime_ondet30_mum - x_prime_ontarget_mum;  
+        // x' (extrapolation on reference plane): the direction remain the same as on det30 or at vtx
+        Double_t x_prime_ondet30_mum = gen_pos_mum[3] / sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5]); 
+
+        // emittance of mu-
+        Double_t x_emittance_mum = x_det30_atZref_mum - x_atZref_eplus;
+        Double_t x_prime_emittance_mum = x_prime_ondet30_mum - x_prime_atZref_eplus;
         hist2D_emittance_x_mum->Fill(x_emittance_mum, x_prime_emittance_mum);
+        hist1D_emittance_x_mum->Fill(x_emittance_mum);
+        hist1D_emittance_x_prime_mum->Fill(x_prime_emittance_mum);
       }        
                 
 
@@ -553,6 +574,13 @@ void doTheHistos(TString inputFileName, TString label){
   //2D emittance histos 
   hist2D_emittance_x_mup->Write(hist2D_emittance_x_mup->GetName()); delete hist2D_emittance_x_mup;
   hist2D_emittance_x_mum->Write(hist2D_emittance_x_mum->GetName()); delete hist2D_emittance_x_mum;
+
+  //1D emittance histos
+  hist1D_emittance_x_mup->Write(hist1D_emittance_x_mup->GetName());             delete hist1D_emittance_x_mup;
+  hist1D_emittance_x_prime_mup->Write(hist1D_emittance_x_prime_mup->GetName()); delete hist1D_emittance_x_prime_mup;
+  hist1D_emittance_x_mum->Write(hist1D_emittance_x_mum->GetName());             delete hist1D_emittance_x_mum;
+  hist1D_emittance_x_prime_mum->Write(hist1D_emittance_x_prime_mum->GetName()); delete hist1D_emittance_x_prime_mum;
+
 
   fOutHistos->Close();
   delete fOutHistos;
@@ -667,6 +695,11 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
 
   TH2D* hist2D_emittance_x_mup_MC = (TH2D*)inFile_MC->Get("hist2D_emittance_x_mup");
   TH2D* hist2D_emittance_x_mum_MC = (TH2D*)inFile_MC->Get("hist2D_emittance_x_mum");
+
+  TH1D* hist1D_emittance_x_mup_MC = (TH1D*)inFile_MC->Get("hist1D_emittance_x_mup");
+  TH1D* hist1D_emittance_x_prime_mup_MC = (TH1D*)inFile_MC->Get("hist1D_emittance_x_prime_mup");
+  TH1D* hist1D_emittance_x_mum_MC = (TH1D*)inFile_MC->Get("hist1D_emittance_x_mum");
+  TH1D* hist1D_emittance_x_prime_mum_MC = (TH1D*)inFile_MC->Get("hist1D_emittance_x_prime_mum");
 
   gStyle->SetOptStat(0);
  
@@ -2353,6 +2386,29 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist2D_emittance_x_mum_MC->GetYaxis()->SetTitleOffset(1.4);
   hist2D_emittance_x_mum_MC->Draw("COLZ");
   c_x_emittance_mum->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_mum->GetName() + ".png"));
+
+  //1D emittance plots
+  gStyle->SetOptStat(1);  //FIXME: remove this if add a legend
+  
+  TCanvas* c_x_emittance_1D_mup = new TCanvas("c_x_emittance_1D_mup","c_x_emittance_1D_mup");
+  c_x_emittance_1D_mup->cd();
+  hist1D_emittance_x_mup_MC->Draw();
+  c_x_emittance_1D_mup->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_1D_mup->GetName() + ".png"));
+
+  TCanvas* c_x_prime_emittance_1D_mup = new TCanvas("c_x_prime_emittance_1D_mup","c_x_prime_emittance_1D_mup");
+  c_x_prime_emittance_1D_mup->cd();
+  hist1D_emittance_x_prime_mup_MC->Draw();
+  c_x_prime_emittance_1D_mup->SaveAs((plotDataMCOutputPath + "/" + c_x_prime_emittance_1D_mup->GetName() + ".png"));
+
+  TCanvas* c_x_emittance_1D_mum = new TCanvas("c_x_emittance_1D_mum","c_x_emittance_1D_mum");
+  c_x_emittance_1D_mum->cd();
+  hist1D_emittance_x_mum_MC->Draw();
+  c_x_emittance_1D_mum->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_1D_mum->GetName() + ".png"));
+
+  TCanvas* c_x_prime_emittance_1D_mum = new TCanvas("c_x_prime_emittance_1D_mum","c_x_prime_emittance_1D_mum");
+  c_x_prime_emittance_1D_mum->cd();
+  hist1D_emittance_x_prime_mum_MC->Draw();
+  c_x_prime_emittance_1D_mum->SaveAs((plotDataMCOutputPath + "/" + c_x_prime_emittance_1D_mum->GetName() + ".png"));
   
 
   cout<<" Plots done! =) "<<endl; 
@@ -2369,7 +2425,7 @@ void plotVariables_BeamInfo(){
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
 
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "190122_LemmaVariables_DataMCComparison_reco-333to352";
+  TString plotDataMCOutputPath = "190206_LemmaVariables_DataMCComparison_reco-333to352";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
