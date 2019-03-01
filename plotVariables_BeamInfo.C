@@ -35,6 +35,7 @@
 #include "TLine.h"
 #include "TPaveText.h"
 #include "TRandom3.h"
+#include "TPaveText.h"
 
 #include "FillBeamInfo.h"
 
@@ -298,7 +299,10 @@ void doTheHistos(TString inputFileName, TString label){
   TH1D* hist1D_emittanceControl_py_mum        = new TH1D("hist1D_emittanceControl_py_mum"       ,"hist1D_emittanceControl_py_mum"       ,100,-60.,60.); // only for MC
   TH1D* hist1D_emittanceControl_pz_mum        = new TH1D("hist1D_emittanceControl_pz_mum"       ,"hist1D_emittanceControl_pz_mum"       ,100,10000.,35000.); // only for MC
   TH1D* hist1D_emittanceControl_pTot_mum      = new TH1D("hist1D_emittanceControl_pTot_mum"     ,"hist1D_emittanceControl_pTot_mum"     ,100,10000.,35000.); // only for MC
-
+  // 2D emittance control plots
+  TH2D* hist2D_emittanceControl_emittance_positron = new TH2D("hist2D_emittanceControl_emittance_positron","hist2D_emittanceControl_emittance_positron",100,-30.,30.,100,-0.002,0.002); // only for MC
+  TH2D* hist2D_emittanceControl_emittance_mup      = new TH2D("hist2D_emittanceControl_emittance_mup"     ,"hist2D_emittanceControl_emittance_mup"     ,100,-30.,30.,100,-0.002,0.002); // only for MC
+  TH2D* hist2D_emittanceControl_emittance_mum      = new TH2D("hist2D_emittanceControl_emittance_mum"     ,"hist2D_emittanceControl_emittance_mum"     ,100,-30.,30.,100,-0.002,0.002); // only for MC
 
 
   // ---------------------------
@@ -499,7 +503,8 @@ void doTheHistos(TString inputFileName, TString label){
         // emittance e+ control plots
         hist1D_emittanceControl_x_atZref_eplus->Fill(x_atZref_eplus);
         hist1D_emittanceControl_x_prime_atZref_eplus->Fill(x_prime_atZref_eplus);
-
+        hist2D_emittanceControl_emittance_positron->Fill(x_atZref_eplus,x_prime_atZref_eplus);
+ 
 
         // --- mu+
         // x  (extrapolation on reference plane): x_det30_atZref_mup = x_onDet30 - (z_onDet30 - z_ref_endTarget)* px_onDet30 / pz_onDet30
@@ -516,6 +521,7 @@ void doTheHistos(TString inputFileName, TString label){
         hist1D_emittanceControl_py_mup->Fill(gen_pos_mup[4]);
         hist1D_emittanceControl_pz_mup->Fill(gen_pos_mup[5]);
         hist1D_emittanceControl_pTot_mup->Fill(pTot_genLev_mup);
+	hist2D_emittanceControl_emittance_mup->Fill(x_det30_atZref_mup,x_prime_ondet30_mup); 
         
         // emittance of mu+
         Double_t x_emittance_mup = x_det30_atZref_mup - x_atZref_eplus;
@@ -540,6 +546,7 @@ void doTheHistos(TString inputFileName, TString label){
         hist1D_emittanceControl_py_mum->Fill(gen_pos_mum[4]);
         hist1D_emittanceControl_pz_mum->Fill(gen_pos_mum[5]);
         hist1D_emittanceControl_pTot_mum->Fill(pTot_genLev_mum);
+       	hist2D_emittanceControl_emittance_mum->Fill(x_det30_atZref_mum,x_prime_ondet30_mum);
 
         // emittance of mu-
         Double_t x_emittance_mum = x_det30_atZref_mum - x_atZref_eplus;
@@ -649,6 +656,11 @@ void doTheHistos(TString inputFileName, TString label){
   hist1D_emittanceControl_py_mum->Write(hist1D_emittanceControl_py_mum->GetName());               delete hist1D_emittanceControl_py_mum;
   hist1D_emittanceControl_pz_mum->Write(hist1D_emittanceControl_pz_mum->GetName());               delete hist1D_emittanceControl_pz_mum;
   hist1D_emittanceControl_pTot_mum->Write(hist1D_emittanceControl_pTot_mum->GetName());           delete hist1D_emittanceControl_pTot_mum;
+
+  //2D emittance control plots 
+  hist2D_emittanceControl_emittance_positron->Write(hist2D_emittanceControl_emittance_positron->GetName()); delete hist2D_emittanceControl_emittance_positron;
+  hist2D_emittanceControl_emittance_mup->Write(hist2D_emittanceControl_emittance_mup->GetName());           delete hist2D_emittanceControl_emittance_mup;
+  hist2D_emittanceControl_emittance_mum->Write(hist2D_emittanceControl_emittance_mum->GetName());           delete hist2D_emittanceControl_emittance_mum;
 					                                       	 
   
 					 
@@ -789,6 +801,11 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   TH1D* hist1D_emittanceControl_py_mum_MC        = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_py_mum");
   TH1D* hist1D_emittanceControl_pz_mum_MC        = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_pz_mum");
   TH1D* hist1D_emittanceControl_pTot_mum_MC      = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_pTot_mum");
+
+  TH2D* hist2D_emittanceControl_emittance_positron_MC = (TH2D*)inFile_MC->Get("hist2D_emittanceControl_emittance_positron");
+  TH2D* hist2D_emittanceControl_emittance_mup_MC      = (TH2D*)inFile_MC->Get("hist2D_emittanceControl_emittance_mup");
+  TH2D* hist2D_emittanceControl_emittance_mum_MC      = (TH2D*)inFile_MC->Get("hist2D_emittanceControl_emittance_mum");
+
 
   
 
@@ -2466,7 +2483,20 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist2D_emittance_x_mup_MC->GetXaxis()->SetTitle("x [mm]");
   hist2D_emittance_x_mup_MC->GetYaxis()->SetTitle("x' [rad]");
   hist2D_emittance_x_mup_MC->GetYaxis()->SetTitleOffset(1.4);
+  gStyle->SetPalette(kBird);
   hist2D_emittance_x_mup_MC->Draw("COLZ");
+  float emittanceValue_mup = sqrt(hist2D_emittance_x_mup_MC->GetCovariance(1,1)*hist2D_emittance_x_mup_MC->GetCovariance(2,2) - hist2D_emittance_x_mup_MC->GetCovariance(2,1)*hist2D_emittance_x_mup_MC->GetCovariance(1,2));
+  TPaveText* pv_x_emittance_mup = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
+  pv_x_emittance_mup->AddText(Form("#epsilon = %f",emittanceValue_mup));
+  pv_x_emittance_mup->AddText("mm #times rad");
+  pv_x_emittance_mup->SetFillColor(kWhite);
+  pv_x_emittance_mup->SetBorderSize(0);
+  pv_x_emittance_mup->SetTextFont(40);
+  pv_x_emittance_mup->SetTextSize(0.05);
+  pv_x_emittance_mup->SetTextFont(42);
+  pv_x_emittance_mup->SetTextAlign(22); //text centering
+  pv_x_emittance_mup->Draw();
+  c_x_emittance_mup->Update();
   c_x_emittance_mup->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_mup->GetName() + ".png"));
 
   TCanvas* c_x_emittance_mum = new TCanvas("c_x_emittance_mum","c_x_emittance_mum"); 
@@ -2475,7 +2505,20 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist2D_emittance_x_mum_MC->GetXaxis()->SetTitle("x [mm]");
   hist2D_emittance_x_mum_MC->GetYaxis()->SetTitle("x' [rad]");
   hist2D_emittance_x_mum_MC->GetYaxis()->SetTitleOffset(1.4);
+  gStyle->SetPalette(kBird);
   hist2D_emittance_x_mum_MC->Draw("COLZ");
+  float emittanceValue_mum = sqrt(hist2D_emittance_x_mum_MC->GetCovariance(1,1)*hist2D_emittance_x_mum_MC->GetCovariance(2,2) - hist2D_emittance_x_mum_MC->GetCovariance(2,1)*hist2D_emittance_x_mum_MC->GetCovariance(1,2));
+  TPaveText* pv_x_emittance_mum = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
+  pv_x_emittance_mum->AddText(Form("#epsilon = %f",emittanceValue_mum));
+  pv_x_emittance_mum->AddText("mm #times rad");
+  pv_x_emittance_mum->SetFillColor(kWhite);
+  pv_x_emittance_mum->SetBorderSize(0);
+  pv_x_emittance_mum->SetTextFont(40);
+  pv_x_emittance_mum->SetTextSize(0.05);
+  pv_x_emittance_mum->SetTextFont(42);
+  pv_x_emittance_mum->SetTextAlign(22); //text centering
+  pv_x_emittance_mum->Draw();
+  c_x_emittance_mum->Update();
   c_x_emittance_mum->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_mum->GetName() + ".png"));
 
   //1D emittance plots
@@ -2586,11 +2629,76 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist1D_emittanceControl_pTot_mum_MC->Draw();
   c_emittanceControl_pTot_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_pTot_mum->GetName() + ".png"));
 
+  // 2D emittance control plots 
+  TCanvas* c_emittanceControl_emittance_positron = new TCanvas("c_emittanceControl_emittance_positron","c_emittanceControl_emittance_positron");
+  c_emittanceControl_emittance_positron->cd();
+  hist2D_emittanceControl_emittance_positron_MC->SetTitle("raw emittance e^{+}");
+  hist2D_emittanceControl_emittance_positron_MC->GetXaxis()->SetTitle("x [mm]");
+  hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitle("x' [rad]");
+  hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitleOffset(1.4);
+  gStyle->SetPalette(kCool);
+  hist2D_emittanceControl_emittance_positron_MC->Draw("COLZ");
+  float emittanceValue_raw_positron = sqrt(hist2D_emittanceControl_emittance_positron_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_positron_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_positron_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_positron_MC->GetCovariance(1,2));
+  TPaveText* pv_emittanceControl_emittance_positron = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
+  pv_emittanceControl_emittance_positron->AddText(Form("#epsilon = %f",emittanceValue_raw_positron));
+  pv_emittanceControl_emittance_positron->AddText("mm #times rad");
+  pv_emittanceControl_emittance_positron->SetFillColor(kWhite);
+  pv_emittanceControl_emittance_positron->SetBorderSize(0);
+  pv_emittanceControl_emittance_positron->SetTextFont(40);
+  pv_emittanceControl_emittance_positron->SetTextSize(0.05);
+  pv_emittanceControl_emittance_positron->SetTextFont(42);
+  pv_emittanceControl_emittance_positron->SetTextAlign(22); //text centering
+  pv_emittanceControl_emittance_positron->Draw();
+  c_emittanceControl_emittance_positron->Update();
+  c_emittanceControl_emittance_positron->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_emittance_positron->GetName() + ".png"));
 
+ 
+  TCanvas* c_emittanceControl_emittance_mup = new TCanvas("c_emittanceControl_emittance_mup","c_emittanceControl_emittance_mup");
+  c_emittanceControl_emittance_mup->cd();
+  hist2D_emittanceControl_emittance_mup_MC->SetTitle("raw emittance #mu^{+}");
+  hist2D_emittanceControl_emittance_mup_MC->GetXaxis()->SetTitle("x [mm]");
+  hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitle("x' [rad]");
+  hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitleOffset(1.4);
+  gStyle->SetPalette(kAvocado);
+  hist2D_emittanceControl_emittance_mup_MC->Draw("COLZ");
+  float emittanceValue_raw_mup = sqrt(hist2D_emittanceControl_emittance_mup_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_mup_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_mup_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_mup_MC->GetCovariance(1,2));
+  TPaveText* pv_emittanceControl_emittance_mup = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
+  pv_emittanceControl_emittance_mup->AddText(Form("#epsilon = %f",emittanceValue_raw_mup));
+  pv_emittanceControl_emittance_mup->AddText("mm #times rad");
+  pv_emittanceControl_emittance_mup->SetFillColor(kWhite);
+  pv_emittanceControl_emittance_mup->SetBorderSize(0);
+  pv_emittanceControl_emittance_mup->SetTextFont(40);
+  pv_emittanceControl_emittance_mup->SetTextSize(0.05);
+  pv_emittanceControl_emittance_mup->SetTextFont(42);
+  pv_emittanceControl_emittance_mup->SetTextAlign(22); //text centering
+  pv_emittanceControl_emittance_mup->Draw();
+  c_emittanceControl_emittance_mup->Update();
+  c_emittanceControl_emittance_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_emittance_mup->GetName() + ".png"));
+
+
+  TCanvas* c_emittanceControl_emittance_mum = new TCanvas("c_emittanceControl_emittance_mum","c_emittanceControl_emittance_mum");
+  c_emittanceControl_emittance_mum->cd();
+  hist2D_emittanceControl_emittance_mum_MC->SetTitle("raw emittance #mu^{-}");
+  hist2D_emittanceControl_emittance_mum_MC->GetXaxis()->SetTitle("x [mm]");
+  hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitle("x' [rad]");
+  hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitleOffset(1.4);
+  gStyle->SetPalette(kAvocado);
+  hist2D_emittanceControl_emittance_mum_MC->Draw("COLZ");
+  float emittanceValue_raw_mum = sqrt(hist2D_emittanceControl_emittance_mum_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_mum_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_mum_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_mum_MC->GetCovariance(1,2));
+  TPaveText* pv_emittanceControl_emittance_mum = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
+  pv_emittanceControl_emittance_mum->AddText(Form("#epsilon = %f",emittanceValue_raw_mum));
+  pv_emittanceControl_emittance_mum->AddText("mm #times rad");
+  pv_emittanceControl_emittance_mum->SetFillColor(kWhite);
+  pv_emittanceControl_emittance_mum->SetBorderSize(0);
+  pv_emittanceControl_emittance_mum->SetTextFont(40);
+  pv_emittanceControl_emittance_mum->SetTextSize(0.05);
+  pv_emittanceControl_emittance_mum->SetTextFont(42);
+  pv_emittanceControl_emittance_mum->SetTextAlign(22); //text centering
+  pv_emittanceControl_emittance_mum->Draw();
+  c_emittanceControl_emittance_mum->Update();
+  c_emittanceControl_emittance_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_emittance_mum->GetName() + ".png"));
   
 
-  
-  
 
   cout<<" Plots done! =) "<<endl; 
 
@@ -2604,9 +2712,9 @@ void plotVariables_BeamInfo(){
   // define input files 
   TString inputFile_Data = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-333to352.root";
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
-
+  
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "190225_LemmaVariables_DataMCComparison_reco-333to352";
+  TString plotDataMCOutputPath = "190301_LemmaVariables_DataMCComparison_reco-333to352_targetBe6cm";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
