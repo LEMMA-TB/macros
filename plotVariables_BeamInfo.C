@@ -268,9 +268,18 @@ void doTheHistos(TString inputFileName, TString label){
   TH1F* hist_xcross = new TH1F("hist_xcross", "hist_xcross", 15,-30.,30.);    // [mm]
   TH1F* hist_zcross = new TH1F("hist_zcross", "hist_zcross", 50,2000.,7000.); // [mm]
 
-  TH1F* hist_npos = new TH1F("hist_npos", "N positrons", 11, -0.5, 10.5);
-  TH1F* hist_xbe_positrons = new TH1F("hist_xbe_positrons", "Positron: Be exit point (mm)", 100, -15.0, 15.0);
-  TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)", 100, -500, 500);
+  TH1F* hist_npos = new TH1F("hist_npos", "N positrons", 11, -0.5, 10.5);                                           // only for DATA
+  TH1F* hist_xbe_positrons = new TH1F("hist_xbe_positrons", "Positron: Be exit point (mm)", 100, -30.0, 30.0);      // only for DATA
+  TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)",  100, -0.002, 0.002);    // only for DATA
+
+  TH1F* hist1D_PositronBeamEmittance_x______1eplus = new TH1F("hist1D_PositronBeamEmittance_x______1eplus","hist1D_PositronBeamEmittance_x______1eplus",100,-30.,30.); // only for DATA
+  TH1F* hist1D_PositronBeamEmittance_xprime_1eplus = new TH1F("hist1D_PositronBeamEmittance_xprime_1eplus","hist1D_PositronBeamEmittance_xprime_1eplus",100,-0.002,0.002); // only for DATA
+  TH2F* hist2D_PositronBeamEmittance_emitt__1eplus = new TH2F("hist2D_PositronBeamEmittance_emitt__1eplus","hist2D_PositronBeamEmittance_emitt__1eplus",100,-30.,30.,100,-0.002,0.002); // only for DATA
+ 
+  TH1F* hist1D_PositronBeamEmittance_x______moreThan1eplus = new TH1F("hist1D_PositronBeamEmittance_x______moreThan1eplus","hist1D_PositronBeamEmittance_x______moreThan1eplus",100,-30.,30.); // only for DATA
+  TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus = new TH1F("hist1D_PositronBeamEmittance_xprime_moreThan1eplus","hist1D_PositronBeamEmittance_xprime_moreThan1eplus",100,-0.002,0.002); // only for DATA
+  TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus = new TH2F("hist2D_PositronBeamEmittance_emitt__moreThan1eplus","hist2D_PositronBeamEmittance_emitt__moreThan1eplus",100,-30.,30.,100,-0.002,0.002); // only for DATA
+
 
   //2D emittance plots
   TH2D* hist2D_emittance_x_mup = new TH2D("hist2D_emittance_x_mup","hist2D_emittance_x_mup",100,-0.6,0.6,100,-0.002,0.002); // only for MC
@@ -312,23 +321,44 @@ void doTheHistos(TString inputFileName, TString label){
 
     inputTree->GetEntry(z);
 
+
+    // Call function to fill positron tracks info --------------------------
+    // ONLY FOR DATA
+    if(!isMC){
+      // Max 10 positrons tracks allowed
+      Double_t xpatz[10], thatz[10];
+      Double_t zpos(370.3+3); //Z position exit face of the Be target
+      Int_t nxbe = ReturnBeamInfo(subdet, xh, zh, nhits, zpos, xpatz, thatz);  // number of positrons
+      hist_npos->Fill(nxbe);
+      cout<<"npos ="<<nxbe<<endl;
+      for(Int_t j=0; j<nxbe; j++){
+        hist_xbe_positrons->Fill(xpatz[j]); //position [mm]
+        hist_the_positrons->Fill(thatz[j]); //angle [rad]
+  
+        if(j==1){
+          hist1D_PositronBeamEmittance_x______1eplus->Fill(xpatz[j]);
+          hist1D_PositronBeamEmittance_xprime_1eplus->Fill(thatz[j]);
+          hist2D_PositronBeamEmittance_emitt__1eplus->Fill(xpatz[j],thatz[j]);
+          cout<<j<<endl;
+          cout<<"---"<<endl;
+        }else if(j>1){
+          hist1D_PositronBeamEmittance_x______moreThan1eplus->Fill(xpatz[j]);
+          hist1D_PositronBeamEmittance_xprime_moreThan1eplus->Fill(thatz[j]);
+          hist2D_PositronBeamEmittance_emitt__moreThan1eplus->Fill(xpatz[j],thatz[j]);
+          cout<<j<<endl;
+        }
+      }
+    cout<<"***"<<endl;
+    }
+    // ----------------------------------------------------------------------
+
+
     
     // --- condition for candidate events
     if( p_mup > 0. && p_mum > 0. ) {
 
 
-      // Call function to fill positron tracks info --------------------------
-      // Max 10 positrons tracks allowed
-      Double_t xpatz[10], thatz[10];
-      Double_t zpos(454.9+3); //Z position exit face of the Be target
-      Int_t nxbe = ReturnBeamInfo(subdet, xh, zh, nhits, zpos, xpatz, thatz);
-      hist_npos->Fill(nxbe);
-      for(Int_t j=0; j<nxbe; j++){
-        hist_xbe_positrons->Fill(xpatz[j]);
-        hist_the_positrons->Fill(thatz[j]*1e6);
-      }
-      // ----------------------------------------------------------------------
-
+      
 
       // --- fill momentum histos 
       hist_pMuPlus->Fill(p_mup);      //momentum for mu plus
@@ -556,7 +586,7 @@ void doTheHistos(TString inputFileName, TString label){
         hist1D_emittance_x_prime_mum->Fill(x_prime_emittance_mum);
 
 
-        cout<<x_prime_atZref_eplus<<"    "<<x_prime_ondet30_mup<<"    "<<x_prime_ondet30_mum<<endl;
+        //cout<<x_prime_atZref_eplus<<"    "<<x_prime_ondet30_mup<<"    "<<x_prime_ondet30_mum<<endl;
 
       }        
                 
@@ -622,9 +652,20 @@ void doTheHistos(TString inputFileName, TString label){
   hist_xext_MuPlus->Write(hist_xext_MuPlus->GetName());   delete hist_xext_MuPlus;
 
   // save some positron beam info
-  hist_npos->Write(hist_npos->GetName());                   delete hist_npos;
-  hist_xbe_positrons->Write(hist_xbe_positrons->GetName()); delete hist_xbe_positrons;
-  hist_the_positrons->Write(hist_the_positrons->GetName()); delete hist_the_positrons;
+  // ONLY FOR DATA
+  if(!isMC){
+    hist_npos->Write(hist_npos->GetName());                   delete hist_npos;
+    hist_xbe_positrons->Write(hist_xbe_positrons->GetName()); delete hist_xbe_positrons;
+    hist_the_positrons->Write(hist_the_positrons->GetName()); delete hist_the_positrons;
+
+    hist1D_PositronBeamEmittance_x______1eplus->Write(hist1D_PositronBeamEmittance_x______1eplus->GetName()); delete hist1D_PositronBeamEmittance_x______1eplus;	
+    hist1D_PositronBeamEmittance_xprime_1eplus->Write(hist1D_PositronBeamEmittance_xprime_1eplus->GetName()); delete hist1D_PositronBeamEmittance_xprime_1eplus;	       
+    hist2D_PositronBeamEmittance_emitt__1eplus->Write(hist2D_PositronBeamEmittance_emitt__1eplus->GetName()); delete hist2D_PositronBeamEmittance_emitt__1eplus;
+
+    hist1D_PositronBeamEmittance_x______moreThan1eplus->Write(hist1D_PositronBeamEmittance_x______moreThan1eplus->GetName()); delete hist1D_PositronBeamEmittance_x______moreThan1eplus;
+    hist1D_PositronBeamEmittance_xprime_moreThan1eplus->Write(hist1D_PositronBeamEmittance_xprime_moreThan1eplus->GetName()); delete hist1D_PositronBeamEmittance_xprime_moreThan1eplus;
+    hist2D_PositronBeamEmittance_emitt__moreThan1eplus->Write(hist2D_PositronBeamEmittance_emitt__moreThan1eplus->GetName()); delete hist2D_PositronBeamEmittance_emitt__moreThan1eplus;
+  }
   //
 
   //2D emittance histos 
@@ -681,9 +722,17 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   TFile *inFile_Data = TFile::Open("plotVariables_DATA.root");
 
   // beam info
-  TH1F* hist_npos = (TH1F*)inFile_Data->Get("hist_npos");
-  TH1F* hist_xbe_positrons = (TH1F*)inFile_Data->Get("hist_xbe_positrons");
-  TH1F* hist_the_positrons = (TH1F*)inFile_Data->Get("hist_the_positrons");
+  TH1F* hist_npos_Data = (TH1F*)inFile_Data->Get("hist_npos");
+  TH1F* hist_xbe_positrons_Data = (TH1F*)inFile_Data->Get("hist_xbe_positrons");
+  TH1F* hist_the_positrons_Data = (TH1F*)inFile_Data->Get("hist_the_positrons");
+
+  TH1F* hist1D_PositronBeamEmittance_x______1eplus_Data = (TH1F*)inFile_Data->Get("hist1D_PositronBeamEmittance_x______1eplus");
+  TH1F* hist1D_PositronBeamEmittance_xprime_1eplus_Data = (TH1F*)inFile_Data->Get("hist1D_PositronBeamEmittance_xprime_1eplus");
+  TH2F* hist2D_PositronBeamEmittance_emitt__1eplus_Data = (TH2F*)inFile_Data->Get("hist2D_PositronBeamEmittance_emitt__1eplus");
+
+  TH1F* hist1D_PositronBeamEmittance_x______moreThan1eplus_Data = (TH1F*)inFile_Data->Get("hist1D_PositronBeamEmittance_x______moreThan1eplus");
+  TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data = (TH1F*)inFile_Data->Get("hist1D_PositronBeamEmittance_xprime_moreThan1eplus");
+  TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data = (TH2F*)inFile_Data->Get("hist2D_PositronBeamEmittance_emitt__moreThan1eplus");
   // 
 
   TH1F* hist_pMuPlus_Data     = (TH1F*)inFile_Data->Get("hist_pMuPlus");
@@ -809,19 +858,68 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
 
   
 
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(1);
  
   //plot histos
 
   // beam info 
+  // DATA ONLY
   TCanvas * c_pos = new TCanvas("c_pos","c_pos",800, 1200);
   c_pos->Divide(1,3);
-  c_pos->cd(1); hist_npos->Draw();
-  c_pos->cd(2); hist_xbe_positrons->Draw();
-  c_pos->cd(3); hist_the_positrons->Draw();
+  c_pos->cd(1); hist_npos_Data->Draw();
+  c_pos->cd(2); hist_xbe_positrons_Data->Draw();
+  c_pos->cd(3); hist_the_positrons_Data->Draw();
   c_pos->SaveAs((plotDataMCOutputPath + "/" + c_pos->GetName() + ".png"));
 
+  TCanvas* c_PositronBeamEmittance_x_1eplus = new TCanvas("c_PositronBeamEmittance_x_1eplus","c_PositronBeamEmittance_x_1eplus");
+  c_PositronBeamEmittance_x_1eplus->cd();
+  hist1D_PositronBeamEmittance_x______1eplus_Data->SetLineColor(kViolet);
+  hist1D_PositronBeamEmittance_x______1eplus_Data->Draw();
+  c_PositronBeamEmittance_x_1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_x_1eplus->GetName() + ".png"));
 
+  TCanvas* c_PositronBeamEmittance_xprime_1eplus = new TCanvas("c_PositronBeamEmittance_xprime_1eplus","c_PositronBeamEmittance_xprime_1eplus");
+  c_PositronBeamEmittance_xprime_1eplus->cd();
+  hist1D_PositronBeamEmittance_xprime_1eplus_Data->SetLineColor(kViolet);
+  hist1D_PositronBeamEmittance_xprime_1eplus_Data->Draw();
+  c_PositronBeamEmittance_xprime_1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_xprime_1eplus->GetName() + ".png"));
+
+  TCanvas* c_PositronBeamEmittance_emitt_1eplus = new TCanvas("c_PositronBeamEmittance_emitt_1eplus","c_PositronBeamEmittance_emitt_1eplus");
+  c_PositronBeamEmittance_emitt_1eplus->cd();
+  hist2D_PositronBeamEmittance_emitt__1eplus_Data->SetTitle("emittance: incoming beam with 1 e^{+}");
+  hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetXaxis()->SetTitle("x [mm]");
+  hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitle("x' [rad]");
+  hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitleOffset(1.4);
+  gStyle->SetPalette(kCool);
+  hist2D_PositronBeamEmittance_emitt__1eplus_Data->Draw("COLZ");
+  c_PositronBeamEmittance_emitt_1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_emitt_1eplus->GetName() + ".png"));
+  
+
+  TCanvas* c_PositronBeamEmittance_x_moreThan1eplus = new TCanvas("c_PositronBeamEmittance_x_moreThan1eplus","c_PositronBeamEmittance_x_moreThan1eplus");
+  c_PositronBeamEmittance_x_moreThan1eplus->cd();
+  hist1D_PositronBeamEmittance_x______moreThan1eplus_Data->SetLineColor(kViolet);
+  hist1D_PositronBeamEmittance_x______moreThan1eplus_Data->Draw();
+  c_PositronBeamEmittance_x_moreThan1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_x_moreThan1eplus->GetName() + ".png"));
+
+  TCanvas* c_PositronBeamEmittance_xprime_moreThan1eplus = new TCanvas("c_PositronBeamEmittance_xprime_moreThan1eplus","c_PositronBeamEmittance_xprime_moreThan1eplus");
+  c_PositronBeamEmittance_xprime_moreThan1eplus->cd();
+  hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data->SetLineColor(kViolet);
+  hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data->Draw();
+  c_PositronBeamEmittance_xprime_moreThan1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_xprime_moreThan1eplus->GetName() + ".png"));
+
+  TCanvas* c_PositronBeamEmittance_emitt_moreThan1eplus = new TCanvas("c_PositronBeamEmittance_emitt_moreThan1eplus","c_PositronBeamEmittance_emitt_moreThan1eplus");
+  c_PositronBeamEmittance_emitt_moreThan1eplus->cd();
+  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->SetTitle("emittance: incoming beam with more than 1 e^{+}");
+  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetXaxis()->SetTitle("x [mm]");
+  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitle("x' [rad]");
+  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitleOffset(1.4);
+  gStyle->SetPalette(kCool);
+  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->Draw("COLZ");
+  c_PositronBeamEmittance_emitt_moreThan1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_emitt_moreThan1eplus->GetName() + ".png"));
+
+  // end beam info (DATA ONLY)
+
+
+  gStyle->SetOptStat(0);
   // ---------------
   // pMuPlus plot
   // ---------------
@@ -2714,7 +2812,7 @@ void plotVariables_BeamInfo(){
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
   
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "190301_LemmaVariables_DataMCComparison_reco-333to352_targetBe6cm";
+  TString plotDataMCOutputPath = "190313_LemmaVariables_DataMCComparison_reco-333to352_targetBe6cm";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
