@@ -157,7 +157,7 @@ Double_t extrapolate_track_x(Double_t z0 ,Double_t x_pos_mum[12], Double_t x_pos
 
 
 // doTheHistos function: read root file and do histos 
-void doTheHistos(TString inputFileName, TString label){
+void doTheHistos(TString inputFileName, TString label, float zEndTarget){
 
   bool isMC = false;                // for Data
   if(label == "MC"){ isMC = true; } // for MC
@@ -272,47 +272,7 @@ void doTheHistos(TString inputFileName, TString label){
   TH1F* hist_xbe_positrons = new TH1F("hist_xbe_positrons", "Positron: Be exit point (mm)", 100, -30.0, 30.0);      // only for DATA
   TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)",  100, -0.002, 0.002);    // only for DATA
 
-  TH1F* hist1D_PositronBeamEmittance_x______1eplus = new TH1F("hist1D_PositronBeamEmittance_x______1eplus","hist1D_PositronBeamEmittance_x______1eplus",100,-30.,30.); // only for DATA
-  TH1F* hist1D_PositronBeamEmittance_xprime_1eplus = new TH1F("hist1D_PositronBeamEmittance_xprime_1eplus","hist1D_PositronBeamEmittance_xprime_1eplus",100,-0.002,0.002); // only for DATA
-  TH2F* hist2D_PositronBeamEmittance_emitt__1eplus = new TH2F("hist2D_PositronBeamEmittance_emitt__1eplus","hist2D_PositronBeamEmittance_emitt__1eplus",100,-30.,30.,100,-0.002,0.002); // only for DATA
- 
-  TH1F* hist1D_PositronBeamEmittance_x______moreThan1eplus = new TH1F("hist1D_PositronBeamEmittance_x______moreThan1eplus","hist1D_PositronBeamEmittance_x______moreThan1eplus",100,-30.,30.); // only for DATA
-  TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus = new TH1F("hist1D_PositronBeamEmittance_xprime_moreThan1eplus","hist1D_PositronBeamEmittance_xprime_moreThan1eplus",100,-0.002,0.002); // only for DATA
-  TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus = new TH2F("hist2D_PositronBeamEmittance_emitt__moreThan1eplus","hist2D_PositronBeamEmittance_emitt__moreThan1eplus",100,-30.,30.,100,-0.002,0.002); // only for DATA
-
-
-  //2D emittance plots
-  TH2D* hist2D_emittance_x_mup = new TH2D("hist2D_emittance_x_mup","hist2D_emittance_x_mup",100,-0.6,0.6,100,-0.002,0.002); // only for MC
-  TH2D* hist2D_emittance_x_mum = new TH2D("hist2D_emittance_x_mum","hist2D_emittance_x_mum",100,-0.6,0.6,100,-0.002,0.002); // only fot MC
-  //1D emittance plots
-  TH1D* hist1D_emittance_x_mup       = new TH1D("hist1D_emittance_x_mup","hist1D_emittance_x_mup",100,-0.6,0.6); // only for MC
-  TH1D* hist1D_emittance_x_prime_mup = new TH1D("hist1D_emittance_x_prime_mup","hist1D_emittance_x_prime_mup",100,-0.002,0.002); // only for MC
-  TH1D* hist1D_emittance_x_mum       = new TH1D("hist1D_emittance_x_mum","hist1D_emittance_x_mum",100,-0.6,0.6); // only for MC
-  TH1D* hist1D_emittance_x_prime_mum = new TH1D("hist1D_emittance_x_prime_mum","hist1D_emittance_x_prime_mum",100,-0.002,0.002); // only for MC
-  // 1D emittance control plots 
-  TH1D* hist1D_emittanceControl_x_atZref_eplus       = new TH1D("hist1D_emittanceControl_x_atZref_eplus","hist1D_emittanceControl_x_atZref_eplus",100,-30.,30.); // only for MC
-  TH1D* hist1D_emittanceControl_x_prime_atZref_eplus = new TH1D("hist1D_emittanceControl_x_prime_atZref_eplus","hist1D_emittanceControl_x_prime_atZref_eplus",100,-0.002,0.002); // only for MC
-
-  TH1D* hist1D_emittanceControl_x_onDet30_mup = new TH1D("hist1D_emittanceControl_x_onDet30_mup","hist1D_emittanceControl_x_onDet30_mup",100,-30.,30.); // only for MC
-  TH1D* hist1D_emittanceControl_x_atZref_mup  = new TH1D("hist1D_emittanceControl_x_atZref_mup" ,"hist1D_emittanceControl_x_atZref_mup" ,100,-30.,30.); // only for MC
-  TH1D* hist1D_emittanceControl_xprime_mup    = new TH1D("hist1D_emittanceControl_xprime_mup"   ,"hist1D_emittanceControl_xprime_mup"   ,100,-0.002,0.002); // only for MC
-  TH1D* hist1D_emittanceControl_px_mup        = new TH1D("hist1D_emittanceControl_px_mup"       ,"hist1D_emittanceControl_px_mup"       ,100,-60.,60.); // only for MC
-  TH1D* hist1D_emittanceControl_py_mup        = new TH1D("hist1D_emittanceControl_py_mup"       ,"hist1D_emittanceControl_py_mup"       ,100,-60.,60.); // only for MC
-  TH1D* hist1D_emittanceControl_pz_mup        = new TH1D("hist1D_emittanceControl_pz_mup"       ,"hist1D_emittanceControl_pz_mup"       ,100,10000.,35000.); // only for MC
-  TH1D* hist1D_emittanceControl_pTot_mup      = new TH1D("hist1D_emittanceControl_pTot_mup"     ,"hist1D_emittanceControl_pTot_mup"     ,100,10000.,35000.); // only for MC
-
-  TH1D* hist1D_emittanceControl_x_onDet30_mum = new TH1D("hist1D_emittanceControl_x_onDet30_mum","hist1D_emittanceControl_x_onDet30_mum",100,-30.,30.); // only for MC
-  TH1D* hist1D_emittanceControl_x_atZref_mum  = new TH1D("hist1D_emittanceControl_x_atZref_mum" ,"hist1D_emittanceControl_x_atZref_mum" ,100,-30.,30.); // only for MC
-  TH1D* hist1D_emittanceControl_xprime_mum    = new TH1D("hist1D_emittanceControl_xprime_mum"   ,"hist1D_emittanceControl_xprime_mum"   ,100,-0.002,0.002); // only for MC
-  TH1D* hist1D_emittanceControl_px_mum        = new TH1D("hist1D_emittanceControl_px_mum"       ,"hist1D_emittanceControl_px_mum"       ,100,-60.,60.); // only for MC
-  TH1D* hist1D_emittanceControl_py_mum        = new TH1D("hist1D_emittanceControl_py_mum"       ,"hist1D_emittanceControl_py_mum"       ,100,-60.,60.); // only for MC
-  TH1D* hist1D_emittanceControl_pz_mum        = new TH1D("hist1D_emittanceControl_pz_mum"       ,"hist1D_emittanceControl_pz_mum"       ,100,10000.,35000.); // only for MC
-  TH1D* hist1D_emittanceControl_pTot_mum      = new TH1D("hist1D_emittanceControl_pTot_mum"     ,"hist1D_emittanceControl_pTot_mum"     ,100,10000.,35000.); // only for MC
-  // 2D emittance control plots
-  TH2D* hist2D_emittanceControl_emittance_positron = new TH2D("hist2D_emittanceControl_emittance_positron","hist2D_emittanceControl_emittance_positron",100,-30.,30.,100,-0.002,0.002); // only for MC
-  TH2D* hist2D_emittanceControl_emittance_mup      = new TH2D("hist2D_emittanceControl_emittance_mup"     ,"hist2D_emittanceControl_emittance_mup"     ,100,-30.,30.,100,-0.002,0.002); // only for MC
-  TH2D* hist2D_emittanceControl_emittance_mum      = new TH2D("hist2D_emittanceControl_emittance_mum"     ,"hist2D_emittanceControl_emittance_mum"     ,100,-30.,30.,100,-0.002,0.002); // only for MC
-
+  
 
   // ---------------------------
   // --- loop over tree entries 
@@ -327,28 +287,13 @@ void doTheHistos(TString inputFileName, TString label){
     if(!isMC){
       // Max 10 positrons tracks allowed
       Double_t xpatz[10], thatz[10];
-      Double_t zpos(370.3+3); //Z position exit face of the Be target
+      Double_t zpos(zEndTarget); //Z position exit face of the Be target [mm]
       Int_t nxbe = ReturnBeamInfo(subdet, xh, zh, nhits, zpos, xpatz, thatz);  // number of positrons
       hist_npos->Fill(nxbe);
-      cout<<"npos ="<<nxbe<<endl;
       for(Int_t j=0; j<nxbe; j++){
         hist_xbe_positrons->Fill(xpatz[j]); //position [mm]
         hist_the_positrons->Fill(thatz[j]); //angle [rad]
-  
-        if(j==1){
-          hist1D_PositronBeamEmittance_x______1eplus->Fill(xpatz[j]);
-          hist1D_PositronBeamEmittance_xprime_1eplus->Fill(thatz[j]);
-          hist2D_PositronBeamEmittance_emitt__1eplus->Fill(xpatz[j],thatz[j]);
-          cout<<j<<endl;
-          cout<<"---"<<endl;
-        }else if(j>1){
-          hist1D_PositronBeamEmittance_x______moreThan1eplus->Fill(xpatz[j]);
-          hist1D_PositronBeamEmittance_xprime_moreThan1eplus->Fill(thatz[j]);
-          hist2D_PositronBeamEmittance_emitt__moreThan1eplus->Fill(xpatz[j],thatz[j]);
-          cout<<j<<endl;
-        }
       }
-    cout<<"***"<<endl;
     }
     // ----------------------------------------------------------------------
 
@@ -505,94 +450,7 @@ void doTheHistos(TString inputFileName, TString label){
         }
 
       } // end loop over i
-        
-
-      // -----------------------------
-      // --- emittance in x 1D and 2D histos
-      // -----------------------------
-      // x  = x  @det30 - x  incoming e+
-      // x' = x' @det30 - x' incoming e+
-      if(isMC){
-        // estimate is done on a reference plane at the beginning of the target (z_ref_BeginTarget)
-        Double_t z_ref_halfTarget  = 3703.0; // [mm] z ref at middle target
-        Double_t z_ref_beginTarget = z_ref_halfTarget - 30; // [mm] z ref at middle target - half target length (6cm /2 -> Be target) 
-        Double_t z_ref_endTarget   = z_ref_halfTarget + 30; // [mm] z ref at middle target + half target length (6cm /2 -> Be target) 
-
-
-        // --- e+ incoming
-        // px of e+ = Cx mu- * En of mu- + Cx mu+ * En of mu+ = px of mu- + px of mu+
-        Double_t px_eplus = gen_vtx_mum[3]*gen_vtx_mum[6] + gen_vtx_mup[3]*gen_vtx_mup[6];
-        Double_t py_eplus = gen_vtx_mum[4]*gen_vtx_mum[6] + gen_vtx_mup[4]*gen_vtx_mup[6];
-        Double_t pz_eplus = gen_vtx_mum[5]*gen_vtx_mum[6] + gen_vtx_mup[5]*gen_vtx_mup[6];
-        // x  of e+ (extrapolation on reference plane)  = x_vtx - (z_vtx - z_ref_endTarget)*(px_e+/pz_e+)
-        // N.B. gen_vtx_mup[0] = gen_vtx_mum[0] and gen_vtx_mup[2] = gen_vtx_mum[2] 
-        Double_t x_atZref_eplus = gen_vtx_mup[0] - (gen_vtx_mup[2] - z_ref_endTarget)*(px_eplus/pz_eplus);
-        // x' of e+ (extrapolation on reference plane)  = px / p  (the direction remain the same as at vtx)
-        Double_t x_prime_atZref_eplus = px_eplus / sqrt(px_eplus*px_eplus + py_eplus*py_eplus + pz_eplus*pz_eplus);
-
-        // emittance e+ control plots
-        hist1D_emittanceControl_x_atZref_eplus->Fill(x_atZref_eplus);
-        hist1D_emittanceControl_x_prime_atZref_eplus->Fill(x_prime_atZref_eplus);
-        hist2D_emittanceControl_emittance_positron->Fill(x_atZref_eplus,x_prime_atZref_eplus);
- 
-
-        // --- mu+
-        // x  (extrapolation on reference plane): x_det30_atZref_mup = x_onDet30 - (z_onDet30 - z_ref_endTarget)* px_onDet30 / pz_onDet30
-        Double_t x_det30_atZref_mup = gen_pos_mup[0] - (gen_pos_mup[2] - z_ref_endTarget)*(gen_pos_mup[3]/gen_pos_mup[5]); 
-        // x' (extrapolation on reference plane): the direction remain the same as on det30 or at vtx
-        Double_t pTot_genLev_mup = sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5]);
-        Double_t x_prime_ondet30_mup = gen_pos_mup[3] / pTot_genLev_mup; 
-
-        // emittance mu+ control plots
-        hist1D_emittanceControl_x_onDet30_mup->Fill(gen_pos_mup[0]);
-        hist1D_emittanceControl_x_atZref_mup->Fill(x_det30_atZref_mup);
-        hist1D_emittanceControl_xprime_mup->Fill(x_prime_ondet30_mup);
-        hist1D_emittanceControl_px_mup->Fill(gen_pos_mup[3]);
-        hist1D_emittanceControl_py_mup->Fill(gen_pos_mup[4]);
-        hist1D_emittanceControl_pz_mup->Fill(gen_pos_mup[5]);
-        hist1D_emittanceControl_pTot_mup->Fill(pTot_genLev_mup);
-	hist2D_emittanceControl_emittance_mup->Fill(x_det30_atZref_mup,x_prime_ondet30_mup); 
-        
-        // emittance of mu+
-        Double_t x_emittance_mup = x_det30_atZref_mup - x_atZref_eplus;
-        Double_t x_prime_emittance_mup = x_prime_ondet30_mup - x_prime_atZref_eplus;
-        hist2D_emittance_x_mup->Fill(x_emittance_mup, x_prime_emittance_mup);
-        hist1D_emittance_x_mup->Fill(x_emittance_mup);
-        hist1D_emittance_x_prime_mup->Fill(x_prime_emittance_mup);
-
-
-        // --- mu-
-        // x  (extrapolation on reference plane): x_det30_atZref_mum = x_onDet30 - (z_onDet30 - z_ref_endTarget)* px_onDet30 / pz_onDet30
-        Double_t x_det30_atZref_mum = gen_pos_mum[0] - (gen_pos_mum[2] - z_ref_endTarget)*(gen_pos_mum[3]/gen_pos_mum[5]); 
-        // x' (extrapolation on reference plane): the direction remain the same as on det30 or at vtx
-        Double_t pTot_genLev_mum = sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5]);
-        Double_t x_prime_ondet30_mum = gen_pos_mum[3] / pTot_genLev_mum; 
-
-        // emittance mu- control plots
-        hist1D_emittanceControl_x_onDet30_mum->Fill(gen_pos_mum[0]);
-        hist1D_emittanceControl_x_atZref_mum->Fill(x_det30_atZref_mum);
-        hist1D_emittanceControl_xprime_mum->Fill(x_prime_ondet30_mum);
-        hist1D_emittanceControl_px_mum->Fill(gen_pos_mum[3]);
-        hist1D_emittanceControl_py_mum->Fill(gen_pos_mum[4]);
-        hist1D_emittanceControl_pz_mum->Fill(gen_pos_mum[5]);
-        hist1D_emittanceControl_pTot_mum->Fill(pTot_genLev_mum);
-       	hist2D_emittanceControl_emittance_mum->Fill(x_det30_atZref_mum,x_prime_ondet30_mum);
-
-        // emittance of mu-
-        Double_t x_emittance_mum = x_det30_atZref_mum - x_atZref_eplus;
-        Double_t x_prime_emittance_mum = x_prime_ondet30_mum - x_prime_atZref_eplus;
-        hist2D_emittance_x_mum->Fill(x_emittance_mum, x_prime_emittance_mum);
-        hist1D_emittance_x_mum->Fill(x_emittance_mum);
-        hist1D_emittance_x_prime_mum->Fill(x_prime_emittance_mum);
-
-
-        //cout<<x_prime_atZref_eplus<<"    "<<x_prime_ondet30_mup<<"    "<<x_prime_ondet30_mum<<endl;
-
-      }        
-                
-
-
-      
+              
 
     } // end if (p_mup > 0. && p_mum > 0.)
 
@@ -657,52 +515,10 @@ void doTheHistos(TString inputFileName, TString label){
     hist_npos->Write(hist_npos->GetName());                   delete hist_npos;
     hist_xbe_positrons->Write(hist_xbe_positrons->GetName()); delete hist_xbe_positrons;
     hist_the_positrons->Write(hist_the_positrons->GetName()); delete hist_the_positrons;
-
-    hist1D_PositronBeamEmittance_x______1eplus->Write(hist1D_PositronBeamEmittance_x______1eplus->GetName()); delete hist1D_PositronBeamEmittance_x______1eplus;	
-    hist1D_PositronBeamEmittance_xprime_1eplus->Write(hist1D_PositronBeamEmittance_xprime_1eplus->GetName()); delete hist1D_PositronBeamEmittance_xprime_1eplus;	       
-    hist2D_PositronBeamEmittance_emitt__1eplus->Write(hist2D_PositronBeamEmittance_emitt__1eplus->GetName()); delete hist2D_PositronBeamEmittance_emitt__1eplus;
-
-    hist1D_PositronBeamEmittance_x______moreThan1eplus->Write(hist1D_PositronBeamEmittance_x______moreThan1eplus->GetName()); delete hist1D_PositronBeamEmittance_x______moreThan1eplus;
-    hist1D_PositronBeamEmittance_xprime_moreThan1eplus->Write(hist1D_PositronBeamEmittance_xprime_moreThan1eplus->GetName()); delete hist1D_PositronBeamEmittance_xprime_moreThan1eplus;
-    hist2D_PositronBeamEmittance_emitt__moreThan1eplus->Write(hist2D_PositronBeamEmittance_emitt__moreThan1eplus->GetName()); delete hist2D_PositronBeamEmittance_emitt__moreThan1eplus;
   }
   //
 
-  //2D emittance histos 
-  hist2D_emittance_x_mup->Write(hist2D_emittance_x_mup->GetName()); delete hist2D_emittance_x_mup;
-  hist2D_emittance_x_mum->Write(hist2D_emittance_x_mum->GetName()); delete hist2D_emittance_x_mum;
-
-  //1D emittance histos
-  hist1D_emittance_x_mup->Write(hist1D_emittance_x_mup->GetName());             delete hist1D_emittance_x_mup;
-  hist1D_emittance_x_prime_mup->Write(hist1D_emittance_x_prime_mup->GetName()); delete hist1D_emittance_x_prime_mup;
-  hist1D_emittance_x_mum->Write(hist1D_emittance_x_mum->GetName());             delete hist1D_emittance_x_mum;
-  hist1D_emittance_x_prime_mum->Write(hist1D_emittance_x_prime_mum->GetName()); delete hist1D_emittance_x_prime_mum;
-
-  //1D emittance control plots
-  hist1D_emittanceControl_x_atZref_eplus->Write(hist1D_emittanceControl_x_atZref_eplus->GetName());             delete hist1D_emittanceControl_x_atZref_eplus;
-  hist1D_emittanceControl_x_prime_atZref_eplus->Write(hist1D_emittanceControl_x_prime_atZref_eplus->GetName()); delete hist1D_emittanceControl_x_prime_atZref_eplus;
- 
-  hist1D_emittanceControl_x_onDet30_mup->Write(hist1D_emittanceControl_x_onDet30_mup->GetName()); delete hist1D_emittanceControl_x_onDet30_mup;
-  hist1D_emittanceControl_x_atZref_mup->Write(hist1D_emittanceControl_x_atZref_mup->GetName());   delete hist1D_emittanceControl_x_atZref_mup;
-  hist1D_emittanceControl_xprime_mup->Write(hist1D_emittanceControl_xprime_mup->GetName());       delete hist1D_emittanceControl_xprime_mup;
-  hist1D_emittanceControl_px_mup->Write(hist1D_emittanceControl_px_mup->GetName());               delete hist1D_emittanceControl_px_mup;
-  hist1D_emittanceControl_py_mup->Write(hist1D_emittanceControl_py_mup->GetName());               delete hist1D_emittanceControl_py_mup;
-  hist1D_emittanceControl_pz_mup->Write(hist1D_emittanceControl_pz_mup->GetName());               delete hist1D_emittanceControl_pz_mup;
-  hist1D_emittanceControl_pTot_mup->Write(hist1D_emittanceControl_pTot_mup->GetName());           delete hist1D_emittanceControl_pTot_mup;
-
-  hist1D_emittanceControl_x_onDet30_mum->Write(hist1D_emittanceControl_x_onDet30_mum->GetName()); delete hist1D_emittanceControl_x_onDet30_mum;
-  hist1D_emittanceControl_x_atZref_mum->Write(hist1D_emittanceControl_x_atZref_mum->GetName());   delete hist1D_emittanceControl_x_atZref_mum;
-  hist1D_emittanceControl_xprime_mum->Write(hist1D_emittanceControl_xprime_mum->GetName());       delete hist1D_emittanceControl_xprime_mum;
-  hist1D_emittanceControl_px_mum->Write(hist1D_emittanceControl_px_mum->GetName());               delete hist1D_emittanceControl_px_mum;
-  hist1D_emittanceControl_py_mum->Write(hist1D_emittanceControl_py_mum->GetName());               delete hist1D_emittanceControl_py_mum;
-  hist1D_emittanceControl_pz_mum->Write(hist1D_emittanceControl_pz_mum->GetName());               delete hist1D_emittanceControl_pz_mum;
-  hist1D_emittanceControl_pTot_mum->Write(hist1D_emittanceControl_pTot_mum->GetName());           delete hist1D_emittanceControl_pTot_mum;
-
-  //2D emittance control plots 
-  hist2D_emittanceControl_emittance_positron->Write(hist2D_emittanceControl_emittance_positron->GetName()); delete hist2D_emittanceControl_emittance_positron;
-  hist2D_emittanceControl_emittance_mup->Write(hist2D_emittanceControl_emittance_mup->GetName());           delete hist2D_emittanceControl_emittance_mup;
-  hist2D_emittanceControl_emittance_mum->Write(hist2D_emittanceControl_emittance_mum->GetName());           delete hist2D_emittanceControl_emittance_mum;
-					                                       	 
+                    	 
   
 					 
   fOutHistos->Close();
@@ -725,14 +541,6 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   TH1F* hist_npos_Data = (TH1F*)inFile_Data->Get("hist_npos");
   TH1F* hist_xbe_positrons_Data = (TH1F*)inFile_Data->Get("hist_xbe_positrons");
   TH1F* hist_the_positrons_Data = (TH1F*)inFile_Data->Get("hist_the_positrons");
-
-  TH1F* hist1D_PositronBeamEmittance_x______1eplus_Data = (TH1F*)inFile_Data->Get("hist1D_PositronBeamEmittance_x______1eplus");
-  TH1F* hist1D_PositronBeamEmittance_xprime_1eplus_Data = (TH1F*)inFile_Data->Get("hist1D_PositronBeamEmittance_xprime_1eplus");
-  TH2F* hist2D_PositronBeamEmittance_emitt__1eplus_Data = (TH2F*)inFile_Data->Get("hist2D_PositronBeamEmittance_emitt__1eplus");
-
-  TH1F* hist1D_PositronBeamEmittance_x______moreThan1eplus_Data = (TH1F*)inFile_Data->Get("hist1D_PositronBeamEmittance_x______moreThan1eplus");
-  TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data = (TH1F*)inFile_Data->Get("hist1D_PositronBeamEmittance_xprime_moreThan1eplus");
-  TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data = (TH2F*)inFile_Data->Get("hist2D_PositronBeamEmittance_emitt__moreThan1eplus");
   // 
 
   TH1F* hist_pMuPlus_Data     = (TH1F*)inFile_Data->Get("hist_pMuPlus");
@@ -824,37 +632,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   TH1F* hist_xext_MuMinus_MC = (TH1F*)inFile_MC->Get("hist_xext_MuMinus");
   TH1F* hist_xext_MuPlus_MC  = (TH1F*)inFile_MC->Get("hist_xext_MuPlus"); 
 
-  TH2D* hist2D_emittance_x_mup_MC = (TH2D*)inFile_MC->Get("hist2D_emittance_x_mup");
-  TH2D* hist2D_emittance_x_mum_MC = (TH2D*)inFile_MC->Get("hist2D_emittance_x_mum");
-
-  TH1D* hist1D_emittance_x_mup_MC       = (TH1D*)inFile_MC->Get("hist1D_emittance_x_mup");
-  TH1D* hist1D_emittance_x_prime_mup_MC = (TH1D*)inFile_MC->Get("hist1D_emittance_x_prime_mup");
-  TH1D* hist1D_emittance_x_mum_MC       = (TH1D*)inFile_MC->Get("hist1D_emittance_x_mum");
-  TH1D* hist1D_emittance_x_prime_mum_MC = (TH1D*)inFile_MC->Get("hist1D_emittance_x_prime_mum");
-
-  TH1D* hist1D_emittanceControl_x_atZref_eplus_MC       = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_x_atZref_eplus");
-  TH1D* hist1D_emittanceControl_x_prime_atZref_eplus_MC = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_x_prime_atZref_eplus");
-
-  TH1D* hist1D_emittanceControl_x_onDet30_mup_MC = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_x_onDet30_mup");
-  TH1D* hist1D_emittanceControl_x_atZref_mup_MC  = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_x_atZref_mup");
-  TH1D* hist1D_emittanceControl_xprime_mup_MC    = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_xprime_mup");
-  TH1D* hist1D_emittanceControl_px_mup_MC        = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_px_mup");
-  TH1D* hist1D_emittanceControl_py_mup_MC        = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_py_mup");
-  TH1D* hist1D_emittanceControl_pz_mup_MC        = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_pz_mup");
-  TH1D* hist1D_emittanceControl_pTot_mup_MC      = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_pTot_mup");
-
-  TH1D* hist1D_emittanceControl_x_onDet30_mum_MC = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_x_onDet30_mum");
-  TH1D* hist1D_emittanceControl_x_atZref_mum_MC  = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_x_atZref_mum");
-  TH1D* hist1D_emittanceControl_xprime_mum_MC    = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_xprime_mum");
-  TH1D* hist1D_emittanceControl_px_mum_MC        = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_px_mum");
-  TH1D* hist1D_emittanceControl_py_mum_MC        = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_py_mum");
-  TH1D* hist1D_emittanceControl_pz_mum_MC        = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_pz_mum");
-  TH1D* hist1D_emittanceControl_pTot_mum_MC      = (TH1D*)inFile_MC->Get("hist1D_emittanceControl_pTot_mum");
-
-  TH2D* hist2D_emittanceControl_emittance_positron_MC = (TH2D*)inFile_MC->Get("hist2D_emittanceControl_emittance_positron");
-  TH2D* hist2D_emittanceControl_emittance_mup_MC      = (TH2D*)inFile_MC->Get("hist2D_emittanceControl_emittance_mup");
-  TH2D* hist2D_emittanceControl_emittance_mum_MC      = (TH2D*)inFile_MC->Get("hist2D_emittanceControl_emittance_mum");
-
+  
 
   
 
@@ -870,52 +648,6 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   c_pos->cd(2); hist_xbe_positrons_Data->Draw();
   c_pos->cd(3); hist_the_positrons_Data->Draw();
   c_pos->SaveAs((plotDataMCOutputPath + "/" + c_pos->GetName() + ".png"));
-
-  TCanvas* c_PositronBeamEmittance_x_1eplus = new TCanvas("c_PositronBeamEmittance_x_1eplus","c_PositronBeamEmittance_x_1eplus");
-  c_PositronBeamEmittance_x_1eplus->cd();
-  hist1D_PositronBeamEmittance_x______1eplus_Data->SetLineColor(kViolet);
-  hist1D_PositronBeamEmittance_x______1eplus_Data->Draw();
-  c_PositronBeamEmittance_x_1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_x_1eplus->GetName() + ".png"));
-
-  TCanvas* c_PositronBeamEmittance_xprime_1eplus = new TCanvas("c_PositronBeamEmittance_xprime_1eplus","c_PositronBeamEmittance_xprime_1eplus");
-  c_PositronBeamEmittance_xprime_1eplus->cd();
-  hist1D_PositronBeamEmittance_xprime_1eplus_Data->SetLineColor(kViolet);
-  hist1D_PositronBeamEmittance_xprime_1eplus_Data->Draw();
-  c_PositronBeamEmittance_xprime_1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_xprime_1eplus->GetName() + ".png"));
-
-  TCanvas* c_PositronBeamEmittance_emitt_1eplus = new TCanvas("c_PositronBeamEmittance_emitt_1eplus","c_PositronBeamEmittance_emitt_1eplus");
-  c_PositronBeamEmittance_emitt_1eplus->cd();
-  hist2D_PositronBeamEmittance_emitt__1eplus_Data->SetTitle("emittance: incoming beam with 1 e^{+}");
-  hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetXaxis()->SetTitle("x [mm]");
-  hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitle("x' [rad]");
-  hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitleOffset(1.4);
-  gStyle->SetPalette(kCool);
-  hist2D_PositronBeamEmittance_emitt__1eplus_Data->Draw("COLZ");
-  c_PositronBeamEmittance_emitt_1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_emitt_1eplus->GetName() + ".png"));
-  
-
-  TCanvas* c_PositronBeamEmittance_x_moreThan1eplus = new TCanvas("c_PositronBeamEmittance_x_moreThan1eplus","c_PositronBeamEmittance_x_moreThan1eplus");
-  c_PositronBeamEmittance_x_moreThan1eplus->cd();
-  hist1D_PositronBeamEmittance_x______moreThan1eplus_Data->SetLineColor(kViolet);
-  hist1D_PositronBeamEmittance_x______moreThan1eplus_Data->Draw();
-  c_PositronBeamEmittance_x_moreThan1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_x_moreThan1eplus->GetName() + ".png"));
-
-  TCanvas* c_PositronBeamEmittance_xprime_moreThan1eplus = new TCanvas("c_PositronBeamEmittance_xprime_moreThan1eplus","c_PositronBeamEmittance_xprime_moreThan1eplus");
-  c_PositronBeamEmittance_xprime_moreThan1eplus->cd();
-  hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data->SetLineColor(kViolet);
-  hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data->Draw();
-  c_PositronBeamEmittance_xprime_moreThan1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_xprime_moreThan1eplus->GetName() + ".png"));
-
-  TCanvas* c_PositronBeamEmittance_emitt_moreThan1eplus = new TCanvas("c_PositronBeamEmittance_emitt_moreThan1eplus","c_PositronBeamEmittance_emitt_moreThan1eplus");
-  c_PositronBeamEmittance_emitt_moreThan1eplus->cd();
-  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->SetTitle("emittance: incoming beam with more than 1 e^{+}");
-  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetXaxis()->SetTitle("x [mm]");
-  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitle("x' [rad]");
-  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitleOffset(1.4);
-  gStyle->SetPalette(kCool);
-  hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->Draw("COLZ");
-  c_PositronBeamEmittance_emitt_moreThan1eplus->SaveAs((plotDataMCOutputPath + "/" + c_PositronBeamEmittance_emitt_moreThan1eplus->GetName() + ".png"));
-
   // end beam info (DATA ONLY)
 
 
@@ -2572,233 +2304,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   c_xext->SaveAs((plotDataMCOutputPath + "/" + c_xext->GetName() + ".png"));
 
 
-  // 2D emittance plots
-  gStyle->SetOptStat(1);  //FIXME: remove this if add a legend
-
-  TCanvas* c_x_emittance_mup = new TCanvas("c_x_emittance_mup","c_x_emittance_mup"); 
-  c_x_emittance_mup->cd();
-  hist2D_emittance_x_mup_MC->SetTitle("emittance #mu^{+}");
-  hist2D_emittance_x_mup_MC->GetXaxis()->SetTitle("x [mm]");
-  hist2D_emittance_x_mup_MC->GetYaxis()->SetTitle("x' [rad]");
-  hist2D_emittance_x_mup_MC->GetYaxis()->SetTitleOffset(1.4);
-  gStyle->SetPalette(kBird);
-  hist2D_emittance_x_mup_MC->Draw("COLZ");
-  float emittanceValue_mup = sqrt(hist2D_emittance_x_mup_MC->GetCovariance(1,1)*hist2D_emittance_x_mup_MC->GetCovariance(2,2) - hist2D_emittance_x_mup_MC->GetCovariance(2,1)*hist2D_emittance_x_mup_MC->GetCovariance(1,2));
-  TPaveText* pv_x_emittance_mup = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-  pv_x_emittance_mup->AddText(Form("#epsilon = %f",emittanceValue_mup));
-  pv_x_emittance_mup->AddText("mm #times rad");
-  pv_x_emittance_mup->SetFillColor(kWhite);
-  pv_x_emittance_mup->SetBorderSize(0);
-  pv_x_emittance_mup->SetTextFont(40);
-  pv_x_emittance_mup->SetTextSize(0.05);
-  pv_x_emittance_mup->SetTextFont(42);
-  pv_x_emittance_mup->SetTextAlign(22); //text centering
-  pv_x_emittance_mup->Draw();
-  c_x_emittance_mup->Update();
-  c_x_emittance_mup->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_mup->GetName() + ".png"));
-
-  TCanvas* c_x_emittance_mum = new TCanvas("c_x_emittance_mum","c_x_emittance_mum"); 
-  c_x_emittance_mum->cd();
-  hist2D_emittance_x_mum_MC->SetTitle("emittance #mu^{-}");
-  hist2D_emittance_x_mum_MC->GetXaxis()->SetTitle("x [mm]");
-  hist2D_emittance_x_mum_MC->GetYaxis()->SetTitle("x' [rad]");
-  hist2D_emittance_x_mum_MC->GetYaxis()->SetTitleOffset(1.4);
-  gStyle->SetPalette(kBird);
-  hist2D_emittance_x_mum_MC->Draw("COLZ");
-  float emittanceValue_mum = sqrt(hist2D_emittance_x_mum_MC->GetCovariance(1,1)*hist2D_emittance_x_mum_MC->GetCovariance(2,2) - hist2D_emittance_x_mum_MC->GetCovariance(2,1)*hist2D_emittance_x_mum_MC->GetCovariance(1,2));
-  TPaveText* pv_x_emittance_mum = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-  pv_x_emittance_mum->AddText(Form("#epsilon = %f",emittanceValue_mum));
-  pv_x_emittance_mum->AddText("mm #times rad");
-  pv_x_emittance_mum->SetFillColor(kWhite);
-  pv_x_emittance_mum->SetBorderSize(0);
-  pv_x_emittance_mum->SetTextFont(40);
-  pv_x_emittance_mum->SetTextSize(0.05);
-  pv_x_emittance_mum->SetTextFont(42);
-  pv_x_emittance_mum->SetTextAlign(22); //text centering
-  pv_x_emittance_mum->Draw();
-  c_x_emittance_mum->Update();
-  c_x_emittance_mum->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_mum->GetName() + ".png"));
-
-  //1D emittance plots
-  gStyle->SetOptStat(1);  //FIXME: remove this if add a legend
-  
-  TCanvas* c_x_emittance_1D_mup = new TCanvas("c_x_emittance_1D_mup","c_x_emittance_1D_mup");
-  c_x_emittance_1D_mup->cd();
-  hist1D_emittance_x_mup_MC->Draw();
-  c_x_emittance_1D_mup->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_1D_mup->GetName() + ".png"));
-
-  TCanvas* c_x_prime_emittance_1D_mup = new TCanvas("c_x_prime_emittance_1D_mup","c_x_prime_emittance_1D_mup");
-  c_x_prime_emittance_1D_mup->cd();
-  hist1D_emittance_x_prime_mup_MC->Draw();
-  c_x_prime_emittance_1D_mup->SaveAs((plotDataMCOutputPath + "/" + c_x_prime_emittance_1D_mup->GetName() + ".png"));
-
-  TCanvas* c_x_emittance_1D_mum = new TCanvas("c_x_emittance_1D_mum","c_x_emittance_1D_mum");
-  c_x_emittance_1D_mum->cd();
-  hist1D_emittance_x_mum_MC->Draw();
-  c_x_emittance_1D_mum->SaveAs((plotDataMCOutputPath + "/" + c_x_emittance_1D_mum->GetName() + ".png"));
-
-  TCanvas* c_x_prime_emittance_1D_mum = new TCanvas("c_x_prime_emittance_1D_mum","c_x_prime_emittance_1D_mum");
-  c_x_prime_emittance_1D_mum->cd();
-  hist1D_emittance_x_prime_mum_MC->Draw();
-  c_x_prime_emittance_1D_mum->SaveAs((plotDataMCOutputPath + "/" + c_x_prime_emittance_1D_mum->GetName() + ".png"));
-
-
-  //1D emittance control plots 
-  TCanvas* c_emittanceControl_x_atZref_eplus = new TCanvas("c_emittanceControl_x_atZref_eplus","c_emittanceControl_x_atZref_eplus");
-  c_emittanceControl_x_atZref_eplus->cd();
-  hist1D_emittanceControl_x_atZref_eplus_MC->SetLineColor(kMagenta);
-  hist1D_emittanceControl_x_atZref_eplus_MC->Draw();
-  c_emittanceControl_x_atZref_eplus->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_x_atZref_eplus->GetName() + ".png"));
-  TCanvas* c_emittanceControl_x_prime_atZref_eplus = new TCanvas("c_emittanceControl_x_prime_atZref_eplus","c_emittanceControl_x_prime_atZref_eplus");
-  c_emittanceControl_x_prime_atZref_eplus->cd();
-  hist1D_emittanceControl_x_prime_atZref_eplus_MC->SetLineColor(kMagenta);
-  hist1D_emittanceControl_x_prime_atZref_eplus_MC->Draw();  
-  c_emittanceControl_x_prime_atZref_eplus->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_x_prime_atZref_eplus->GetName() + ".png"));
-
-  TCanvas* c_emittanceControl_x_onDet30_mup = new TCanvas("c_emittanceControl_x_onDet30_mup","c_emittanceControl_x_onDet30_mup");
-  c_emittanceControl_x_onDet30_mup->cd();
-  hist1D_emittanceControl_x_onDet30_mup_MC->SetLineColor(kRed);
-  hist1D_emittanceControl_x_onDet30_mup_MC->Draw();
-  c_emittanceControl_x_onDet30_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_x_onDet30_mup->GetName() + ".png"));
-  TCanvas* c_emittanceControl_x_atZref_mup = new TCanvas("c_emittanceControl_x_atZref_mup","c_emittanceControl_x_atZref_mup");
-  c_emittanceControl_x_atZref_mup->cd();
-  hist1D_emittanceControl_x_atZref_mup_MC->SetLineColor(kRed);
-  hist1D_emittanceControl_x_atZref_mup_MC->Draw();
-  c_emittanceControl_x_atZref_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_x_atZref_mup->GetName() + ".png"));
-  TCanvas* c_emittanceControl_xprime_mup = new TCanvas("c_emittanceControl_xprime_mup","c_emittanceControl_xprime_mup");
-  c_emittanceControl_xprime_mup->cd();
-  hist1D_emittanceControl_xprime_mup_MC->SetLineColor(kRed);
-  hist1D_emittanceControl_xprime_mup_MC->Draw();
-  c_emittanceControl_xprime_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_xprime_mup->GetName() + ".png"));
-  TCanvas* c_emittanceControl_px_mup = new TCanvas("c_emittanceControl_px_mup","c_emittanceControl_px_mup");
-  c_emittanceControl_px_mup->cd();
-  hist1D_emittanceControl_px_mup_MC->SetLineColor(kRed);
-  hist1D_emittanceControl_px_mup_MC->Draw();
-  c_emittanceControl_px_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_px_mup->GetName() + ".png"));
-  TCanvas* c_emittanceControl_py_mup = new TCanvas("c_emittanceControl_py_mup","c_emittanceControl_py_mup");
-  c_emittanceControl_py_mup->cd();
-  hist1D_emittanceControl_py_mup_MC->SetLineColor(kRed);
-  hist1D_emittanceControl_py_mup_MC->Draw();
-  c_emittanceControl_py_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_py_mup->GetName() + ".png"));
-  TCanvas* c_emittanceControl_pz_mup = new TCanvas("c_emittanceControl_pz_mup","c_emittanceControl_pz_mup");
-  c_emittanceControl_pz_mup->cd();
-  hist1D_emittanceControl_pz_mup_MC->SetLineColor(kRed);
-  hist1D_emittanceControl_pz_mup_MC->Draw();
-  c_emittanceControl_pz_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_pz_mup->GetName() + ".png"));
-  TCanvas* c_emittanceControl_pTot_mup = new TCanvas("c_emittanceControl_pTot_mup","c_emittanceControl_pTot_mup");
-  c_emittanceControl_pTot_mup->cd();
-  hist1D_emittanceControl_pTot_mup_MC->SetLineColor(kRed);
-  hist1D_emittanceControl_pTot_mup_MC->Draw();
-  c_emittanceControl_pTot_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_pTot_mup->GetName() + ".png"));
-
-  TCanvas* c_emittanceControl_x_onDet30_mum = new TCanvas("c_emittanceControl_x_onDet30_mum","c_emittanceControl_x_onDet30_mum");
-  c_emittanceControl_x_onDet30_mum->cd();
-  hist1D_emittanceControl_x_onDet30_mum_MC->SetLineColor(kBlue);
-  hist1D_emittanceControl_x_onDet30_mum_MC->Draw();
-  c_emittanceControl_x_onDet30_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_x_onDet30_mum->GetName() + ".png"));
-  TCanvas* c_emittanceControl_x_atZref_mum = new TCanvas("c_emittanceControl_x_atZref_mum","c_emittanceControl_x_atZref_mum");
-  c_emittanceControl_x_atZref_mum->cd();
-  hist1D_emittanceControl_x_atZref_mum_MC->SetLineColor(kBlue);
-  hist1D_emittanceControl_x_atZref_mum_MC->Draw();
-  c_emittanceControl_x_atZref_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_x_atZref_mum->GetName() + ".png"));
-  TCanvas* c_emittanceControl_xprime_mum = new TCanvas("c_emittanceControl_xprime_mum","c_emittanceControl_xprime_mum");
-  c_emittanceControl_xprime_mum->cd();
-  hist1D_emittanceControl_xprime_mum_MC->SetLineColor(kBlue);
-  hist1D_emittanceControl_xprime_mum_MC->Draw();
-  c_emittanceControl_xprime_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_xprime_mum->GetName() + ".png"));
-  TCanvas* c_emittanceControl_px_mum = new TCanvas("c_emittanceControl_px_mum","c_emittanceControl_px_mum");
-  c_emittanceControl_px_mum->cd();
-  hist1D_emittanceControl_px_mum_MC->SetLineColor(kBlue);
-  hist1D_emittanceControl_px_mum_MC->Draw();
-  c_emittanceControl_px_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_px_mum->GetName() + ".png"));
-  TCanvas* c_emittanceControl_py_mum = new TCanvas("c_emittanceControl_py_mum","c_emittanceControl_py_mum");
-  c_emittanceControl_py_mum->cd();
-  hist1D_emittanceControl_py_mum_MC->SetLineColor(kBlue);
-  hist1D_emittanceControl_py_mum_MC->Draw();
-  c_emittanceControl_py_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_py_mum->GetName() + ".png"));
-  TCanvas* c_emittanceControl_pz_mum = new TCanvas("c_emittanceControl_pz_mum","c_emittanceControl_pz_mum");
-  c_emittanceControl_pz_mum->cd();
-  hist1D_emittanceControl_pz_mum_MC->SetLineColor(kBlue);
-  hist1D_emittanceControl_pz_mum_MC->Draw();
-  c_emittanceControl_pz_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_pz_mum->GetName() + ".png"));
-  TCanvas* c_emittanceControl_pTot_mum = new TCanvas("c_emittanceControl_pTot_mum","c_emittanceControl_pTot_mum");
-  c_emittanceControl_pTot_mum->cd();
-  hist1D_emittanceControl_pTot_mum_MC->SetLineColor(kBlue);
-  hist1D_emittanceControl_pTot_mum_MC->Draw();
-  c_emittanceControl_pTot_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_pTot_mum->GetName() + ".png"));
-
-  // 2D emittance control plots 
-  TCanvas* c_emittanceControl_emittance_positron = new TCanvas("c_emittanceControl_emittance_positron","c_emittanceControl_emittance_positron");
-  c_emittanceControl_emittance_positron->cd();
-  hist2D_emittanceControl_emittance_positron_MC->SetTitle("raw emittance e^{+}");
-  hist2D_emittanceControl_emittance_positron_MC->GetXaxis()->SetTitle("x [mm]");
-  hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitle("x' [rad]");
-  hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitleOffset(1.4);
-  gStyle->SetPalette(kCool);
-  hist2D_emittanceControl_emittance_positron_MC->Draw("COLZ");
-  float emittanceValue_raw_positron = sqrt(hist2D_emittanceControl_emittance_positron_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_positron_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_positron_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_positron_MC->GetCovariance(1,2));
-  TPaveText* pv_emittanceControl_emittance_positron = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-  pv_emittanceControl_emittance_positron->AddText(Form("#epsilon = %f",emittanceValue_raw_positron));
-  pv_emittanceControl_emittance_positron->AddText("mm #times rad");
-  pv_emittanceControl_emittance_positron->SetFillColor(kWhite);
-  pv_emittanceControl_emittance_positron->SetBorderSize(0);
-  pv_emittanceControl_emittance_positron->SetTextFont(40);
-  pv_emittanceControl_emittance_positron->SetTextSize(0.05);
-  pv_emittanceControl_emittance_positron->SetTextFont(42);
-  pv_emittanceControl_emittance_positron->SetTextAlign(22); //text centering
-  pv_emittanceControl_emittance_positron->Draw();
-  c_emittanceControl_emittance_positron->Update();
-  c_emittanceControl_emittance_positron->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_emittance_positron->GetName() + ".png"));
-
- 
-  TCanvas* c_emittanceControl_emittance_mup = new TCanvas("c_emittanceControl_emittance_mup","c_emittanceControl_emittance_mup");
-  c_emittanceControl_emittance_mup->cd();
-  hist2D_emittanceControl_emittance_mup_MC->SetTitle("raw emittance #mu^{+}");
-  hist2D_emittanceControl_emittance_mup_MC->GetXaxis()->SetTitle("x [mm]");
-  hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitle("x' [rad]");
-  hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitleOffset(1.4);
-  gStyle->SetPalette(kAvocado);
-  hist2D_emittanceControl_emittance_mup_MC->Draw("COLZ");
-  float emittanceValue_raw_mup = sqrt(hist2D_emittanceControl_emittance_mup_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_mup_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_mup_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_mup_MC->GetCovariance(1,2));
-  TPaveText* pv_emittanceControl_emittance_mup = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-  pv_emittanceControl_emittance_mup->AddText(Form("#epsilon = %f",emittanceValue_raw_mup));
-  pv_emittanceControl_emittance_mup->AddText("mm #times rad");
-  pv_emittanceControl_emittance_mup->SetFillColor(kWhite);
-  pv_emittanceControl_emittance_mup->SetBorderSize(0);
-  pv_emittanceControl_emittance_mup->SetTextFont(40);
-  pv_emittanceControl_emittance_mup->SetTextSize(0.05);
-  pv_emittanceControl_emittance_mup->SetTextFont(42);
-  pv_emittanceControl_emittance_mup->SetTextAlign(22); //text centering
-  pv_emittanceControl_emittance_mup->Draw();
-  c_emittanceControl_emittance_mup->Update();
-  c_emittanceControl_emittance_mup->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_emittance_mup->GetName() + ".png"));
-
-
-  TCanvas* c_emittanceControl_emittance_mum = new TCanvas("c_emittanceControl_emittance_mum","c_emittanceControl_emittance_mum");
-  c_emittanceControl_emittance_mum->cd();
-  hist2D_emittanceControl_emittance_mum_MC->SetTitle("raw emittance #mu^{-}");
-  hist2D_emittanceControl_emittance_mum_MC->GetXaxis()->SetTitle("x [mm]");
-  hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitle("x' [rad]");
-  hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitleOffset(1.4);
-  gStyle->SetPalette(kAvocado);
-  hist2D_emittanceControl_emittance_mum_MC->Draw("COLZ");
-  float emittanceValue_raw_mum = sqrt(hist2D_emittanceControl_emittance_mum_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_mum_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_mum_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_mum_MC->GetCovariance(1,2));
-  TPaveText* pv_emittanceControl_emittance_mum = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-  pv_emittanceControl_emittance_mum->AddText(Form("#epsilon = %f",emittanceValue_raw_mum));
-  pv_emittanceControl_emittance_mum->AddText("mm #times rad");
-  pv_emittanceControl_emittance_mum->SetFillColor(kWhite);
-  pv_emittanceControl_emittance_mum->SetBorderSize(0);
-  pv_emittanceControl_emittance_mum->SetTextFont(40);
-  pv_emittanceControl_emittance_mum->SetTextSize(0.05);
-  pv_emittanceControl_emittance_mum->SetTextFont(42);
-  pv_emittanceControl_emittance_mum->SetTextAlign(22); //text centering
-  pv_emittanceControl_emittance_mum->Draw();
-  c_emittanceControl_emittance_mum->Update();
-  c_emittanceControl_emittance_mum->SaveAs((plotDataMCOutputPath + "/" + c_emittanceControl_emittance_mum->GetName() + ".png"));
-  
-
-
-  cout<<" Plots done! =) "<<endl; 
+   cout<<" Plots done! =) "<<endl; 
 
 
 }
@@ -2812,14 +2318,21 @@ void plotVariables_BeamInfo(){
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
   
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "190313_LemmaVariables_DataMCComparison_reco-333to352_targetBe6cm";
+  TString plotDataMCOutputPath = "190314_LemmaVariables_DataMCComparison_reco-333to352_targetAugustBe6cm";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
+
+
+  // choose type of target
+  float zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
+  //float zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
+  //float zEndTarget = 10.*(460.93+1.-82.78); // [mm] - dataset: SEPTEMBER 2018 C  target 2 cm 
+ 
 
 
   // --- call do the histos function
   // arguments: input file, label for data or MC
-  doTheHistos(inputFile_Data, "DATA");
-  doTheHistos(inputFile_MC, "MC");
+  doTheHistos(inputFile_Data, "DATA",zEndTarget);
+  doTheHistos(inputFile_MC,   "MC",  zEndTarget);
 
 
   // --- call data/MC comparison function
