@@ -8,7 +8,7 @@
 //        at the end of the script
 //
 // run with:
-//        root -l -b -q plotVariables_BeamInfo.C++
+//        root -l -b -q plotVariables.C++
 //
 // *****************************************************
 
@@ -2311,14 +2311,14 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
 
 
 // main function 
-void plotVariables_BeamInfo(){
+void plotVariables(){
 
   // define input files 
   TString inputFile_Data = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-333to352.root";
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
   
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "190314_LemmaVariables_DataMCComparison_reco-333to352_targetAugustBe6cm";
+  TString plotDataMCOutputPath = "190314_LemmaVariables_DataMCComparison_reco-333to352_August_targetBe6cm";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
