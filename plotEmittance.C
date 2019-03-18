@@ -45,27 +45,29 @@ using namespace std;
 
 
 
-// Double_t getemittance(Double_t x[5000], Double_t xp[5000]){
+Double_t getemittance(vector<Double_t> x, vector<Double_t> xp){
 
-//   Double_t emittance=0.;
+  UInt_t n_points = x.size();
 
-//   Double_t x2=0.;
-//   Double_t xp2=0.;
-//   Double_t xxp=0.;
-//   for(Int_t i=0;i<n_points;i++){
-//     x2+=(x[i]*x[i]);
-//     xp2+=(xp[i]*xp[i]);
-//     xxp+=(x[i]*xp[i]);
-//   }
-//   x2*=1./float(n_points);
-//   xp2*=1./float(n_points);
-//   xxp*=1./float(n_points);
+  Double_t emittance=0.;
 
-//   emittance=TMath::Sqrt(x2*xp2-xxp*xxp);
+  Double_t x2=0.;
+  Double_t xp2=0.;
+  Double_t xxp=0.;
+  for(UInt_t i=0;i<x.size();i++){
+    x2+=(1000000*x[i]*1000000*x[i]); // [nm x nm]
+    xp2+=(xp[i]*xp[i]);              // [rad x rad]
+    xxp+=(1000000*x[i]*xp[i]);       // [nm x rad]
+  }
+  x2*=1./float(n_points);
+  xp2*=1./float(n_points);
+  xxp*=1./float(n_points);
 
-//   return emittance;
+  emittance=TMath::Sqrt(x2*xp2-xxp*xxp); // [nm x rad]
 
-// }
+  return emittance;
+
+}
 
 
 
@@ -136,12 +138,37 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     inputTree->SetBranchAddress("gen_vtx_mup", &gen_vtx_mup[0]); 
   }    
 
+
+  // def vectors for emittance estimate
+
+  // DATA vectors  
+  vector<double> vec_PositronBeamEmittance_x_1eplus_Data;
+  vector<double> vec_PositronBeamEmittance_xprime_1eplus_Data;
+  vector<double> vec_PositronBeamEmittance_x_moreThan1eplus_Data;
+  vector<double> vec_PositronBeamEmittance_xprime_moreThan1eplus_Data;
+
+  // MC vectors
+  vector<double> vec_emittanceControl_emittance_x_positron_MC;
+  vector<double> vec_emittanceControl_emittance_xprime_positron_MC;
+
+  vector<double> vec_emittance_x_mup_MC;
+  vector<double> vec_emittance_xprime_mup_MC;
+  vector<double> vec_emittanceControl_emittance_x_mup_MC;
+  vector<double> vec_emittanceControl_emittance_xprime_mup_MC;
+
+  vector<double> vec_emittance_x_mum_MC;
+  vector<double> vec_emittance_xprime_mum_MC;
+  vector<double> vec_emittanceControl_emittance_x_mum_MC;
+  vector<double> vec_emittanceControl_emittance_xprime_mum_MC;
+
+
+
   // def histos 
  
   // --- DATA HISTOS
   TH1F* hist_npos_Data = new TH1F("hist_npos_Data", "N positrons", 11, -0.5, 10.5);                                           
   TH1F* hist_xbe_positrons_Data = new TH1F("hist_xbe_positrons_Data", "Positron: Be exit point (mm)", 100, -30.0, 30.0);      
-  TH1F* hist_the_positrons_Data = new TH1F("hist_the_positrons_Data", "Positron: theta exit (urad)",  100, -0.002, 0.002);    
+  TH1F* hist_the_positrons_Data = new TH1F("hist_the_positrons_Data", "Positron: theta exit (rad)",  100, -0.002, 0.002);    
 
   TH1F* hist1D_PositronBeamEmittance_x______1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______1eplus_Data","hist1D_PositronBeamEmittance_x______1eplus_Data",100,-30.,30.); 
   TH1F* hist1D_PositronBeamEmittance_xprime_1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_1eplus_Data","hist1D_PositronBeamEmittance_xprime_1eplus_Data",100,-0.002,0.002);
@@ -151,6 +178,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data","hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data",100,-0.002,0.002);
   TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data","hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data",100,-30.,30.,100,-0.002,0.002);
 
+  
 
   // --- MC HISTOS
   //2D emittance plots
@@ -204,11 +232,6 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
       Int_t nxbe = ReturnBeamInfo(subdet, xh, zh, nhits, zpos, xpatz, thatz);  // number of positrons
       hist_npos_Data->Fill(nxbe);
 
-      // vector<double> vec_PositronBeamEmittance_x_1eplus_Data;
-      // vector<double> vec_PositronBeamEmittance_xprime_1eplus_Data;
-      // vector<double> vec_PositronBeamEmittance_x_moreThan1eplus_Data;
-      // vector<double> vec_PositronBeamEmittance_xprime_moreThan1eplus_Data;
-
       for(Int_t j=0; j<nxbe; j++){
         hist_xbe_positrons_Data->Fill(xpatz[j]); //position [mm]
         hist_the_positrons_Data->Fill(thatz[j]); //angle [rad]
@@ -218,8 +241,8 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
           hist1D_PositronBeamEmittance_xprime_1eplus_Data->Fill(thatz[j]);
           hist2D_PositronBeamEmittance_emitt__1eplus_Data->Fill(xpatz[j],thatz[j]);
 
-          // vec_PositronBeamEmittance_x_1eplus_Data     .push_back(xpatz[j]);
-	  // vec_PositronBeamEmittance_xprime_1eplus_Data.push_back(thatz[j]);
+          vec_PositronBeamEmittance_x_1eplus_Data     .push_back(xpatz[j]);
+	  vec_PositronBeamEmittance_xprime_1eplus_Data.push_back(thatz[j]);
 
         }else if(j>1){
 
@@ -227,14 +250,10 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
           hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data->Fill(thatz[j]);
           hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->Fill(xpatz[j],thatz[j]);
 
-          // vec_PositronBeamEmittance_x_moreThan1eplus_Data     .push_back(xpatz[j]);
-          // vec_PositronBeamEmittance_xprime_moreThan1eplus_Data.push_back(thatz[j]);
+          vec_PositronBeamEmittance_x_moreThan1eplus_Data     .push_back(xpatz[j]);
+          vec_PositronBeamEmittance_xprime_moreThan1eplus_Data.push_back(thatz[j]);
         }
       }
-    
-      // double emittance_positronBeam_1eplus_Data = getemittance();
-      // double emittance_positronBeam_1eplus_Data = getemittance();
-
     }//end if !isMC
     // ----------------------------------------------------------------------
 
@@ -270,6 +289,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
         hist1D_emittanceControl_x_atZref_eplus_MC->Fill(x_atZref_eplus);
         hist1D_emittanceControl_x_prime_atZref_eplus_MC->Fill(x_prime_atZref_eplus);
         hist2D_emittanceControl_emittance_positron_MC->Fill(x_atZref_eplus,x_prime_atZref_eplus);
+
+        vec_emittanceControl_emittance_x_positron_MC     .push_back(x_atZref_eplus);
+        vec_emittanceControl_emittance_xprime_positron_MC.push_back(x_prime_atZref_eplus);
  
 
         // --- mu+
@@ -288,6 +310,10 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
         hist1D_emittanceControl_pz_mup_MC->Fill(gen_pos_mup[5]);
         hist1D_emittanceControl_pTot_mup_MC->Fill(pTot_genLev_mup);
 	hist2D_emittanceControl_emittance_mup_MC->Fill(x_det30_atZref_mup,x_prime_ondet30_mup); 
+ 
+        vec_emittanceControl_emittance_x_mup_MC     .push_back(x_det30_atZref_mup);
+        vec_emittanceControl_emittance_xprime_mup_MC.push_back(x_prime_ondet30_mup);
+
         
         // emittance of mu+
         Double_t x_emittance_mup = x_det30_atZref_mup - x_atZref_eplus;
@@ -295,6 +321,11 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
         hist2D_emittance_x_mup_MC->Fill(x_emittance_mup, x_prime_emittance_mup);
         hist1D_emittance_x_mup_MC->Fill(x_emittance_mup);
         hist1D_emittance_x_prime_mup_MC->Fill(x_prime_emittance_mup);
+
+        vec_emittance_x_mup_MC     .push_back(x_emittance_mup);
+        vec_emittance_xprime_mup_MC.push_back(x_prime_emittance_mup);
+
+
 
 
         // --- mu-
@@ -314,12 +345,19 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
         hist1D_emittanceControl_pTot_mum_MC->Fill(pTot_genLev_mum);
        	hist2D_emittanceControl_emittance_mum_MC->Fill(x_det30_atZref_mum,x_prime_ondet30_mum);
 
+        vec_emittanceControl_emittance_x_mum_MC     .push_back(x_det30_atZref_mum);
+        vec_emittanceControl_emittance_xprime_mum_MC.push_back(x_prime_ondet30_mum);
+
+
         // emittance of mu-
         Double_t x_emittance_mum = x_det30_atZref_mum - x_atZref_eplus;
         Double_t x_prime_emittance_mum = x_prime_ondet30_mum - x_prime_atZref_eplus;
         hist2D_emittance_x_mum_MC->Fill(x_emittance_mum, x_prime_emittance_mum);
         hist1D_emittance_x_mum_MC->Fill(x_emittance_mum);
         hist1D_emittance_x_prime_mum_MC->Fill(x_prime_emittance_mum);
+
+        vec_emittance_x_mum_MC     .push_back(x_emittance_mum);
+        vec_emittance_xprime_mum_MC.push_back(x_prime_emittance_mum);
 
 
         //cout<<x_prime_atZref_eplus<<"    "<<x_prime_ondet30_mup<<"    "<<x_prime_ondet30_mum<<endl;
@@ -375,10 +413,13 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitleOffset(1.4);
     gStyle->SetPalette(kCool);
     hist2D_PositronBeamEmittance_emitt__1eplus_Data->Draw("COLZ");
-    float emittanceValue_positronBeam_1eplus_Data = sqrt(hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetCovariance(1,1)*hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetCovariance(2,2) - hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetCovariance(2,1)*hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetCovariance(1,2));
+    // --- Binned formula
+    //float emittanceValue_positronBeam_1eplus_Data = sqrt(hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetCovariance(1,1)*hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetCovariance(2,2) - hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetCovariance(2,1)*hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetCovariance(1,2)); 
+    // --- Unbinned formula
+    float emittanceValue_positronBeam_1eplus_Data = getemittance(vec_PositronBeamEmittance_x_1eplus_Data, vec_PositronBeamEmittance_xprime_1eplus_Data); 
     TPaveText* pv_positronBeam_1eplus = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-    pv_positronBeam_1eplus->AddText(Form("#epsilon = %f",emittanceValue_positronBeam_1eplus_Data));
-    pv_positronBeam_1eplus->AddText("mm #times rad");
+    pv_positronBeam_1eplus->AddText(Form("#epsilon = %.2f",emittanceValue_positronBeam_1eplus_Data));
+    pv_positronBeam_1eplus->AddText("nm #times rad");
     pv_positronBeam_1eplus->SetFillColor(kWhite);
     pv_positronBeam_1eplus->SetBorderSize(0);
     pv_positronBeam_1eplus->SetTextFont(40);
@@ -410,10 +451,12 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitleOffset(1.4);
     gStyle->SetPalette(kCool);
     hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->Draw("COLZ");
-    float emittanceValue_positronBeam_moreThan1eplus_Data = sqrt(hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetCovariance(1,1)*hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetCovariance(2,2) - hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetCovariance(2,1)*hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetCovariance(1,2));
+    // --- Binned formula
+    // float emittanceValue_positronBeam_moreThan1eplus_Data = sqrt(hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetCovariance(1,1)*hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetCovariance(2,2) - hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetCovariance(2,1)*hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetCovariance(1,2));
+    float emittanceValue_positronBeam_moreThan1eplus_Data = getemittance(vec_PositronBeamEmittance_x_moreThan1eplus_Data, vec_PositronBeamEmittance_xprime_moreThan1eplus_Data);
     TPaveText* pv_positronBeam_moreThan1eplus = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-    pv_positronBeam_moreThan1eplus->AddText(Form("#epsilon = %f",emittanceValue_positronBeam_moreThan1eplus_Data));
-    pv_positronBeam_moreThan1eplus->AddText("mm #times rad");
+    pv_positronBeam_moreThan1eplus->AddText(Form("#epsilon = %.2f",emittanceValue_positronBeam_moreThan1eplus_Data));
+    pv_positronBeam_moreThan1eplus->AddText("nm #times rad");
     pv_positronBeam_moreThan1eplus->SetFillColor(kWhite);
     pv_positronBeam_moreThan1eplus->SetBorderSize(0);
     pv_positronBeam_moreThan1eplus->SetTextFont(40);
@@ -440,10 +483,13 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     hist2D_emittance_x_mup_MC->GetYaxis()->SetTitleOffset(1.4);
     gStyle->SetPalette(kBird);
     hist2D_emittance_x_mup_MC->Draw("COLZ");
-    float emittanceValue_mup = sqrt(hist2D_emittance_x_mup_MC->GetCovariance(1,1)*hist2D_emittance_x_mup_MC->GetCovariance(2,2) - hist2D_emittance_x_mup_MC->GetCovariance(2,1)*hist2D_emittance_x_mup_MC->GetCovariance(1,2));
+    // --- Binned formula
+    // float emittanceValue_mup = sqrt(hist2D_emittance_x_mup_MC->GetCovariance(1,1)*hist2D_emittance_x_mup_MC->GetCovariance(2,2) - hist2D_emittance_x_mup_MC->GetCovariance(2,1)*hist2D_emittance_x_mup_MC->GetCovariance(1,2));
+    // --- Unbinned formula
+    float emittanceValue_mup = getemittance(vec_emittance_x_mup_MC, vec_emittance_xprime_mup_MC);
     TPaveText* pv_x_emittance_mup = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-    pv_x_emittance_mup->AddText(Form("#epsilon = %f",emittanceValue_mup));
-    pv_x_emittance_mup->AddText("mm #times rad");
+    pv_x_emittance_mup->AddText(Form("#epsilon = %.2f",emittanceValue_mup));
+    pv_x_emittance_mup->AddText("nm #times rad");
     pv_x_emittance_mup->SetFillColor(kWhite);
     pv_x_emittance_mup->SetBorderSize(0);
     pv_x_emittance_mup->SetTextFont(40);
@@ -462,10 +508,13 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     hist2D_emittance_x_mum_MC->GetYaxis()->SetTitleOffset(1.4);
     gStyle->SetPalette(kBird);
     hist2D_emittance_x_mum_MC->Draw("COLZ");
-    float emittanceValue_mum = sqrt(hist2D_emittance_x_mum_MC->GetCovariance(1,1)*hist2D_emittance_x_mum_MC->GetCovariance(2,2) - hist2D_emittance_x_mum_MC->GetCovariance(2,1)*hist2D_emittance_x_mum_MC->GetCovariance(1,2));
+    // -- Binned formula
+    // float emittanceValue_mum = sqrt(hist2D_emittance_x_mum_MC->GetCovariance(1,1)*hist2D_emittance_x_mum_MC->GetCovariance(2,2) - hist2D_emittance_x_mum_MC->GetCovariance(2,1)*hist2D_emittance_x_mum_MC->GetCovariance(1,2));
+    // --- Unbinned formula
+    float emittanceValue_mum = getemittance(vec_emittance_x_mum_MC, vec_emittance_xprime_mum_MC);
     TPaveText* pv_x_emittance_mum = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-    pv_x_emittance_mum->AddText(Form("#epsilon = %f",emittanceValue_mum));
-    pv_x_emittance_mum->AddText("mm #times rad");
+    pv_x_emittance_mum->AddText(Form("#epsilon = %.2f",emittanceValue_mum));
+    pv_x_emittance_mum->AddText("nm #times rad");
     pv_x_emittance_mum->SetFillColor(kWhite);
     pv_x_emittance_mum->SetBorderSize(0);
     pv_x_emittance_mum->SetTextFont(40);
@@ -504,78 +553,93 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     hist1D_emittanceControl_x_atZref_eplus_MC->SetLineColor(kMagenta);
     hist1D_emittanceControl_x_atZref_eplus_MC->Draw();
     c_emittanceControl_x_atZref_eplus->SaveAs((plotOutputPath + "/" + c_emittanceControl_x_atZref_eplus->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_x_prime_atZref_eplus = new TCanvas("c_emittanceControl_x_prime_atZref_eplus","c_emittanceControl_x_prime_atZref_eplus");
     c_emittanceControl_x_prime_atZref_eplus->cd();
     hist1D_emittanceControl_x_prime_atZref_eplus_MC->SetLineColor(kMagenta);
     hist1D_emittanceControl_x_prime_atZref_eplus_MC->Draw();  
     c_emittanceControl_x_prime_atZref_eplus->SaveAs((plotOutputPath + "/" + c_emittanceControl_x_prime_atZref_eplus->GetName() + ".png"));
     
+
     TCanvas* c_emittanceControl_x_onDet30_mup = new TCanvas("c_emittanceControl_x_onDet30_mup","c_emittanceControl_x_onDet30_mup");
     c_emittanceControl_x_onDet30_mup->cd();
     hist1D_emittanceControl_x_onDet30_mup_MC->SetLineColor(kRed);
     hist1D_emittanceControl_x_onDet30_mup_MC->Draw();
     c_emittanceControl_x_onDet30_mup->SaveAs((plotOutputPath + "/" + c_emittanceControl_x_onDet30_mup->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_x_atZref_mup = new TCanvas("c_emittanceControl_x_atZref_mup","c_emittanceControl_x_atZref_mup");
     c_emittanceControl_x_atZref_mup->cd();
     hist1D_emittanceControl_x_atZref_mup_MC->SetLineColor(kRed);
     hist1D_emittanceControl_x_atZref_mup_MC->Draw();
     c_emittanceControl_x_atZref_mup->SaveAs((plotOutputPath + "/" + c_emittanceControl_x_atZref_mup->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_xprime_mup = new TCanvas("c_emittanceControl_xprime_mup","c_emittanceControl_xprime_mup");
     c_emittanceControl_xprime_mup->cd();
     hist1D_emittanceControl_xprime_mup_MC->SetLineColor(kRed);
     hist1D_emittanceControl_xprime_mup_MC->Draw();
     c_emittanceControl_xprime_mup->SaveAs((plotOutputPath + "/" + c_emittanceControl_xprime_mup->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_px_mup = new TCanvas("c_emittanceControl_px_mup","c_emittanceControl_px_mup");
     c_emittanceControl_px_mup->cd();
     hist1D_emittanceControl_px_mup_MC->SetLineColor(kRed);
     hist1D_emittanceControl_px_mup_MC->Draw();
     c_emittanceControl_px_mup->SaveAs((plotOutputPath + "/" + c_emittanceControl_px_mup->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_py_mup = new TCanvas("c_emittanceControl_py_mup","c_emittanceControl_py_mup");
     c_emittanceControl_py_mup->cd();
     hist1D_emittanceControl_py_mup_MC->SetLineColor(kRed);
     hist1D_emittanceControl_py_mup_MC->Draw();
     c_emittanceControl_py_mup->SaveAs((plotOutputPath + "/" + c_emittanceControl_py_mup->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_pz_mup = new TCanvas("c_emittanceControl_pz_mup","c_emittanceControl_pz_mup");
     c_emittanceControl_pz_mup->cd();
     hist1D_emittanceControl_pz_mup_MC->SetLineColor(kRed);
     hist1D_emittanceControl_pz_mup_MC->Draw();
     c_emittanceControl_pz_mup->SaveAs((plotOutputPath + "/" + c_emittanceControl_pz_mup->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_pTot_mup = new TCanvas("c_emittanceControl_pTot_mup","c_emittanceControl_pTot_mup");
     c_emittanceControl_pTot_mup->cd();
     hist1D_emittanceControl_pTot_mup_MC->SetLineColor(kRed);
     hist1D_emittanceControl_pTot_mup_MC->Draw();
     c_emittanceControl_pTot_mup->SaveAs((plotOutputPath + "/" + c_emittanceControl_pTot_mup->GetName() + ".png"));
     
+
     TCanvas* c_emittanceControl_x_onDet30_mum = new TCanvas("c_emittanceControl_x_onDet30_mum","c_emittanceControl_x_onDet30_mum");
     c_emittanceControl_x_onDet30_mum->cd();
     hist1D_emittanceControl_x_onDet30_mum_MC->SetLineColor(kBlue);
     hist1D_emittanceControl_x_onDet30_mum_MC->Draw();
     c_emittanceControl_x_onDet30_mum->SaveAs((plotOutputPath + "/" + c_emittanceControl_x_onDet30_mum->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_x_atZref_mum = new TCanvas("c_emittanceControl_x_atZref_mum","c_emittanceControl_x_atZref_mum");
     c_emittanceControl_x_atZref_mum->cd();
     hist1D_emittanceControl_x_atZref_mum_MC->SetLineColor(kBlue);
     hist1D_emittanceControl_x_atZref_mum_MC->Draw();
     c_emittanceControl_x_atZref_mum->SaveAs((plotOutputPath + "/" + c_emittanceControl_x_atZref_mum->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_xprime_mum = new TCanvas("c_emittanceControl_xprime_mum","c_emittanceControl_xprime_mum");
     c_emittanceControl_xprime_mum->cd();
     hist1D_emittanceControl_xprime_mum_MC->SetLineColor(kBlue);
     hist1D_emittanceControl_xprime_mum_MC->Draw();
     c_emittanceControl_xprime_mum->SaveAs((plotOutputPath + "/" + c_emittanceControl_xprime_mum->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_px_mum = new TCanvas("c_emittanceControl_px_mum","c_emittanceControl_px_mum");
     c_emittanceControl_px_mum->cd();
     hist1D_emittanceControl_px_mum_MC->SetLineColor(kBlue);
     hist1D_emittanceControl_px_mum_MC->Draw();
     c_emittanceControl_px_mum->SaveAs((plotOutputPath + "/" + c_emittanceControl_px_mum->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_py_mum = new TCanvas("c_emittanceControl_py_mum","c_emittanceControl_py_mum");
     c_emittanceControl_py_mum->cd();
     hist1D_emittanceControl_py_mum_MC->SetLineColor(kBlue);
     hist1D_emittanceControl_py_mum_MC->Draw();
     c_emittanceControl_py_mum->SaveAs((plotOutputPath + "/" + c_emittanceControl_py_mum->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_pz_mum = new TCanvas("c_emittanceControl_pz_mum","c_emittanceControl_pz_mum");
     c_emittanceControl_pz_mum->cd();
     hist1D_emittanceControl_pz_mum_MC->SetLineColor(kBlue);
     hist1D_emittanceControl_pz_mum_MC->Draw();
     c_emittanceControl_pz_mum->SaveAs((plotOutputPath + "/" + c_emittanceControl_pz_mum->GetName() + ".png"));
+    
     TCanvas* c_emittanceControl_pTot_mum = new TCanvas("c_emittanceControl_pTot_mum","c_emittanceControl_pTot_mum");
     c_emittanceControl_pTot_mum->cd();
     hist1D_emittanceControl_pTot_mum_MC->SetLineColor(kBlue);
@@ -591,10 +655,13 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitleOffset(1.4);
     gStyle->SetPalette(kCool);
     hist2D_emittanceControl_emittance_positron_MC->Draw("COLZ");
-    float emittanceValue_raw_positron = sqrt(hist2D_emittanceControl_emittance_positron_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_positron_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_positron_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_positron_MC->GetCovariance(1,2));
+    // --- Binned formula
+    // float emittanceValue_raw_positron = sqrt(hist2D_emittanceControl_emittance_positron_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_positron_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_positron_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_positron_MC->GetCovariance(1,2));
+    // --- Unbinned formula
+    float emittanceValue_raw_positron_MC = getemittance(vec_emittanceControl_emittance_x_positron_MC, vec_emittanceControl_emittance_xprime_positron_MC);
     TPaveText* pv_emittanceControl_emittance_positron = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-    pv_emittanceControl_emittance_positron->AddText(Form("#epsilon = %f",emittanceValue_raw_positron));
-    pv_emittanceControl_emittance_positron->AddText("mm #times rad");
+    pv_emittanceControl_emittance_positron->AddText(Form("#epsilon = %.2f",emittanceValue_raw_positron_MC));
+    pv_emittanceControl_emittance_positron->AddText("nm #times rad");
     pv_emittanceControl_emittance_positron->SetFillColor(kWhite);
     pv_emittanceControl_emittance_positron->SetBorderSize(0);
     pv_emittanceControl_emittance_positron->SetTextFont(40);
@@ -614,10 +681,13 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitleOffset(1.4);
     gStyle->SetPalette(kAvocado);
     hist2D_emittanceControl_emittance_mup_MC->Draw("COLZ");
-    float emittanceValue_raw_mup = sqrt(hist2D_emittanceControl_emittance_mup_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_mup_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_mup_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_mup_MC->GetCovariance(1,2));
+    // --- Binned formula
+    //float emittanceValue_raw_mup = sqrt(hist2D_emittanceControl_emittance_mup_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_mup_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_mup_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_mup_MC->GetCovariance(1,2));
+    // --- Unbinned formula
+    float emittanceValue_raw_mup = getemittance(vec_emittanceControl_emittance_x_mup_MC, vec_emittanceControl_emittance_xprime_mup_MC);
     TPaveText* pv_emittanceControl_emittance_mup = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-    pv_emittanceControl_emittance_mup->AddText(Form("#epsilon = %f",emittanceValue_raw_mup));
-    pv_emittanceControl_emittance_mup->AddText("mm #times rad");
+    pv_emittanceControl_emittance_mup->AddText(Form("#epsilon = %.2f",emittanceValue_raw_mup));
+    pv_emittanceControl_emittance_mup->AddText("nm #times rad");
     pv_emittanceControl_emittance_mup->SetFillColor(kWhite);
     pv_emittanceControl_emittance_mup->SetBorderSize(0);
     pv_emittanceControl_emittance_mup->SetTextFont(40);
@@ -637,10 +707,13 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitleOffset(1.4);
     gStyle->SetPalette(kAvocado);
     hist2D_emittanceControl_emittance_mum_MC->Draw("COLZ");
-    float emittanceValue_raw_mum = sqrt(hist2D_emittanceControl_emittance_mum_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_mum_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_mum_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_mum_MC->GetCovariance(1,2));
+    // --- Binned formula
+    // float emittanceValue_raw_mum = sqrt(hist2D_emittanceControl_emittance_mum_MC->GetCovariance(1,1)*hist2D_emittanceControl_emittance_mum_MC->GetCovariance(2,2) - hist2D_emittanceControl_emittance_mum_MC->GetCovariance(2,1)*hist2D_emittanceControl_emittance_mum_MC->GetCovariance(1,2));
+    // --- Unbinned formula
+    float emittanceValue_raw_mum = getemittance(vec_emittanceControl_emittance_x_mum_MC, vec_emittanceControl_emittance_xprime_mum_MC);
     TPaveText* pv_emittanceControl_emittance_mum = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
-    pv_emittanceControl_emittance_mum->AddText(Form("#epsilon = %f",emittanceValue_raw_mum));
-    pv_emittanceControl_emittance_mum->AddText("mm #times rad");
+    pv_emittanceControl_emittance_mum->AddText(Form("#epsilon = %.2f",emittanceValue_raw_mum));
+    pv_emittanceControl_emittance_mum->AddText("nm #times rad");
     pv_emittanceControl_emittance_mum->SetFillColor(kWhite);
     pv_emittanceControl_emittance_mum->SetBorderSize(0);
     pv_emittanceControl_emittance_mum->SetTextFont(40);
@@ -672,29 +745,29 @@ void plotEmittance(){
   
   // define output path and make output directory 
 
-  //TString plotOutputPath = "190314_Emittance_August2018_targetBe6cm_DATA";
-  //TString plotOutputPath = "190314_Emittance_August2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190314_Emittance_September2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190314_Emittance_September2018_targetC6cm_MC";
-  TString plotOutputPath = "190314_Emittance_September2018_targetC2cm_MC";
+  TString plotOutputPath = "190318_Emittance_August2018_targetBe6cm_DATA";
+  //TString plotOutputPath = "190318_Emittance_August2018_targetBe6cm_MC";
+  //TString plotOutputPath = "190318_Emittance_September2018_targetBe6cm_MC";
+  //TString plotOutputPath = "190318_Emittance_September2018_targetC6cm_MC";
+  //TString plotOutputPath = "190318_Emittance_September2018_targetC2cm_MC";
   gSystem->Exec(("mkdir -p "+plotOutputPath));
 
 
 
   // choose type of target
-  //double zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
+  double zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
   //double zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
-  double zEndTarget = 10.*(460.93+1.-82.78); // [mm] - dataset: SEPTEMBER 2018 C  target 2 cm 
+  //double zEndTarget = 10.*(460.93+1.-82.78); // [mm] - dataset: SEPTEMBER 2018 C  target 2 cm 
  
 
 
   // --- call do the histos function
   // arguments: input file, label for data or MC
 
-  //doTheHistos(inputFile_Data_Aug2018_Be6cm, "DATA", zEndTarget, plotOutputPath);
+  doTheHistos(inputFile_Data_Aug2018_Be6cm, "DATA", zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_C6cm,    "MC",   zEndTarget, plotOutputPath); 
-  doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",   zEndTarget, plotOutputPath);
+  //doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",   zEndTarget, plotOutputPath);
 
 }
