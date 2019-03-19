@@ -49,7 +49,7 @@ Double_t getemittance(vector<Double_t> xv, vector<Double_t> xpv){
 
   UInt_t centering=1; // default: 1, only other reasonable value: 0
 	
-  UInt_t n_points = x.size();
+  UInt_t n_points = xv.size();
 
   Double_t emittance=0.;
 
