@@ -1,23 +1,36 @@
 
 TRandom *r=new TRandom();
 
-Double_t getemittance(Int_t n_points, Double_t x[5000], Double_t xp[5000]){
+Double_t getemittance(Int_t n_points, Double_t xv[5000], Double_t xpv[5000]){
+
+  Int_t centering=1;
 
   Double_t emittance=0.;
 
+  Double_t x=0.;
   Double_t x2=0.;
+  Double_t xp=0.;
   Double_t xp2=0.;
   Double_t xxp=0.;
   for(Int_t i=0;i<n_points;i++){
-    x2+=(x[i]*x[i]);
-    xp2+=(xp[i]*xp[i]);
-    xxp+=(x[i]*xp[i]);
+    x+=xv[i];
+    x2+=(xv[i]*xv[i]);
+    xp+=xpv[i];
+    xp2+=(xpv[i]*xpv[i]);
+    xxp+=(xv[i]*xpv[i]);
   }
+  x*=1./float(n_points);
   x2*=1./float(n_points);
+  xp*=1./float(n_points);
   xp2*=1./float(n_points);
   xxp*=1./float(n_points);
 
-  emittance=TMath::Sqrt(x2*xp2-xxp*xxp);
+  if( centering==0 ){
+    emittance=TMath::Sqrt(x2*xp2-xxp*xxp);
+  }else{
+    emittance=((x2-x*x)*(xp2-xp*xp)-(xxp-x*xp)*(xxp-x*xp));
+    emittance=TMath::Sqrt(emittance);
+  }
 
   return emittance;
 
@@ -44,11 +57,11 @@ void Emitest(){
   // fill the arrays in case of an alternative definition of emittance
   for(Int_t i=0;i<n_points;i++){
     // cout << i << endl;
-    x[i]=r->Gaus(0,fatness*1e-3);
+    x[i]=r->Gaus(0,fatness*1e-3)+fatness*1e-3;
     xprime[i]=r->Gaus(0,fatness*1e-6);
   }
-  Double_t emittance_unbin=getemittance(n_points,x,xprime);
-  cout << emittance_unbin << endl;
+  Double_t emit_unbined=getemittance(n_points,x,xprime);
+  cout << emit_unbined << endl;
 
   // fill histos
   for(Int_t j=0;j<n_points;j++){
@@ -64,8 +77,8 @@ void Emitest(){
   cEmittance->cd(3); phxxprime->Draw("BOX");
 
   // compute emittance from histo
-  Double_t emittance = sqrt(phxxprime->GetCovariance(1,1)*phxxprime->GetCovariance(2,2)-
-                            phxxprime->GetCovariance(2,1)*phxxprime->GetCovariance(1,2) );
-  cout << emittance << endl;
+  Double_t emit_binned = sqrt(phxxprime->GetCovariance(1,1)*phxxprime->GetCovariance(2,2)-
+                              phxxprime->GetCovariance(2,1)*phxxprime->GetCovariance(1,2) );
+  cout << emit_binned << endl;
 
 }
