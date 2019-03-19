@@ -58,7 +58,7 @@ Double_t getemittance(vector<Double_t> xv, vector<Double_t> xpv){
   Double_t xp=0.;
   Double_t xp2=0.;
   Double_t xxp=0.;
-  for(UInt_t i=0;i<x.size();i++){
+  for(UInt_t i=0;i<xv.size();i++){
     x+=(1000000*xv[i]);                // [nm]
     x2+=(1000000*xv[i]*1000000*xv[i]); // [nm x nm]
     xp+=(xpv[i]);                      // [rad]
