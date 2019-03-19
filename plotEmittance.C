@@ -45,25 +45,38 @@ using namespace std;
 
 
 
-Double_t getemittance(vector<Double_t> x, vector<Double_t> xp){
+Double_t getemittance(vector<Double_t> xv, vector<Double_t> xpv){
 
+  UInt_t centering=1; // default: 1, only other reasonable value: 0
+	
   UInt_t n_points = x.size();
 
   Double_t emittance=0.;
 
+  Double_t x=0.;
   Double_t x2=0.;
+  Double_t xp=0.;
   Double_t xp2=0.;
   Double_t xxp=0.;
   for(UInt_t i=0;i<x.size();i++){
-    x2+=(1000000*x[i]*1000000*x[i]); // [nm x nm]
-    xp2+=(xp[i]*xp[i]);              // [rad x rad]
-    xxp+=(1000000*x[i]*xp[i]);       // [nm x rad]
+    x+=(1000000*xv[i]);                // [nm]
+    x2+=(1000000*xv[i]*1000000*xv[i]); // [nm x nm]
+    xp+=(xpv[i]);                      // [rad]
+    xp2+=(xpv[i]*xpv[i]);              // [rad x rad]
+    xxp+=(1000000*xv[i]*xpv[i]);       // [nm x rad]
   }
+  x*=1./float(n_points);
   x2*=1./float(n_points);
+  xp*=1./float(n_points);
   xp2*=1./float(n_points);
   xxp*=1./float(n_points);
 
-  emittance=TMath::Sqrt(x2*xp2-xxp*xxp); // [nm x rad]
+  if( centering==0 ){
+    emittance=TMath::Sqrt(x2*xp2-xxp*xxp); // [nm x rad]
+  }else{
+    emittance=((x2-x*x)*(xp2-xp*xp)-(xxp-x*xp)*(xxp-x*xp));
+    emittance=TMath::Sqrt(emittance);	  
+  }
 
   return emittance;
 
