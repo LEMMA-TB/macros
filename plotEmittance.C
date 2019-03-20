@@ -176,55 +176,72 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 
 
 
+  // def histos limits
+
+  double h_min_x_rawEmitt      = -30.;   // [mm]
+  double h_max_x_rawEmitt      =  30.;   // [mm]
+  double h_min_xprime_rawEmitt = -0.002; // [rad]
+  double h_max_xprime_rawEmitt =  0.002; // [rad]
+
+  double h_min_x_emitt      = -0.3;   // [mm]
+  double h_max_x_emitt      =  0.3;   // [mm]
+  double h_min_xprime_emitt = -0.002; // [rad]
+  double h_max_xprime_emitt =  0.002; // [rad]
+
+
+
   // def histos 
  
   // --- DATA HISTOS
   TH1F* hist_npos_Data = new TH1F("hist_npos_Data", "N positrons", 11, -0.5, 10.5);                                           
-  TH1F* hist_xbe_positrons_Data = new TH1F("hist_xbe_positrons_Data", "Positron: Be exit point (mm)", 100, -30.0, 30.0);      
-  TH1F* hist_the_positrons_Data = new TH1F("hist_the_positrons_Data", "Positron: theta exit (rad)",  100, -0.002, 0.002);    
+  TH1F* hist_xbe_positrons_Data = new TH1F("hist_xbe_positrons_Data", "Positron: Be exit point (mm)", 100, h_min_x_rawEmitt,      h_max_x_rawEmitt);      
+  TH1F* hist_the_positrons_Data = new TH1F("hist_the_positrons_Data", "Positron: theta exit (rad)",   100, h_min_xprime_rawEmitt, h_max_xprime_rawEmitt);    
 
-  TH1F* hist1D_PositronBeamEmittance_x______1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______1eplus_Data","hist1D_PositronBeamEmittance_x______1eplus_Data",100,-30.,30.); 
-  TH1F* hist1D_PositronBeamEmittance_xprime_1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_1eplus_Data","hist1D_PositronBeamEmittance_xprime_1eplus_Data",100,-0.002,0.002);
-  TH2F* hist2D_PositronBeamEmittance_emitt__1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__1eplus_Data","hist2D_PositronBeamEmittance_emitt__1eplus_Data",100,-30.,30.,100,-0.002,0.002);
+  // --- raw emittance
+  TH1F* hist1D_PositronBeamEmittance_x______1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______1eplus_Data","hist1D_PositronBeamEmittance_x______1eplus_Data",100,h_min_x_rawEmitt,h_max_x_rawEmitt); 
+  TH1F* hist1D_PositronBeamEmittance_xprime_1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_1eplus_Data","hist1D_PositronBeamEmittance_xprime_1eplus_Data",100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2F* hist2D_PositronBeamEmittance_emitt__1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__1eplus_Data","hist2D_PositronBeamEmittance_emitt__1eplus_Data",100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
  
-  TH1F* hist1D_PositronBeamEmittance_x______moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______moreThan1eplus_Data","hist1D_PositronBeamEmittance_x______moreThan1eplus_Data",100,-30.,30.);
-  TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data","hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data",100,-0.002,0.002);
-  TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data","hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data",100,-30.,30.,100,-0.002,0.002);
+  TH1F* hist1D_PositronBeamEmittance_x______moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______moreThan1eplus_Data","hist1D_PositronBeamEmittance_x______moreThan1eplus_Data",100,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data","hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data",100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data","hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data",100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
 
   
 
   // --- MC HISTOS
   //2D emittance plots
-  TH2D* hist2D_emittance_x_mup_MC = new TH2D("hist2D_emittance_x_mup_MC","hist2D_emittance_x_mup_MC",100,-0.6,0.6,100,-0.002,0.002);
-  TH2D* hist2D_emittance_x_mum_MC = new TH2D("hist2D_emittance_x_mum_MC","hist2D_emittance_x_mum_MC",100,-0.6,0.6,100,-0.002,0.002);
+  TH2D* hist2D_emittance_x_mup_MC = new TH2D("hist2D_emittance_x_mup_MC","hist2D_emittance_x_mup_MC",100, h_min_x_emitt, h_max_x_emitt, 100, h_min_xprime_emitt, h_max_xprime_emitt);
+  TH2D* hist2D_emittance_x_mum_MC = new TH2D("hist2D_emittance_x_mum_MC","hist2D_emittance_x_mum_MC",100, h_min_x_emitt, h_max_x_emitt, 100, h_min_xprime_emitt, h_max_xprime_emitt);
   //1D emittance plots
-  TH1D* hist1D_emittance_x_mup_MC       = new TH1D("hist1D_emittance_x_mup_MC","hist1D_emittance_x_mup_MC",100,-0.6,0.6);
-  TH1D* hist1D_emittance_x_prime_mup_MC = new TH1D("hist1D_emittance_x_prime_mup_MC","hist1D_emittance_x_prime_mup_MC",100,-0.002,0.002);
-  TH1D* hist1D_emittance_x_mum_MC       = new TH1D("hist1D_emittance_x_mum_MC","hist1D_emittance_x_mum_MC",100,-0.6,0.6);
-  TH1D* hist1D_emittance_x_prime_mum_MC = new TH1D("hist1D_emittance_x_prime_mum_MC","hist1D_emittance_x_prime_mum_MC",100,-0.002,0.002);
-  // 1D emittance control plots 
-  TH1D* hist1D_emittanceControl_x_atZref_eplus_MC       = new TH1D("hist1D_emittanceControl_x_atZref_eplus_MC","hist1D_emittanceControl_x_atZref_eplus_MC",100,-30.,30.);
-  TH1D* hist1D_emittanceControl_x_prime_atZref_eplus_MC = new TH1D("hist1D_emittanceControl_x_prime_atZref_eplus_MC","hist1D_emittanceControl_x_prime_atZref_eplus_MC",100,-0.002,0.002);
+  TH1D* hist1D_emittance_x_mup_MC       = new TH1D("hist1D_emittance_x_mup_MC",      "hist1D_emittance_x_mup_MC",      100, h_min_x_emitt,      h_max_x_emitt);
+  TH1D* hist1D_emittance_x_prime_mup_MC = new TH1D("hist1D_emittance_x_prime_mup_MC","hist1D_emittance_x_prime_mup_MC",100, h_min_xprime_emitt, h_max_xprime_emitt);
+  TH1D* hist1D_emittance_x_mum_MC       = new TH1D("hist1D_emittance_x_mum_MC",      "hist1D_emittance_x_mum_MC",      100, h_min_x_emitt,      h_max_x_emitt);
+  TH1D* hist1D_emittance_x_prime_mum_MC = new TH1D("hist1D_emittance_x_prime_mum_MC","hist1D_emittance_x_prime_mum_MC",100, h_min_xprime_emitt, h_max_xprime_emitt);
 
-  TH1D* hist1D_emittanceControl_x_onDet30_mup_MC = new TH1D("hist1D_emittanceControl_x_onDet30_mup_MC","hist1D_emittanceControl_x_onDet30_mup_MC",100,-30.,30.);
-  TH1D* hist1D_emittanceControl_x_atZref_mup_MC  = new TH1D("hist1D_emittanceControl_x_atZref_mup_MC" ,"hist1D_emittanceControl_x_atZref_mup_MC" ,100,-30.,30.);
-  TH1D* hist1D_emittanceControl_xprime_mup_MC    = new TH1D("hist1D_emittanceControl_xprime_mup_MC"   ,"hist1D_emittanceControl_xprime_mup_MC"   ,100,-0.002,0.002);
+  // --- raw emittance
+  // 1D emittance control plots 
+  TH1D* hist1D_emittanceControl_x_atZref_eplus_MC       = new TH1D("hist1D_emittanceControl_x_atZref_eplus_MC","hist1D_emittanceControl_x_atZref_eplus_MC",100,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_prime_atZref_eplus_MC = new TH1D("hist1D_emittanceControl_x_prime_atZref_eplus_MC","hist1D_emittanceControl_x_prime_atZref_eplus_MC",100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+
+  TH1D* hist1D_emittanceControl_x_onDet30_mup_MC = new TH1D("hist1D_emittanceControl_x_onDet30_mup_MC","hist1D_emittanceControl_x_onDet30_mup_MC",100,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_atZref_mup_MC  = new TH1D("hist1D_emittanceControl_x_atZref_mup_MC" ,"hist1D_emittanceControl_x_atZref_mup_MC" ,100,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_xprime_mup_MC    = new TH1D("hist1D_emittanceControl_xprime_mup_MC"   ,"hist1D_emittanceControl_xprime_mup_MC"   ,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
   TH1D* hist1D_emittanceControl_px_mup_MC        = new TH1D("hist1D_emittanceControl_px_mup_MC"       ,"hist1D_emittanceControl_px_mup_MC"       ,100,-60.,60.);
   TH1D* hist1D_emittanceControl_py_mup_MC        = new TH1D("hist1D_emittanceControl_py_mup_MC"       ,"hist1D_emittanceControl_py_mup_MC"       ,100,-60.,60.);
   TH1D* hist1D_emittanceControl_pz_mup_MC        = new TH1D("hist1D_emittanceControl_pz_mup_MC"       ,"hist1D_emittanceControl_pz_mup_MC"       ,100,10000.,35000.);
   TH1D* hist1D_emittanceControl_pTot_mup_MC      = new TH1D("hist1D_emittanceControl_pTot_mup_MC"     ,"hist1D_emittanceControl_pTot_mup_MC"     ,100,10000.,35000.);
 
-  TH1D* hist1D_emittanceControl_x_onDet30_mum_MC = new TH1D("hist1D_emittanceControl_x_onDet30_mum_MC","hist1D_emittanceControl_x_onDet30_mum_MC",100,-30.,30.);
-  TH1D* hist1D_emittanceControl_x_atZref_mum_MC  = new TH1D("hist1D_emittanceControl_x_atZref_mum_MC" ,"hist1D_emittanceControl_x_atZref_mum_MC" ,100,-30.,30.);
-  TH1D* hist1D_emittanceControl_xprime_mum_MC    = new TH1D("hist1D_emittanceControl_xprime_mum_MC"   ,"hist1D_emittanceControl_xprime_mum_MC"   ,100,-0.002,0.002);
+  TH1D* hist1D_emittanceControl_x_onDet30_mum_MC = new TH1D("hist1D_emittanceControl_x_onDet30_mum_MC","hist1D_emittanceControl_x_onDet30_mum_MC",100,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_atZref_mum_MC  = new TH1D("hist1D_emittanceControl_x_atZref_mum_MC" ,"hist1D_emittanceControl_x_atZref_mum_MC" ,100,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_xprime_mum_MC    = new TH1D("hist1D_emittanceControl_xprime_mum_MC"   ,"hist1D_emittanceControl_xprime_mum_MC"   ,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
   TH1D* hist1D_emittanceControl_px_mum_MC        = new TH1D("hist1D_emittanceControl_px_mum_MC"       ,"hist1D_emittanceControl_px_mum_MC"       ,100,-60.,60.);
   TH1D* hist1D_emittanceControl_py_mum_MC        = new TH1D("hist1D_emittanceControl_py_mum_MC"       ,"hist1D_emittanceControl_py_mum_MC"       ,100,-60.,60.);
   TH1D* hist1D_emittanceControl_pz_mum_MC        = new TH1D("hist1D_emittanceControl_pz_mum_MC"       ,"hist1D_emittanceControl_pz_mum_MC"       ,100,10000.,35000.);
   TH1D* hist1D_emittanceControl_pTot_mum_MC      = new TH1D("hist1D_emittanceControl_pTot_mum_MC"     ,"hist1D_emittanceControl_pTot_mum_MC"     ,100,10000.,35000.);
   // 2D emittance control plots
-  TH2D* hist2D_emittanceControl_emittance_positron_MC = new TH2D("hist2D_emittanceControl_emittance_positron_MC","hist2D_emittanceControl_emittance_positron_MC",100,-30.,30.,100,-0.002,0.002);
-  TH2D* hist2D_emittanceControl_emittance_mup_MC      = new TH2D("hist2D_emittanceControl_emittance_mup_MC"     ,"hist2D_emittanceControl_emittance_mup_MC"     ,100,-30.,30.,100,-0.002,0.002);
-  TH2D* hist2D_emittanceControl_emittance_mum_MC      = new TH2D("hist2D_emittanceControl_emittance_mum_MC"     ,"hist2D_emittanceControl_emittance_mum_MC"     ,100,-30.,30.,100,-0.002,0.002);
+  TH2D* hist2D_emittanceControl_emittance_positron_MC = new TH2D("hist2D_emittanceControl_emittance_positron_MC","hist2D_emittanceControl_emittance_positron_MC",100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2D* hist2D_emittanceControl_emittance_mup_MC      = new TH2D("hist2D_emittanceControl_emittance_mup_MC"     ,"hist2D_emittanceControl_emittance_mup_MC"     ,100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2D* hist2D_emittanceControl_emittance_mum_MC      = new TH2D("hist2D_emittanceControl_emittance_mum_MC"     ,"hist2D_emittanceControl_emittance_mum_MC"     ,100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
 
 
 
@@ -758,11 +775,11 @@ void plotEmittance(){
   
   // define output path and make output directory 
 
-  TString plotOutputPath = "190318_Emittance_August2018_targetBe6cm_DATA";
-  //TString plotOutputPath = "190318_Emittance_August2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190318_Emittance_September2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190318_Emittance_September2018_targetC6cm_MC";
-  //TString plotOutputPath = "190318_Emittance_September2018_targetC2cm_MC";
+  TString plotOutputPath = "190320_Emittance_August2018_targetBe6cm_DATA";
+  //TString plotOutputPath = "190320_Emittance_August2018_targetBe6cm_MC";
+  //TString plotOutputPath = "190320_Emittance_September2018_targetBe6cm_MC";
+  //TString plotOutputPath = "190320_Emittance_September2018_targetC6cm_MC";
+  //TString plotOutputPath = "190320_Emittance_September2018_targetC2cm_MC";
   gSystem->Exec(("mkdir -p "+plotOutputPath));
 
 
