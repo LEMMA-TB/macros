@@ -762,6 +762,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 }
 
 
+
+
+
 // main function 
 void plotEmittance(){
 
@@ -775,11 +778,11 @@ void plotEmittance(){
   
   // define output path and make output directory 
 
-  TString plotOutputPath = "190320_Emittance_August2018_targetBe6cm_DATA";
-  //TString plotOutputPath = "190320_Emittance_August2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190320_Emittance_September2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190320_Emittance_September2018_targetC6cm_MC";
-  //TString plotOutputPath = "190320_Emittance_September2018_targetC2cm_MC";
+  TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_DATA";
+  //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_MC";
+  //TString plotOutputPath = "190327_Emittance_September2018_targetBe6cm_MC";
+  //TString plotOutputPath = "190327_Emittance_September2018_targetC6cm_MC";
+  //TString plotOutputPath = "190327_Emittance_September2018_targetC2cm_MC";
   gSystem->Exec(("mkdir -p "+plotOutputPath));
 
 
