@@ -774,22 +774,27 @@ void plotEmittance(){
   TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-Be6cm.root";
   TString inputFile_MC_Sep2018_C6cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C6cm.root";
   TString inputFile_MC_Sep2018_C2cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C2cm.root";
+
+  // 16 May 2019
+  TString inputFile_MC_Sep2018_Be6cm_new = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-Be6cm-GausGaus.root"; 
   
   
   // define output path and make output directory 
 
-  TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_DATA";
+  //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_DATA";
   //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetBe6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC2cm_MC";
+
+  TString plotOutputPath = "190516_Emittance_Sep18_Be6cm_GausGaus";
   gSystem->Exec(("mkdir -p "+plotOutputPath));
 
 
 
   // choose type of target
-  double zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
-  //double zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
+  //double zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
+  double zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
   //double zEndTarget = 10.*(460.93+1.-82.78); // [mm] - dataset: SEPTEMBER 2018 C  target 2 cm 
  
 
@@ -797,10 +802,12 @@ void plotEmittance(){
   // --- call do the histos function
   // arguments: input file, label for data or MC
 
-  doTheHistos(inputFile_Data_Aug2018_Be6cm, "DATA", zEndTarget, plotOutputPath);
+  //doTheHistos(inputFile_Data_Aug2018_Be6cm, "DATA", zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_C6cm,    "MC",   zEndTarget, plotOutputPath); 
   //doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",   zEndTarget, plotOutputPath);
+
+  doTheHistos(inputFile_MC_Sep2018_Be6cm_new,   "MC",   zEndTarget, plotOutputPath);
 
 }
