@@ -575,6 +575,17 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     c_x_prime_emittance_1D_mum->cd();
     hist1D_emittance_x_prime_mum_MC->Draw();
     c_x_prime_emittance_1D_mum->SaveAs((plotOutputPath + "/" + c_x_prime_emittance_1D_mum->GetName() + ".png"));
+
+    // -------------------------------------- 
+    // save 1D emittance plots in root file
+    TFile* fOut_1DemittanceHistos = new TFile("fout_1DemittancePlots_Sep.root","recreate");
+    fOut_1DemittanceHistos->cd();
+    hist1D_emittance_x_mup_MC      ->Write(hist1D_emittance_x_mup_MC      ->GetName());
+    hist1D_emittance_x_prime_mup_MC->Write(hist1D_emittance_x_prime_mup_MC->GetName());
+    hist1D_emittance_x_mum_MC      ->Write(hist1D_emittance_x_mum_MC      ->GetName());
+    hist1D_emittance_x_prime_mum_MC->Write(hist1D_emittance_x_prime_mum_MC->GetName());
+    fOut_1DemittanceHistos->Close();
+    // --------------------------------------
     
     
     //1D emittance control plots 
@@ -783,11 +794,11 @@ void plotEmittance(){
 
   //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_DATA";
   //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190327_Emittance_September2018_targetBe6cm_MC";
+  TString plotOutputPath = "190327_Emittance_September2018_targetBe6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC2cm_MC";
 
-  TString plotOutputPath = "190516_Emittance_Sep18_Be6cm_GausGaus";
+  //TString plotOutputPath = "190516_Emittance_Sep18_Be6cm_GausGaus";
   gSystem->Exec(("mkdir -p "+plotOutputPath));
 
 
@@ -804,10 +815,11 @@ void plotEmittance(){
 
   //doTheHistos(inputFile_Data_Aug2018_Be6cm, "DATA", zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
-  //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
+  doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_C6cm,    "MC",   zEndTarget, plotOutputPath); 
   //doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",   zEndTarget, plotOutputPath);
 
-  doTheHistos(inputFile_MC_Sep2018_Be6cm_new,   "MC",   zEndTarget, plotOutputPath);
+  // gauss profile of input beam
+  //doTheHistos(inputFile_MC_Sep2018_Be6cm_new,   "MC",   zEndTarget, plotOutputPath);
 
 }
