@@ -89,7 +89,7 @@ void fillVecGetEmittance(TString inputFileName, TString label, double zEndTarget
   if(label == "MC"){ isMC = true; } // for MC
 
 
-  Double_t chi2m;
+  Double_t chi2Si5MuM;
   Double_t x_pos_mum[12];
   Double_t x_pos_mum_err[12];
   Double_t z_x_pos_mum[12];
@@ -97,7 +97,7 @@ void fillVecGetEmittance(TString inputFileName, TString label, double zEndTarget
   Double_t z_pos_DT_mum[8];
   Double_t p_mum;
   Double_t p_mup;
-  Double_t chi2p;
+  Double_t chi2Si5MuP;
   Double_t x_pos_mup[12];
   Double_t x_pos_mup_err[12];
   Double_t z_x_pos_mup[12];
@@ -119,7 +119,7 @@ void fillVecGetEmittance(TString inputFileName, TString label, double zEndTarget
   TFile* inputFile = new TFile(inputFileName);
   TTree* inputTree = (TTree*)inputFile->Get("lemma");
 
-  inputTree->SetBranchAddress("chi2m",	        &chi2m);	     
+  inputTree->SetBranchAddress("chi2Si5MuM",     &chi2Si5MuM);	     
   inputTree->SetBranchAddress("x_pos_mum",      &x_pos_mum[0]); 
   inputTree->SetBranchAddress("x_pos_mum_err",  &x_pos_mum_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mum",    &z_x_pos_mum[0]);
@@ -127,7 +127,7 @@ void fillVecGetEmittance(TString inputFileName, TString label, double zEndTarget
   inputTree->SetBranchAddress("z_pos_DT_mum",   &z_pos_DT_mum[0]);
   inputTree->SetBranchAddress("p_mum",          &p_mum);	     
   inputTree->SetBranchAddress("p_mup",          &p_mup);	     
-  inputTree->SetBranchAddress("chi2p",          &chi2p);	       
+  inputTree->SetBranchAddress("chi2Si5MuP",     &chi2Si5MuP);	       
   inputTree->SetBranchAddress("x_pos_mup",      &x_pos_mup[0]); 
   inputTree->SetBranchAddress("x_pos_mup_err",  &x_pos_mup_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mup",    &z_x_pos_mup[0]);
