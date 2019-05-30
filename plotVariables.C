@@ -389,11 +389,11 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
       //              gen_pos_mup[0]=xh[i]; gen_pos_mup[1]=yh[i]; gen_pos_mup[2]=zh[i];
       // - on det 31: gen_pos_mum[3]=xh[i]; gen_pos_mum[4]=yh[i]; gen_pos_mum[5]=zh[i];
       //              gen_pos_mup[3]=xh[i]; gen_pos_mup[4]=yh[i]; gen_pos_mup[5]=zh[i];
-      if(isMC){
-        Double_t gen_dx_on_dz_ext_mup = (gen_pos_mup[3] - gen_pos_mup[0])/(gen_pos_mup[5] - gen_pos_mup[2]);
-        Double_t gen_dx_on_dz_ext_mum = (gen_pos_mum[3] - gen_pos_mum[0])/(gen_pos_mum[5] - gen_pos_mum[2]);
-        z_cross = z0 + (gen_pos_mum[0] - gen_pos_mup[0])/(gen_dx_on_dz_ext_mup - gen_dx_on_dz_ext_mum);
-      }
+      // if(isMC){
+      //   Double_t gen_dx_on_dz_ext_mup = (gen_pos_mup[3] - gen_pos_mup[0])/(gen_pos_mup[5] - gen_pos_mup[2]);
+      //   Double_t gen_dx_on_dz_ext_mum = (gen_pos_mum[3] - gen_pos_mum[0])/(gen_pos_mum[5] - gen_pos_mum[2]);
+      //   z_cross = z0 + (gen_pos_mum[0] - gen_pos_mup[0])/(gen_dx_on_dz_ext_mup - gen_dx_on_dz_ext_mum);
+      // }
 
       hist_xcross->Fill(x_cross);
       hist_zcross->Fill(z_cross);
