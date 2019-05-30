@@ -92,7 +92,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   bool isMC = false;                // for Data
   if(label == "MC"){ isMC = true; } // for MC
   
-  Double_t chi2m;
+  Double_t chi2Si5MuM;
   Double_t x_pos_mum[12];
   Double_t x_pos_mum_err[12];
   Double_t z_x_pos_mum[12];
@@ -100,7 +100,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   Double_t z_pos_DT_mum[8];
   Double_t p_mum;
   Double_t p_mup;
-  Double_t chi2p;
+  Double_t chi2Si5MuP;
   Double_t x_pos_mup[12];
   Double_t x_pos_mup_err[12];
   Double_t z_x_pos_mup[12];
@@ -122,7 +122,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   TFile* inputFile = new TFile(inputFileName);
   TTree* inputTree = (TTree*)inputFile->Get("lemma");
 
-  inputTree->SetBranchAddress("chi2m",	        &chi2m);	     
+  inputTree->SetBranchAddress("chi2Si5MuM",	&chi2Si5MuM);	     
   inputTree->SetBranchAddress("x_pos_mum",      &x_pos_mum[0]); 
   inputTree->SetBranchAddress("x_pos_mum_err",  &x_pos_mum_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mum",    &z_x_pos_mum[0]);
@@ -130,7 +130,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   inputTree->SetBranchAddress("z_pos_DT_mum",   &z_pos_DT_mum[0]);
   inputTree->SetBranchAddress("p_mum",          &p_mum);	     
   inputTree->SetBranchAddress("p_mup",          &p_mup);	     
-  inputTree->SetBranchAddress("chi2p",          &chi2p);	       
+  inputTree->SetBranchAddress("chi2Si5MuP",     &chi2Si5MuP);	       
   inputTree->SetBranchAddress("x_pos_mup",      &x_pos_mup[0]); 
   inputTree->SetBranchAddress("x_pos_mup_err",  &x_pos_mup_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mup",    &z_x_pos_mup[0]);
@@ -780,11 +780,11 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 void plotEmittance(){
 
   // define input files 
-  TString inputFile_Data_Aug2018_Be6cm = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-333to352.root"; 
-  TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root";   
-  TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-Be6cm.root";
-  TString inputFile_MC_Sep2018_C6cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C6cm.root";
-  TString inputFile_MC_Sep2018_C2cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C2cm.root";
+  TString inputFile_Data_Aug2018_Be6cm = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-334to352.root"; 
+  TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root";   
+  TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/previous/sep18/reco-mupmum-Be6cm.root";
+  TString inputFile_MC_Sep2018_C6cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/previous/sep18/reco-mupmum-C6cm.root";
+  TString inputFile_MC_Sep2018_C2cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/previous/sep18/reco-mupmum-C2cm.root";
 
   // 16 May 2019
   TString inputFile_MC_Sep2018_Be6cm_new = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-Be6cm-GausGaus.root"; 
@@ -793,8 +793,8 @@ void plotEmittance(){
   // define output path and make output directory 
 
   //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_DATA";
-  //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_MC";
-  TString plotOutputPath = "190327_Emittance_September2018_targetBe6cm_MC";
+  TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_MC";
+  //TString plotOutputPath = "190327_Emittance_September2018_targetBe6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC2cm_MC";
 
@@ -804,8 +804,8 @@ void plotEmittance(){
 
 
   // choose type of target
-  //double zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
-  double zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
+  double zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
+  //double zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
   //double zEndTarget = 10.*(460.93+1.-82.78); // [mm] - dataset: SEPTEMBER 2018 C  target 2 cm 
  
 
@@ -814,8 +814,8 @@ void plotEmittance(){
   // arguments: input file, label for data or MC
 
   //doTheHistos(inputFile_Data_Aug2018_Be6cm, "DATA", zEndTarget, plotOutputPath);
-  //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
-  doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
+  doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
+  //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",   zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_C6cm,    "MC",   zEndTarget, plotOutputPath); 
   //doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",   zEndTarget, plotOutputPath);
 
