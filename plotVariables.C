@@ -162,7 +162,7 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   bool isMC = false;                // for Data
   if(label == "MC"){ isMC = true; } // for MC
   
-  Double_t chi2m;
+  Double_t chi2Si5MuM;
   Double_t x_pos_mum[12];
   Double_t x_pos_mum_err[12];
   Double_t z_x_pos_mum[12];
@@ -170,7 +170,7 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   Double_t z_pos_DT_mum[8];
   Double_t p_mum;
   Double_t p_mup;
-  Double_t chi2p;
+  Double_t chi2Si5MuP;
   Double_t x_pos_mup[12];
   Double_t x_pos_mup_err[12];
   Double_t z_x_pos_mup[12];
@@ -192,7 +192,7 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   TFile* inputFile = new TFile(inputFileName);
   TTree* inputTree = (TTree*)inputFile->Get("lemma");
 
-  inputTree->SetBranchAddress("chi2m",	        &chi2m);	     
+  inputTree->SetBranchAddress("chi2Si5MuM",	&chi2Si5MuM);	     
   inputTree->SetBranchAddress("x_pos_mum",      &x_pos_mum[0]); 
   inputTree->SetBranchAddress("x_pos_mum_err",  &x_pos_mum_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mum",    &z_x_pos_mum[0]);
@@ -200,7 +200,7 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   inputTree->SetBranchAddress("z_pos_DT_mum",   &z_pos_DT_mum[0]);
   inputTree->SetBranchAddress("p_mum",          &p_mum);	     
   inputTree->SetBranchAddress("p_mup",          &p_mup);	     
-  inputTree->SetBranchAddress("chi2p",          &chi2p);	       
+  inputTree->SetBranchAddress("chi2Si5MuP",     &chi2Si5MuP);	       
   inputTree->SetBranchAddress("x_pos_mup",      &x_pos_mup[0]); 
   inputTree->SetBranchAddress("x_pos_mup_err",  &x_pos_mup_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mup",    &z_x_pos_mup[0]);
@@ -228,8 +228,8 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   TH1F* hist_pTot_smear03_bias000 = new TH1F("hist_pTot_smear03_bias000", "hist_pTot_smear03_bias000", 80,24800.,56800.); // used for MC only
   TH1F* hist_pTot_smear03_bias099 = new TH1F("hist_pTot_smear03_bias099", "hist_pTot_smear03_bias099", 80,24800.,56800.); // used for MC only
   TH1F* hist_pTot_smear03_bias101 = new TH1F("hist_pTot_smear03_bias101", "hist_pTot_smear03_bias101", 80,24800.,56800.); // used for MC only
-  TH1F* hist_chi2MuPlus  = new TH1F("hist_chi2MuPlus", "hist_chi2MuPlus", 50,0.,10.);
-  TH1F* hist_chi2MuMinus = new TH1F("hist_chi2MuMinus","hist_chi2MuMinus",50,0.,10.);
+  TH1F* hist_chi2MuPlus  = new TH1F("hist_chi2MuPlus", "hist_chi2MuPlus", 20,0.,10.);
+  TH1F* hist_chi2MuMinus = new TH1F("hist_chi2MuMinus","hist_chi2MuMinus",20,0.,10.);
   // TH1F* hist_ThetaMuPlus  = new TH1F("hist_ThetaMuPlus","hist_ThetaMuPlus",10,0.,10.);    //angle in bending plane
   // TH1F* hist_ThetaMuMinus = new TH1F("hist_ThetaMuMinus","hist_ThetaMuMinus",10,0.,10.);  //angle in bending plane
 
@@ -300,17 +300,17 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
 
     
     // --- condition for candidate events
-    if( p_mup > 0. && p_mum > 0. ) {
+    if( p_mup > 0. && p_mum > 0. && max(chi2Si5MuM,chi2Si5MuP)<100. ) {
 
 
       
 
       // --- fill momentum histos 
-      hist_pMuPlus->Fill(p_mup);      //momentum for mu plus
-      hist_chi2MuPlus->Fill(chi2p);   //chi2 for mu plus tracks
+      hist_pMuPlus->Fill(p_mup);         //momentum for mu plus
+      hist_chi2MuPlus->Fill(chi2Si5MuP); //chi2 for mu plus tracks
 
-      hist_pMuMinus->Fill(p_mum);     //momentum for mu minus
-      hist_chi2MuMinus->Fill(chi2m);  //chi2 for mu minus tracks
+      hist_pMuMinus->Fill(p_mum);         //momentum for mu minus
+      hist_chi2MuMinus->Fill(chi2Si5MuM); //chi2 for mu minus tracks
 
       hist_pTot->Fill(p_mum + p_mup); //total momentum 
 
@@ -2314,11 +2314,11 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
 void plotVariables(){
 
   // define input files 
-  TString inputFile_Data = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-333to352.root";
-  TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-mupmum.root"; 
+  TString inputFile_Data = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-334to352.root";
+  TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root"; 
   
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "190314_LemmaVariables_DataMCComparison_reco-333to352_August_targetBe6cm";
+  TString plotDataMCOutputPath = "190530_LemmaVariables_DataMCComparison_reco-334to352_August_targetBe6cm";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
 
 
