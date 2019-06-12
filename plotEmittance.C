@@ -43,9 +43,8 @@
 using namespace std;
 
 //Extrapolate track function: track points are refitted
-Double_t extrapolate_track_x(TString inputFileName, Double_t z0 ,Double_t x_pos_mum[12], Double_t x_pos_mum_err[12], Double_t z_x_pos_mum[12], Double_t& x_ext, Double_t& x_ext_err, Double_t& dx_on_dz_ext, Double_t& dx_on_dz_ext_err){
+Double_t extrapolate_track_x(TString inputFileName, Double_t z0, Double_t x_pos_mum[12], Double_t x_pos_mum_err[12], Double_t z_x_pos_mum[12], Double_t& x_ext, Double_t& x_ext_err, Double_t& dx_on_dz_ext, Double_t& dx_on_dz_ext_err){
 
-  cout << inputFileName << endl;
   //Magnetic field (box)
   Double_t zM=0.,B=0.;
   if ( inputFileName.Contains("aug18") ){
@@ -209,7 +208,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   bool isMC = false;                                       // for Data
   if(label == "MC" || label == "MCreclev"){ isMC = true; } // for MC
   
-  // Double_t chi2Si5MuM;
+  // Double_t chi2Si5MuM; old MC samples do NOT have this variables, uncomment later on
   Double_t x_pos_mum[12];
   Double_t x_pos_mum_err[12];
   Double_t z_x_pos_mum[12];
@@ -217,7 +216,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   Double_t z_pos_DT_mum[8];
   Double_t p_mum;
   Double_t p_mup;
-  // Double_t chi2Si5MuP;
+  // Double_t chi2Si5MuP; old MC samples do NOT have this variables, uncomment later on
   Double_t x_pos_mup[12];
   Double_t x_pos_mup_err[12];
   Double_t z_x_pos_mup[12];
@@ -239,7 +238,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   TFile* inputFile = new TFile(inputFileName);
   TTree* inputTree = (TTree*)inputFile->Get("lemma");
 
-  // inputTree->SetBranchAddress("chi2Si5MuM",	&chi2Si5MuM);	     
+  // inputTree->SetBranchAddress("chi2Si5MuM",	&chi2Si5MuM); old MC samples do NOT have this variables, uncomment later on
   inputTree->SetBranchAddress("x_pos_mum",      &x_pos_mum[0]); 
   inputTree->SetBranchAddress("x_pos_mum_err",  &x_pos_mum_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mum",    &z_x_pos_mum[0]);
@@ -247,7 +246,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   inputTree->SetBranchAddress("z_pos_DT_mum",   &z_pos_DT_mum[0]);
   inputTree->SetBranchAddress("p_mum",          &p_mum);	     
   inputTree->SetBranchAddress("p_mup",          &p_mup);	     
-  // inputTree->SetBranchAddress("chi2Si5MuP",     &chi2Si5MuP);	       
+  // inputTree->SetBranchAddress("chi2Si5MuP",     &chi2Si5MuP); old MC samples do NOT have this variables, uncomment later on
   inputTree->SetBranchAddress("x_pos_mup",      &x_pos_mup[0]); 
   inputTree->SetBranchAddress("x_pos_mup_err",  &x_pos_mup_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mup",    &z_x_pos_mup[0]);
@@ -360,10 +359,10 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   TH2D* hist2D_emittanceControl_emittance_mup_MC      = new TH2D("hist2D_emittanceControl_emittance_mup_MC"     ,"hist2D_emittanceControl_emittance_mup_MC"     ,100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
   TH2D* hist2D_emittanceControl_emittance_mum_MC      = new TH2D("hist2D_emittanceControl_emittance_mum_MC"     ,"hist2D_emittanceControl_emittance_mum_MC"     ,100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
 
-  // -1. extrapolate_track_x
-  // 0.  track points @ 30 and 31
-  // >0. Geant4 points @ 30 and 31 smeared by sigma_x
-  Double_t sigma_x=-1.; // Gaus(1.,sigma_x/1000.);
+  // -9999. -> extrapolate_track_x, to be used to process MC as if data and data
+  // 0.     -> track points @ 30 and 31, FOR TEST PURPOSES
+  // >0.    -> Geant4 points @ 30 and 31 smeared by sigma_x, FOR TEST PURPOSES, smeares by Gaus(1.,sigma_x/1000.)
+  Double_t sigma_x=-9999.;
 
   // ---------------------------
   // --- loop over tree entries 

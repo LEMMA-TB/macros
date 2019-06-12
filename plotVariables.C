@@ -45,13 +45,21 @@ using namespace std;
 
 
 //Extrapolate track function: track points are refitted
-Double_t extrapolate_track_x(Double_t z0 ,Double_t x_pos_mum[12], Double_t x_pos_mum_err[12], Double_t z_x_pos_mum[12], Double_t& x_ext, Double_t& x_ext_err, Double_t& dx_on_dz_ext, Double_t& dx_on_dz_ext_err){
+Double_t extrapolate_track_x(TString inputFileName, Double_t z0, Double_t x_pos_mum[12], Double_t x_pos_mum_err[12], Double_t z_x_pos_mum[12], Double_t& x_ext, Double_t& x_ext_err, Double_t& dx_on_dz_ext, Double_t& dx_on_dz_ext_err){
 
    //Magnetic field (box)
-   Double_t zM= 17193-846;
-   Double_t z1= zM-1000.;
-   Double_t z2= zM+1000.;
-   Double_t B = 1.7476;
+   Double_t zM=0.,B=0.;
+   if ( inputFileName.Contains("aug18") ){
+     zM=17193-846;
+     B=1.7476;
+   }
+   if( inputFileName.Contains("sep18") ){
+     zM=10.*(1573.79+0.5*(1773.79-1573.79)-82.78);
+     B=2.01;
+   }
+   Double_t z1=zM-1000.;
+   Double_t z2=zM+1000.;
+   if( B==0. ) cout << "B undefined in extrapolate_track_x !" << endl;
 
    Double_t chi2 = 99999;
 
@@ -364,12 +372,12 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
       //x_ext_err, 
       //dx_on_dz_ext (extrapolated dx/dz at z=z0), 
       //dx_on_dz_ext_err
-      chi2_mum = extrapolate_track_x(z0, x_pos_mum, x_pos_mum_err, z_x_pos_mum, x_ext_mum, x_ext_mum_err, dx_on_dz_ext_mum, dx_on_dz_ext_mum_err);
+      chi2_mum = extrapolate_track_x(inputFileName, z0, x_pos_mum, x_pos_mum_err, z_x_pos_mum, x_ext_mum, x_ext_mum_err, dx_on_dz_ext_mum, dx_on_dz_ext_mum_err);
       if( chi2_mum < 9999. ){
         // cout << x_ext << " " << x_ext_err << endl;
         hist_xext_MuMinus->Fill(x_ext_mum);
       }
-      chi2_mup = extrapolate_track_x(z0, x_pos_mup, x_pos_mup_err, z_x_pos_mup, x_ext_mup, x_ext_mup_err, dx_on_dz_ext_mup, dx_on_dz_ext_mup_err);
+      chi2_mup = extrapolate_track_x(inputFileName, z0, x_pos_mup, x_pos_mup_err, z_x_pos_mup, x_ext_mup, x_ext_mup_err, dx_on_dz_ext_mup, dx_on_dz_ext_mup_err);
       if( chi2_mup < 9999. ){
         // cout << x_ext << " " << x_ext_err << endl;
         hist_xext_MuPlus->Fill(x_ext_mup);
