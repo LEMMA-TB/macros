@@ -222,6 +222,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   Double_t z_x_pos_mup[12];
   Double_t x_pos_DT_mup[8];
   Double_t z_pos_DT_mup[8];
+  Double_t vtx_x;
   Int_t    subdet[100];
   Int_t    itrack[100];
   Double_t xh[100];
@@ -252,6 +253,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   inputTree->SetBranchAddress("z_x_pos_mup",    &z_x_pos_mup[0]);
   inputTree->SetBranchAddress("x_pos_DT_mup",   &x_pos_DT_mup[0]);
   inputTree->SetBranchAddress("z_pos_DT_mup",   &z_pos_DT_mup[0]);
+  inputTree->SetBranchAddress("vtx_x",          &vtx_x);
   inputTree->SetBranchAddress("subdet",         &subdet[0]);   
   inputTree->SetBranchAddress("itrack",         &itrack[0]);   
   inputTree->SetBranchAddress("xh",             &xh[0]);	     
@@ -411,6 +413,10 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     // --- condition for candidate events
     if( p_mup > 0. && p_mum > 0. ) {
 
+      // --- if data or MC as if data require a valid e+/mu+/mu- vertex constraint
+      if( !isMC && !(vtx_x>-9999.) ) continue;
+      if( isMC && (label == "MCreclev") && !(vtx_x>-9999.) ) continue; 
+
 
       // --- ONLY FOR MC 
       // -----------------------------
@@ -470,11 +476,12 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
           // use smeared Geant4 points on 30 and 31 for x_det30_atZref_mum
           if( sigma_x>0 ){
             TRandom3* prandom = new TRandom3(0);
-            Double_t r30=prandom->Gaus(1.,sigma_x/1000.);
-            Double_t r31=prandom->Gaus(1.,sigma_x/1000.);
+            Double_t r30=prandom->Gaus(0.,sigma_x/1000.);
+            Double_t r31=prandom->Gaus(0.,sigma_x/1000.);
             // cout << r30 << " " << r31 << endl;
-            Double_t DeltaX=(r31*gen_pos_mup[6]-r30*gen_pos_mup[0]); Double_t DeltaZ=(gen_pos_mup[8]-gen_pos_mup[2]);
-            x_det30_atZref_mup = (r30*gen_pos_mup[0] + (z_ref-gen_pos_mup[2])*DeltaX/DeltaZ);
+            r31+=gen_pos_mup[6]; r30+=gen_pos_mup[0];
+            Double_t DeltaX=(r31-r30); Double_t DeltaZ=(gen_pos_mup[8]-gen_pos_mup[2]);
+            x_det30_atZref_mup = (r30 + (z_ref-gen_pos_mup[2])*DeltaX/DeltaZ);
             delete prandom;
 	  }
 	}
@@ -535,11 +542,12 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
           // use smeared Geant4 points on 30 and 31 for x_det30_atZref_mum
           if( sigma_x>0 ){
             TRandom3* prandom = new TRandom3(0);
-            Double_t r30=prandom->Gaus(1.,sigma_x/1000.);
-            Double_t r31=prandom->Gaus(1.,sigma_x/1000.);
-            // cout << r30 << " " << r31 << endl; 
-            Double_t DeltaX=(r31*gen_pos_mum[6]-r30*gen_pos_mum[0]); Double_t DeltaZ=(gen_pos_mum[8]-gen_pos_mum[2]);
-            x_det30_atZref_mum = (r30*gen_pos_mum[0] + (z_ref-gen_pos_mum[2])*DeltaX/DeltaZ);
+            Double_t r30=prandom->Gaus(0.,sigma_x/1000.);
+            Double_t r31=prandom->Gaus(0.,sigma_x/1000.);
+            // cout << r30 << " " << r31 << endl;
+            r31+=gen_pos_mum[6]; r30+=gen_pos_mum[0]; 
+            Double_t DeltaX=(r31-r30); Double_t DeltaZ=(gen_pos_mum[8]-gen_pos_mum[2]);
+            x_det30_atZref_mum = (r30 + (z_ref-gen_pos_mum[2])*DeltaX/DeltaZ);
             delete prandom;
 	  }
 	}
@@ -964,7 +972,8 @@ void plotEmittance(){
 
   // define input files 
   TString inputFile_Data_Aug2018_Be6cm = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-333to352.root";
-  TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root";
+  // TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root";
+  TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/with_vtx_fit/reco-mupmum.root";
   TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-Be6cm.root";
   TString inputFile_MC_Sep2018_C6cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C6cm.root";
   TString inputFile_MC_Sep2018_C2cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C2cm.root";
@@ -998,8 +1007,8 @@ void plotEmittance(){
   // arguments: input file, label for data or MC
 
   //doTheHistos(inputFile_Data_Aug2018_Be6cm, "DATA",     zEndTarget, plotOutputPath);
-  // doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",       zEndTarget, plotOutputPath);
-  doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MCreclev", zEndTarget, plotOutputPath);
+  doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",       zEndTarget, plotOutputPath);
+  //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MCreclev", zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MCreclev",       zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_C6cm,    "MC",       zEndTarget, plotOutputPath); 
   //doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",       zEndTarget, plotOutputPath);
