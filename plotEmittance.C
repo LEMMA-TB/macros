@@ -205,10 +205,11 @@ Double_t getemittance(vector<Double_t> xv, vector<Double_t> xpv){
 // doTheHistos function: read root file and do histos 
 void doTheHistos(TString inputFileName, TString label, double zEndTarget, TString plotOutputPath){
 
-  bool isMC = false;                                       // for Data
-  if(label == "MC" || label == "MCreclev"){ isMC = true; } // for MC
+  cout << label << endl;
+  bool isMC = false;                        // for Data
+  if(label.Contains("MC") ){ isMC = true; } // for MC
   
-  // Double_t chi2Si5MuM; old MC samples do NOT have this variables, uncomment later on
+  Double_t chi2Si5MuM;
   Double_t x_pos_mum[12];
   Double_t x_pos_mum_err[12];
   Double_t z_x_pos_mum[12];
@@ -216,13 +217,15 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   Double_t z_pos_DT_mum[8];
   Double_t p_mum;
   Double_t p_mup;
-  // Double_t chi2Si5MuP; old MC samples do NOT have this variables, uncomment later on
+  Double_t chi2Si5MuP;
   Double_t x_pos_mup[12];
   Double_t x_pos_mup_err[12];
   Double_t z_x_pos_mup[12];
   Double_t x_pos_DT_mup[8];
   Double_t z_pos_DT_mup[8];
   Double_t vtx_x;
+  Double_t vtx_z;
+  Double_t vtx_chi2;
   Int_t    subdet[100];
   Int_t    itrack[100];
   Double_t xh[100];
@@ -239,7 +242,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   TFile* inputFile = new TFile(inputFileName);
   TTree* inputTree = (TTree*)inputFile->Get("lemma");
 
-  // inputTree->SetBranchAddress("chi2Si5MuM",	&chi2Si5MuM); old MC samples do NOT have this variables, uncomment later on
+  inputTree->SetBranchAddress("chi2Si5MuM",	&chi2Si5MuM);
   inputTree->SetBranchAddress("x_pos_mum",      &x_pos_mum[0]); 
   inputTree->SetBranchAddress("x_pos_mum_err",  &x_pos_mum_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mum",    &z_x_pos_mum[0]);
@@ -247,13 +250,15 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
   inputTree->SetBranchAddress("z_pos_DT_mum",   &z_pos_DT_mum[0]);
   inputTree->SetBranchAddress("p_mum",          &p_mum);	     
   inputTree->SetBranchAddress("p_mup",          &p_mup);	     
-  // inputTree->SetBranchAddress("chi2Si5MuP",     &chi2Si5MuP); old MC samples do NOT have this variables, uncomment later on
+  inputTree->SetBranchAddress("chi2Si5MuP",     &chi2Si5MuP);
   inputTree->SetBranchAddress("x_pos_mup",      &x_pos_mup[0]); 
   inputTree->SetBranchAddress("x_pos_mup_err",  &x_pos_mup_err[0]);
   inputTree->SetBranchAddress("z_x_pos_mup",    &z_x_pos_mup[0]);
   inputTree->SetBranchAddress("x_pos_DT_mup",   &x_pos_DT_mup[0]);
   inputTree->SetBranchAddress("z_pos_DT_mup",   &z_pos_DT_mup[0]);
   inputTree->SetBranchAddress("vtx_x",          &vtx_x);
+  inputTree->SetBranchAddress("vtx_z",          &vtx_z);
+  inputTree->SetBranchAddress("vtx_chi2",       &vtx_chi2);
   inputTree->SetBranchAddress("subdet",         &subdet[0]);   
   inputTree->SetBranchAddress("itrack",         &itrack[0]);   
   inputTree->SetBranchAddress("xh",             &xh[0]);	     
@@ -296,10 +301,19 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 
   // def histos limits
 
+  int    h_n_bins_rawEmitt     =  100;
   double h_min_x_rawEmitt      = -30.;   // [mm]
   double h_max_x_rawEmitt      =  30.;   // [mm]
   double h_min_xprime_rawEmitt = -0.002; // [rad]
   double h_max_xprime_rawEmitt =  0.002; // [rad]
+  if( !isMC ){
+    h_n_bins_rawEmitt = 25;
+    h_min_x_rawEmitt*=2.; 
+    h_max_x_rawEmitt*=2.;
+    h_min_xprime_rawEmitt*=2.; 
+    h_max_xprime_rawEmitt*=2.;
+  }
+
 
   double h_min_x_emitt      = -0.3;   // [mm]
   double h_max_x_emitt      =  0.3;   // [mm]
@@ -312,17 +326,17 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
  
   // --- DATA HISTOS
   TH1F* hist_npos_Data = new TH1F("hist_npos_Data", "N positrons", 11, -0.5, 10.5);                                           
-  TH1F* hist_xbe_positrons_Data = new TH1F("hist_xbe_positrons_Data", "Positron: Be exit point (mm)", 100, h_min_x_rawEmitt,      h_max_x_rawEmitt);      
-  TH1F* hist_the_positrons_Data = new TH1F("hist_the_positrons_Data", "Positron: theta exit (rad)",   100, h_min_xprime_rawEmitt, h_max_xprime_rawEmitt);    
+  TH1F* hist_xbe_positrons_Data = new TH1F("hist_xbe_positrons_Data", "Positron: Be exit point (mm)", h_n_bins_rawEmitt, h_min_x_rawEmitt,      h_max_x_rawEmitt);      
+  TH1F* hist_the_positrons_Data = new TH1F("hist_the_positrons_Data", "Positron: theta exit (rad)",   h_n_bins_rawEmitt, h_min_xprime_rawEmitt, h_max_xprime_rawEmitt);    
 
   // --- raw emittance
-  TH1F* hist1D_PositronBeamEmittance_x______1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______1eplus_Data","hist1D_PositronBeamEmittance_x______1eplus_Data",100,h_min_x_rawEmitt,h_max_x_rawEmitt); 
-  TH1F* hist1D_PositronBeamEmittance_xprime_1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_1eplus_Data","hist1D_PositronBeamEmittance_xprime_1eplus_Data",100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
-  TH2F* hist2D_PositronBeamEmittance_emitt__1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__1eplus_Data","hist2D_PositronBeamEmittance_emitt__1eplus_Data",100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH1F* hist1D_PositronBeamEmittance_x______1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______1eplus_Data","hist1D_PositronBeamEmittance_x______1eplus_Data",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt); 
+  TH1F* hist1D_PositronBeamEmittance_xprime_1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_1eplus_Data","hist1D_PositronBeamEmittance_xprime_1eplus_Data",h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2F* hist2D_PositronBeamEmittance_emitt__1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__1eplus_Data","hist2D_PositronBeamEmittance_emitt__1eplus_Data",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
  
-  TH1F* hist1D_PositronBeamEmittance_x______moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______moreThan1eplus_Data","hist1D_PositronBeamEmittance_x______moreThan1eplus_Data",100,h_min_x_rawEmitt,h_max_x_rawEmitt);
-  TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data","hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data",100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
-  TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data","hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data",100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH1F* hist1D_PositronBeamEmittance_x______moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_x______moreThan1eplus_Data","hist1D_PositronBeamEmittance_x______moreThan1eplus_Data",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1F* hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data = new TH1F("hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data","hist1D_PositronBeamEmittance_xprime_moreThan1eplus_Data",h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2F* hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data = new TH2F("hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data","hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
 
   
 
@@ -338,28 +352,28 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 
   // --- raw emittance
   // 1D emittance control plots 
-  TH1D* hist1D_emittanceControl_x_atZref_eplus_MC       = new TH1D("hist1D_emittanceControl_x_atZref_eplus_MC","hist1D_emittanceControl_x_atZref_eplus_MC",100,h_min_x_rawEmitt,h_max_x_rawEmitt);
-  TH1D* hist1D_emittanceControl_x_prime_atZref_eplus_MC = new TH1D("hist1D_emittanceControl_x_prime_atZref_eplus_MC","hist1D_emittanceControl_x_prime_atZref_eplus_MC",100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_atZref_eplus_MC       = new TH1D("hist1D_emittanceControl_x_atZref_eplus_MC","hist1D_emittanceControl_x_atZref_eplus_MC",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_prime_atZref_eplus_MC = new TH1D("hist1D_emittanceControl_x_prime_atZref_eplus_MC","hist1D_emittanceControl_x_prime_atZref_eplus_MC",h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
 
-  TH1D* hist1D_emittanceControl_x_onDet30_mup_MC = new TH1D("hist1D_emittanceControl_x_onDet30_mup_MC","hist1D_emittanceControl_x_onDet30_mup_MC",100,h_min_x_rawEmitt,h_max_x_rawEmitt);
-  TH1D* hist1D_emittanceControl_x_atZref_mup_MC  = new TH1D("hist1D_emittanceControl_x_atZref_mup_MC" ,"hist1D_emittanceControl_x_atZref_mup_MC" ,100,h_min_x_rawEmitt,h_max_x_rawEmitt);
-  TH1D* hist1D_emittanceControl_xprime_mup_MC    = new TH1D("hist1D_emittanceControl_xprime_mup_MC"   ,"hist1D_emittanceControl_xprime_mup_MC"   ,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_onDet30_mup_MC = new TH1D("hist1D_emittanceControl_x_onDet30_mup_MC","hist1D_emittanceControl_x_onDet30_mup_MC",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_atZref_mup_MC  = new TH1D("hist1D_emittanceControl_x_atZref_mup_MC" ,"hist1D_emittanceControl_x_atZref_mup_MC" ,h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_xprime_mup_MC    = new TH1D("hist1D_emittanceControl_xprime_mup_MC"   ,"hist1D_emittanceControl_xprime_mup_MC"   ,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
   TH1D* hist1D_emittanceControl_px_mup_MC        = new TH1D("hist1D_emittanceControl_px_mup_MC"       ,"hist1D_emittanceControl_px_mup_MC"       ,100,-60.,60.);
   TH1D* hist1D_emittanceControl_py_mup_MC        = new TH1D("hist1D_emittanceControl_py_mup_MC"       ,"hist1D_emittanceControl_py_mup_MC"       ,100,-60.,60.);
   TH1D* hist1D_emittanceControl_pz_mup_MC        = new TH1D("hist1D_emittanceControl_pz_mup_MC"       ,"hist1D_emittanceControl_pz_mup_MC"       ,100,10000.,35000.);
   TH1D* hist1D_emittanceControl_pTot_mup_MC      = new TH1D("hist1D_emittanceControl_pTot_mup_MC"     ,"hist1D_emittanceControl_pTot_mup_MC"     ,100,10000.,35000.);
 
-  TH1D* hist1D_emittanceControl_x_onDet30_mum_MC = new TH1D("hist1D_emittanceControl_x_onDet30_mum_MC","hist1D_emittanceControl_x_onDet30_mum_MC",100,h_min_x_rawEmitt,h_max_x_rawEmitt);
-  TH1D* hist1D_emittanceControl_x_atZref_mum_MC  = new TH1D("hist1D_emittanceControl_x_atZref_mum_MC" ,"hist1D_emittanceControl_x_atZref_mum_MC" ,100,h_min_x_rawEmitt,h_max_x_rawEmitt);
-  TH1D* hist1D_emittanceControl_xprime_mum_MC    = new TH1D("hist1D_emittanceControl_xprime_mum_MC"   ,"hist1D_emittanceControl_xprime_mum_MC"   ,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_onDet30_mum_MC = new TH1D("hist1D_emittanceControl_x_onDet30_mum_MC","hist1D_emittanceControl_x_onDet30_mum_MC",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_x_atZref_mum_MC  = new TH1D("hist1D_emittanceControl_x_atZref_mum_MC" ,"hist1D_emittanceControl_x_atZref_mum_MC" ,h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt);
+  TH1D* hist1D_emittanceControl_xprime_mum_MC    = new TH1D("hist1D_emittanceControl_xprime_mum_MC"   ,"hist1D_emittanceControl_xprime_mum_MC"   ,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
   TH1D* hist1D_emittanceControl_px_mum_MC        = new TH1D("hist1D_emittanceControl_px_mum_MC"       ,"hist1D_emittanceControl_px_mum_MC"       ,100,-60.,60.);
   TH1D* hist1D_emittanceControl_py_mum_MC        = new TH1D("hist1D_emittanceControl_py_mum_MC"       ,"hist1D_emittanceControl_py_mum_MC"       ,100,-60.,60.);
   TH1D* hist1D_emittanceControl_pz_mum_MC        = new TH1D("hist1D_emittanceControl_pz_mum_MC"       ,"hist1D_emittanceControl_pz_mum_MC"       ,100,10000.,35000.);
   TH1D* hist1D_emittanceControl_pTot_mum_MC      = new TH1D("hist1D_emittanceControl_pTot_mum_MC"     ,"hist1D_emittanceControl_pTot_mum_MC"     ,100,10000.,35000.);
   // 2D emittance control plots
-  TH2D* hist2D_emittanceControl_emittance_positron_MC = new TH2D("hist2D_emittanceControl_emittance_positron_MC","hist2D_emittanceControl_emittance_positron_MC",100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
-  TH2D* hist2D_emittanceControl_emittance_mup_MC      = new TH2D("hist2D_emittanceControl_emittance_mup_MC"     ,"hist2D_emittanceControl_emittance_mup_MC"     ,100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
-  TH2D* hist2D_emittanceControl_emittance_mum_MC      = new TH2D("hist2D_emittanceControl_emittance_mum_MC"     ,"hist2D_emittanceControl_emittance_mum_MC"     ,100,h_min_x_rawEmitt,h_max_x_rawEmitt,100,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2D* hist2D_emittanceControl_emittance_positron_MC = new TH2D("hist2D_emittanceControl_emittance_positron_MC","hist2D_emittanceControl_emittance_positron_MC",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2D* hist2D_emittanceControl_emittance_mup_MC      = new TH2D("hist2D_emittanceControl_emittance_mup_MC"     ,"hist2D_emittanceControl_emittance_mup_MC"     ,h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+  TH2D* hist2D_emittanceControl_emittance_mum_MC      = new TH2D("hist2D_emittanceControl_emittance_mum_MC"     ,"hist2D_emittanceControl_emittance_mum_MC"     ,h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
 
   // -9999. -> extrapolate_track_x, to be used to process MC as if data and data
   // 0.     -> track points @ 30 and 31, FOR TEST PURPOSES
@@ -414,21 +428,25 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     if( p_mup > 0. && p_mum > 0. ) {
 
       // --- if data or MC as if data require a valid e+/mu+/mu- vertex constraint
-      if( !isMC && !(vtx_x>-9999.) ) continue;
-      if( isMC && (label == "MCreclev") && !(vtx_x>-9999.) ) continue; 
+      // if( label.Contains("reclev") && vtx_x<-9990. ) continue; // backward compatibility studies
+      if( label.Contains("reclev") ){
+	if( vtx_chi2>=500. ) continue; // 9999. 
+        if( chi2Si5MuP>500. ) continue;
+        if( chi2Si5MuM>500. ) continue;
+      }
 
-
-      // --- ONLY FOR MC 
       // -----------------------------
       // --- emittance in x 1D and 2D histos
       // -----------------------------
       // x  = x  @det30 - x  incoming e+
       // x' = x' @det30 - x' incoming e+
-      if(isMC){
-        // estimate is done on a reference plane 
-        Double_t z_ref  = zEndTarget; // [mm] z ref (end of the target)
-        
+      // estimate is done on a reference plane                                                                                          
+      Double_t z_ref  = zEndTarget; // [mm] z ref (end of the target)
 
+      Double_t x_atZref_eplus=0.;
+      Double_t x_prime_atZref_eplus=0.;
+      if(isMC){
+        
         // --- e+ incoming
         // px of e+ = Cx mu- * En of mu- + Cx mu+ * En of mu+ = px of mu- + px of mu+
         Double_t px_eplus = gen_vtx_mum[3]*gen_vtx_mum[6] + gen_vtx_mup[3]*gen_vtx_mup[6];
@@ -436,18 +454,37 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
         Double_t pz_eplus = gen_vtx_mum[5]*gen_vtx_mum[6] + gen_vtx_mup[5]*gen_vtx_mup[6];
         // x  of e+ (extrapolation on reference plane)  = x_vtx - (z_vtx - z_ref)*(px_e+/pz_e+)
         // N.B. gen_vtx_mup[0] = gen_vtx_mum[0] and gen_vtx_mup[2] = gen_vtx_mum[2] 
-        Double_t x_atZref_eplus = gen_vtx_mup[0] - (gen_vtx_mup[2] - z_ref)*(px_eplus/pz_eplus);
+        x_atZref_eplus = gen_vtx_mup[0] - (gen_vtx_mup[2] - z_ref)*(px_eplus/pz_eplus);
         // x' of e+ (extrapolation on reference plane)  = px / p  (the direction remain the same as at vtx)
-        Double_t x_prime_atZref_eplus = px_eplus / sqrt(px_eplus*px_eplus + py_eplus*py_eplus + pz_eplus*pz_eplus);
+        x_prime_atZref_eplus = px_eplus / sqrt(px_eplus*px_eplus + py_eplus*py_eplus + pz_eplus*pz_eplus);
+      }else{
 
-        // emittance e+ control plots
-        hist1D_emittanceControl_x_atZref_eplus_MC->Fill(x_atZref_eplus);
-        hist1D_emittanceControl_x_prime_atZref_eplus_MC->Fill(x_prime_atZref_eplus);
-        hist2D_emittanceControl_emittance_positron_MC->Fill(x_atZref_eplus,x_prime_atZref_eplus);
+        // --- e+ incoming
+        // use the positron giving the best vertex chi2 fit, these hits are flagged
+        Double_t x_10=0.; Double_t z_10=0.; Double_t x_20=0.; Double_t z_20=0.;
+        for(Int_t i=0;i<nhits;i++){
+	  if( subdet[i]==10 && itrack[i]==-11 ){
+            if( xh[i]>-9990. ) x_10=xh[i];
+            if( zh[i]>-9990. ) z_10=zh[i];
+	  }
+          if( subdet[i]==20 && itrack[i]==-11 ){
+            if( xh[i]>-9990. ) x_20=xh[i];
+            if( zh[i]>-9990. ) z_20=zh[i];
+          }
+	}
+        x_prime_atZref_eplus = ((x_20-x_10)/(z_20-z_10)); // DeltaX/DeltaZ
+        x_atZref_eplus = (x_20 + (z_ref-z_20)*x_prime_atZref_eplus);
+      }
 
-        vec_emittanceControl_emittance_x_positron_MC     .push_back(x_atZref_eplus);
-        vec_emittanceControl_emittance_xprime_positron_MC.push_back(x_prime_atZref_eplus);
+      // emittance e+ control plots
+      hist1D_emittanceControl_x_atZref_eplus_MC->Fill(x_atZref_eplus);
+      hist1D_emittanceControl_x_prime_atZref_eplus_MC->Fill(x_prime_atZref_eplus);
+      hist2D_emittanceControl_emittance_positron_MC->Fill(x_atZref_eplus,x_prime_atZref_eplus);
+
+      vec_emittanceControl_emittance_x_positron_MC     .push_back(x_atZref_eplus);
+      vec_emittanceControl_emittance_xprime_positron_MC.push_back(x_prime_atZref_eplus);
  
+      if( true ){
 
         // --- mu+
         Double_t x_det30_atZref_mup=0,pTot_genLev_mup=0,x_prime_ondet30_mup=0;
@@ -458,7 +495,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
           pTot_genLev_mup = sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5]);
           x_prime_ondet30_mup = gen_pos_mup[3] / pTot_genLev_mup;
 	}
-        if( label == "MCreclev" ){
+        if( label.Contains("reclev") ){
           // use full track and extrapolate_track_x
           Double_t chi2_mup=9999;
 	  Double_t x_ext_mup=-9999,x_ext_err_mup=-9999;
@@ -500,7 +537,6 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
  
         vec_emittanceControl_emittance_x_mup_MC     .push_back(x_det30_atZref_mup);
         vec_emittanceControl_emittance_xprime_mup_MC.push_back(x_prime_ondet30_mup);
-
         
         // emittance of mu+
         Double_t x_emittance_mup = x_det30_atZref_mup - x_atZref_eplus;
@@ -514,7 +550,6 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 
 
 
-
         // --- mu-
         Double_t x_det30_atZref_mum=0,pTot_genLev_mum=0,x_prime_ondet30_mum=0;
         if( label == "MC" ){
@@ -524,7 +559,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
           pTot_genLev_mum = sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5]);
           x_prime_ondet30_mum = gen_pos_mum[3] / pTot_genLev_mum; 
 	}
-        if( label == "MCreclev" ){
+        if( label.Contains("reclev") ){
           // use full track and extrapolate_track_x
           Double_t chi2_mum=9999;
           Double_t x_ext_mum=-9999,x_ext_err_mum=-9999;
@@ -581,11 +616,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 
         //cout<<x_prime_atZref_eplus<<"    "<<x_prime_ondet30_mup<<"    "<<x_prime_ondet30_mum<<endl;
 
-      }        
-                
-
-
-      
+      } // true
 
     } // end if (p_mup > 0. && p_mum > 0.)
 
@@ -691,7 +722,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 
 
   // MC HISTOS
-  if(isMC){
+  if( true ){
 
     // 2D emittance plots
     TCanvas* c_x_emittance_mup = new TCanvas("c_x_emittance_mup","c_x_emittance_mup"); 
@@ -705,6 +736,13 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     // --- Binned formula
     // float emittanceValue_mup = sqrt(hist2D_emittance_x_mup_MC->GetCovariance(1,1)*hist2D_emittance_x_mup_MC->GetCovariance(2,2) - hist2D_emittance_x_mup_MC->GetCovariance(2,1)*hist2D_emittance_x_mup_MC->GetCovariance(1,2));
     // --- Unbinned formula
+    if( false ){
+      cout << vec_emittance_x_mup_MC.size() << endl;
+      cout << vec_emittance_xprime_mup_MC.size() << endl;
+      for(UInt_t i_dbg=0;i_dbg<vec_emittance_x_mup_MC.size();i_dbg++){
+        cout << vec_emittance_x_mup_MC[i_dbg] << " " << vec_emittance_xprime_mup_MC[i_dbg] << endl;
+      }
+    }
     float emittanceValue_mup = getemittance(vec_emittance_x_mup_MC, vec_emittance_xprime_mup_MC);
     cout << "emittanceValue_mup = " << emittanceValue_mup << endl;
     TPaveText* pv_x_emittance_mup = new TPaveText(0.15,0.75,0.35,0.85,"brNDC");
@@ -956,7 +994,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
     c_emittanceControl_emittance_mum->Update();
     c_emittanceControl_emittance_mum->SaveAs((plotOutputPath + "/" + c_emittanceControl_emittance_mum->GetName() + ".png"));
   
-  } //end plot mc plots
+  } // true
 
   cout<<" Plots done! =) "<<endl; 
 
@@ -971,29 +1009,24 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, TStrin
 void plotEmittance(){
 
   // define input files 
-  TString inputFile_Data_Aug2018_Be6cm = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/reco-333to352.root";
+  TString inputFile_Data_Aug2018_Be6cm = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-aug18.root";
   // TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root";
-  TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/with_vtx_fit/reco-mupmum.root";
-  TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-Be6cm.root";
+  TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/previous/aug18/with_vtx_fit/reco-mupmum.root";
+  TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/with_vtx_fit/reco-mupmum-Be6cm.root";
   TString inputFile_MC_Sep2018_C6cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C6cm.root";
   TString inputFile_MC_Sep2018_C2cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C2cm.root";
-
-  // 16 May 2019
-  TString inputFile_MC_Sep2018_Be6cm_new = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-Be6cm-GausGaus.root"; 
+  TString inputFile_MC_Sep2018_Be6cm_new = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/with_vtx_fit/reco-mupmum-Be6cm-GausGaus.root"; 
   
   
-  // define output path and make output directory 
-
+  // define output path and make output directory
   //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_DATA";
   //TString plotOutputPath = "Emittance_August2018_targetBe6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetBe6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC2cm_MC";
-  TString plotOutputPath = "test";
-
   //TString plotOutputPath = "190516_Emittance_Sep18_Be6cm_GausGaus";
+  TString plotOutputPath = "test";
   gSystem->Exec(("mkdir -p "+plotOutputPath));
-
 
 
   // choose type of target
@@ -1002,18 +1035,16 @@ void plotEmittance(){
   //double zEndTarget = 10.*(460.93+1.-82.78); // [mm] - dataset: SEPTEMBER 2018 C  target 2 cm 
  
 
-
   // --- call do the histos function
   // arguments: input file, label for data or MC
 
-  //doTheHistos(inputFile_Data_Aug2018_Be6cm, "DATA",     zEndTarget, plotOutputPath);
-  doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",       zEndTarget, plotOutputPath);
+  doTheHistos(inputFile_Data_Aug2018_Be6cm, "reclev",   zEndTarget, plotOutputPath);
+  //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",       zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MCreclev", zEndTarget, plotOutputPath);
-  //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MCreclev",       zEndTarget, plotOutputPath);
+  //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",       zEndTarget, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_C6cm,    "MC",       zEndTarget, plotOutputPath); 
   //doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",       zEndTarget, plotOutputPath);
-
   // gauss profile of input beam
-  //doTheHistos(inputFile_MC_Sep2018_Be6cm_new,   "MC",   zEndTarget, plotOutputPath);
+  //doTheHistos(inputFile_MC_Sep2018_Be6cm_new, "MC",     zEndTarget, plotOutputPath);
 
 }
