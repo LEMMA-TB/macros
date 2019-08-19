@@ -184,6 +184,9 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   Double_t z_x_pos_mup[12];
   Double_t x_pos_DT_mup[8];
   Double_t z_pos_DT_mup[8];
+  Double_t vtx_x;
+  Double_t vtx_z;
+  Double_t vtx_chi2;
   Int_t    subdet[100];
   Int_t    itrack[100];
   Double_t xh[100];
@@ -214,6 +217,9 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   inputTree->SetBranchAddress("z_x_pos_mup",    &z_x_pos_mup[0]);
   inputTree->SetBranchAddress("x_pos_DT_mup",   &x_pos_DT_mup[0]);
   inputTree->SetBranchAddress("z_pos_DT_mup",   &z_pos_DT_mup[0]);
+  inputTree->SetBranchAddress("vtx_x",          &vtx_x);
+  inputTree->SetBranchAddress("vtx_z",          &vtx_z);
+  inputTree->SetBranchAddress("vtx_chi2",       &vtx_chi2);
   inputTree->SetBranchAddress("subdet",         &subdet[0]);   
   inputTree->SetBranchAddress("itrack",         &itrack[0]);   
   inputTree->SetBranchAddress("xh",             &xh[0]);	     
@@ -236,8 +242,8 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   TH1F* hist_pTot_smear03_bias000 = new TH1F("hist_pTot_smear03_bias000", "hist_pTot_smear03_bias000", 80,24800.,56800.); // used for MC only
   TH1F* hist_pTot_smear03_bias099 = new TH1F("hist_pTot_smear03_bias099", "hist_pTot_smear03_bias099", 80,24800.,56800.); // used for MC only
   TH1F* hist_pTot_smear03_bias101 = new TH1F("hist_pTot_smear03_bias101", "hist_pTot_smear03_bias101", 80,24800.,56800.); // used for MC only
-  TH1F* hist_chi2MuPlus  = new TH1F("hist_chi2MuPlus", "hist_chi2MuPlus", 20,0.,10.);
-  TH1F* hist_chi2MuMinus = new TH1F("hist_chi2MuMinus","hist_chi2MuMinus",20,0.,10.);
+  TH1F* hist_chi2MuPlus  = new TH1F("hist_chi2MuPlus", "hist_chi2MuPlus", 20,0.,500.);
+  TH1F* hist_chi2MuMinus = new TH1F("hist_chi2MuMinus","hist_chi2MuMinus",20,0.,500.);
   // TH1F* hist_ThetaMuPlus  = new TH1F("hist_ThetaMuPlus","hist_ThetaMuPlus",10,0.,10.);    //angle in bending plane
   // TH1F* hist_ThetaMuMinus = new TH1F("hist_ThetaMuMinus","hist_ThetaMuMinus",10,0.,10.);  //angle in bending plane
 
@@ -308,11 +314,13 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
 
     
     // --- condition for candidate events
-    if( p_mup > 0. && p_mum > 0. && max(chi2Si5MuM,chi2Si5MuP)<100. ) {
+    if( p_mup > 0. && p_mum > 0. ) {
 
-
+      // --- quality cuts on muon tracks and vertex
+      if( vtx_chi2>=500. ) continue;
+      if( chi2Si5MuP>500. ) continue;
+      if( chi2Si5MuM>500. ) continue;
       
-
       // --- fill momentum histos 
       hist_pMuPlus->Fill(p_mup);         //momentum for mu plus
       hist_chi2MuPlus->Fill(chi2Si5MuP); //chi2 for mu plus tracks
@@ -353,6 +361,9 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
       hist_xh_det62_MuPlus->Fill(x_pos_DT_mup[0]);
       hist_xh_det61_MuMinus->Fill(x_pos_DT_mum[0]);
 
+      // use production vertex (pre-computed) as the tracks crossing point 
+      hist_xcross->Fill(vtx_x);
+      hist_zcross->Fill(vtx_z);
 
       // use extrapolate_track_x function 
       Double_t z0 = 10.*(569.5-84.6); // subdet 30
@@ -382,31 +393,6 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
         // cout << x_ext << " " << x_ext_err << endl;
         hist_xext_MuPlus->Fill(x_ext_mup);
       }
-
-
-      // ---- x and z on the target (primary vertex of mu+ mu- production)
-      // derived assuming: 
-      // -   x_mup(z) = x_ext_mup + dx_on_dz_ext_mup * (z-z0)
-      // -   x_mum(z) = x_ext_mum + dx_on_dz_ext_mum * (z-z0) 
-      // -   x_mup(z_cross) = x_mum(z_cross)  
-      Double_t z_cross = z0 + (x_ext_mum - x_ext_mup)/(dx_on_dz_ext_mup - dx_on_dz_ext_mum);
-      Double_t x_cross = x_ext_mup + dx_on_dz_ext_mup * (z_cross - z0);
-
-      // if MC we use gen level quantities
-      // - on det 30: gen_pos_mum[0]=xh[i]; gen_pos_mum[1]=yh[i]; gen_pos_mum[2]=zh[i];
-      //              gen_pos_mup[0]=xh[i]; gen_pos_mup[1]=yh[i]; gen_pos_mup[2]=zh[i];
-      // - on det 31: gen_pos_mum[3]=xh[i]; gen_pos_mum[4]=yh[i]; gen_pos_mum[5]=zh[i];
-      //              gen_pos_mup[3]=xh[i]; gen_pos_mup[4]=yh[i]; gen_pos_mup[5]=zh[i];
-      // if(isMC){
-      //   Double_t gen_dx_on_dz_ext_mup = (gen_pos_mup[3] - gen_pos_mup[0])/(gen_pos_mup[5] - gen_pos_mup[2]);
-      //   Double_t gen_dx_on_dz_ext_mum = (gen_pos_mum[3] - gen_pos_mum[0])/(gen_pos_mum[5] - gen_pos_mum[2]);
-      //   z_cross = z0 + (gen_pos_mum[0] - gen_pos_mup[0])/(gen_dx_on_dz_ext_mup - gen_dx_on_dz_ext_mum);
-      // }
-
-      hist_xcross->Fill(x_cross);
-      hist_zcross->Fill(z_cross);
-      // ----
-
 
       // --- mu+ mu- invariant mass
       Double_t theta_xz_mup = atan(dx_on_dz_ext_mup);
@@ -2322,26 +2308,23 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
 void plotVariables(){
 
   // define input files 
-  TString inputFile_Data = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-334to352.root";
+  TString inputFile_Data = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-aug18.root";
   TString inputFile_MC   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root"; 
   
   // define output path and make output directory for data/MC comparison
-  TString plotDataMCOutputPath = "190530_LemmaVariables_DataMCComparison_reco-334to352_August_targetBe6cm";
+  // TString plotDataMCOutputPath = "190530_LemmaVariables_DataMCComparison_reco-334to352_August_targetBe6cm";
+  TString plotDataMCOutputPath = "test_plotVariables";
   gSystem->Exec(("mkdir -p "+plotDataMCOutputPath));
-
 
   // choose type of target
   float zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
   //float zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
   //float zEndTarget = 10.*(460.93+1.-82.78); // [mm] - dataset: SEPTEMBER 2018 C  target 2 cm 
  
-
-
   // --- call do the histos function
   // arguments: input file, label for data or MC
   doTheHistos(inputFile_Data, "DATA",zEndTarget);
   doTheHistos(inputFile_MC,   "MC",  zEndTarget);
-
 
   // --- call data/MC comparison function
   //
@@ -2360,6 +2343,5 @@ void plotVariables(){
   bool WriteHistStat = false;
   //
   dataMCComparison(plotDataMCOutputPath,normalizationOption,WriteHistStat);
-
 
 }
