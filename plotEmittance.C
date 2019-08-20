@@ -670,7 +670,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist_xbe_positrons_Data_det20->Draw();
     c_pos_det20->cd(3);
     gStyle->SetOptStat(1); 
-    TF1* g1 = new TF1("g1","gaus", -0.0004, 0.0004);
+    TF1* g1 = new TF1("g1","gaus", -0.00045, 0.00045);
     g1->SetParameter(0,4500.);
     g1->SetParameter(1,0.);
     g1->SetParameter(2,0.0004);
