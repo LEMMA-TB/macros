@@ -331,8 +331,8 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
 
   // on det20
   TH1F* hist_npos_Data_det20          = new TH1F("hist_npos_Data_det20", "N positrons on det20", 11, -0.5, 10.5);                                           
-  TH1F* hist_xbe_positrons_Data_det20 = new TH1F("hist_xbe_positrons_Data_det20", "Positron: Be exit point on det20 (mm)", 5*h_n_bins_rawEmitt, h_min_x_rawEmitt, h_max_x_rawEmitt);      
-  TH1F* hist_the_positrons_Data_det20 = new TH1F("hist_the_positrons_Data_det20", "Positron: theta exit on det20 (rad)", 5*h_n_bins_rawEmitt, h_min_xprime_rawEmitt, h_max_xprime_rawEmitt);    
+  TH1F* hist_xbe_positrons_Data_det20 = new TH1F("hist_xbe_positrons_Data_det20", "Positron: Be exit point on det20 (mm)", 500, -30., 30.);      
+  TH1F* hist_the_positrons_Data_det20 = new TH1F("hist_the_positrons_Data_det20", "Positron: theta exit on det20 (rad)", 500, -2e-3, 2e-3);    
 
 
   // --- raw emittance
@@ -666,7 +666,8 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     TCanvas * c_pos_det20 = new TCanvas("c_pos_det20","c_pos_det20",800, 1200);
     c_pos_det20->Divide(1,3);
     c_pos_det20->cd(1); hist_npos_Data_det20->Draw();
-    c_pos_det20->cd(2); hist_xbe_positrons_Data_det20->Draw();
+    c_pos_det20->cd(2); 
+    hist_xbe_positrons_Data_det20->Draw();
     c_pos_det20->cd(3);
     gStyle->SetOptStat(1); 
     TF1* g1 = new TF1("g1","gaus", -0.0004, 0.0004);
@@ -674,7 +675,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     g1->SetParameter(1,0.);
     g1->SetParameter(2,0.0004);
     g1->SetLineColor(kRed);
-    hist_the_positrons_Data_det20->Fit("Gaus","R");
+    hist_the_positrons_Data_det20->Fit("g1","R");
     hist_the_positrons_Data_det20->Draw();
     g1->Draw("samel");
     c_pos_det20->SaveAs((plotOutputPath + "/" + c_pos_det20->GetName() + ".png"));
@@ -1047,13 +1048,11 @@ void plotEmittance(){
 
   // define input files 
   TString inputFile_Data_Aug2018_Be6cm = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-aug18.root";
-  // TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root";
-  TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/previous/aug18/with_vtx_fit/reco-mupmum.root";
+  TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root";
   TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/with_vtx_fit/reco-mupmum-Be6cm.root";
   TString inputFile_MC_Sep2018_C6cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C6cm.root";
   TString inputFile_MC_Sep2018_C2cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C2cm.root";
   TString inputFile_MC_Sep2018_Be6cm_new = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/with_vtx_fit/reco-mupmum-Be6cm-GausGaus.root"; 
-  
   
   // define output path and make output directory
   //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_DATA";
@@ -1062,21 +1061,18 @@ void plotEmittance(){
   //TString plotOutputPath = "190327_Emittance_September2018_targetC6cm_MC";
   //TString plotOutputPath = "190327_Emittance_September2018_targetC2cm_MC";
   //TString plotOutputPath = "190516_Emittance_Sep18_Be6cm_GausGaus";
-  TString plotOutputPath = "test";
+  TString plotOutputPath = "test_plotEmittance";
   gSystem->Exec(("mkdir -p "+plotOutputPath));
-
 
   // choose type of target
   double zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
   //double zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
   //double zEndTarget = 10.*(460.93+1.-82.78); // [mm] - dataset: SEPTEMBER 2018 C  target 2 cm 
 
-
   // choose configuration
   double zPosDet20 = 10.*(444.5-84.6); // [mm] - AUGUST 2018
   // double zPosDet20 = 10.*(441.63-82.78); // [mm] - SEPTEMBER 2018
  
-
   // --- call do the histos function
   // arguments: input file, label for data or MC
 
