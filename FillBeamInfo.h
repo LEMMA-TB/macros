@@ -40,7 +40,7 @@ Int_t ReturnBeamInfo(/*Inputs*/
 //    thatz: angle at position zpos (this actually does not depend on z
 // ---------------------------------------------------------------------
     Double_t SiHitError(0.015); // 15um for Si 10 and Si 20
-    Double_t BeamSpread(0.000400); // 400urad
+    Double_t BeamSpread(0.000450); // 400urad -> 450 to match tbanalysis.C
  
     Int_t npatz=0;
     for(Int_t i=0; i<10; i++){
