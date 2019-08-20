@@ -2188,23 +2188,6 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     l_det6x->Draw();
   }
   c_det6x->Update();
-  TLine *line_det6xA = new TLine(261.5,gPad->GetUymin(),261.5,gPad->GetUymax());
-  line_det6xA->SetLineColor(kBlack);
-  line_det6xA->SetLineStyle(1);
-  line_det6xA->Draw();
-  // TLine *line_det6xB = new TLine(261.5 + 735.,gPad->GetUymin(),261.5 + 735.,gPad->GetUymax());
-  // line_det6xB->SetLineColor(kBlack);
-  // line_det6xB->SetLineStyle(2);
-  // line_det6xB->Draw();
-  TLine *line_det6xC = new TLine(-947.4 + 735.,gPad->GetUymin(),-947.4 + 735.,gPad->GetUymax());
-  line_det6xC->SetLineColor(kBlack);
-  line_det6xC->SetLineStyle(2);
-  line_det6xC->Draw();
-  // TLine *line_det6xD = new TLine(-947.4,gPad->GetUymin(),-947.4,gPad->GetUymax());
-  // line_det6xD->SetLineColor(kBlack);
-  // line_det6xD->SetLineStyle(1);
-  // line_det6xD->Draw();
-  c_det6x->Update();
   c_det6x->SaveAs((plotDataMCOutputPath + "/" + c_det6x->GetName() + ".png"));   
 
   
