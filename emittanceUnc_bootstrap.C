@@ -215,8 +215,8 @@ void emittanceUnc_bootstrap(){
   // ----------------------------------
   TString inputFileName = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-aug18.root"; // inputFile_Data_Aug2018_Be6cm
   TString label = "reclev";
-  //TString inputFileName = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root"; // inputFile_MC_Aug2018_Be6cm
-  //TString label = "MCreclev";
+  // TString inputFileName = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root"; // inputFile_MC_Aug2018_Be6cm
+  // TString label = "MCreclev";
 
   double zEndTarget = 10.*(457.9+3.-84.6);   // [mm] - dataset: AUGUST 2018    Be target 6 cm
   //double zEndTarget = 10.*(460.93+3.-82.78); // [mm] - dataset: SEPTEMBER 2018 Be target 6 cm and C target 6cm
@@ -296,8 +296,8 @@ void emittanceUnc_bootstrap(){
 
 
   // define Histos 
-  TH1F* hist_emittanceValue_mup = new TH1F("hist_emittanceValue_mup","hist_emittanceValue_mup",400,1000.,5000.);
-  TH1F* hist_emittanceValue_mum = new TH1F("hist_emittanceValue_mum","hist_emittanceValue_mum",400,1000.,5000.);
+  TH1F* hist_emittanceValue_mup = new TH1F("hist_emittanceValue_mup","Emittance Value mup; nm #times rad; entries",30,1500.,4500.);
+  TH1F* hist_emittanceValue_mum = new TH1F("hist_emittanceValue_mum","Emittance Value mum; nm #times rad; entries",30,1500.,4500.);
 
 
 
