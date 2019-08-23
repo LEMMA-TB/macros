@@ -296,8 +296,8 @@ void emittanceUnc_bootstrap(){
 
 
   // define Histos 
-  TH1F* hist_emittanceValue_mup = new TH1F("hist_emittanceValue_mup","hist_emittanceValue_mup",100,5.,20.);
-  TH1F* hist_emittanceValue_mum = new TH1F("hist_emittanceValue_mum","hist_emittanceValue_mum",100,5.,20.);
+  TH1F* hist_emittanceValue_mup = new TH1F("hist_emittanceValue_mup","hist_emittanceValue_mup",400,1000.,5000.);
+  TH1F* hist_emittanceValue_mum = new TH1F("hist_emittanceValue_mum","hist_emittanceValue_mum",400,1000.,5000.);
 
 
 
@@ -325,15 +325,15 @@ void emittanceUnc_bootstrap(){
 
 
     // def vectors for emittance estimate
-    vector<double> vec_emittance_x_mup_MC; 
-    vec_emittance_x_mup_MC.clear();
-    vector<double> vec_emittance_xprime_mup_MC;
-    vec_emittance_xprime_mup_MC.clear();
+    vector<double> vec_emittance_x_mup; 
+    vec_emittance_x_mup.clear();
+    vector<double> vec_emittance_xprime_mup;
+    vec_emittance_xprime_mup.clear();
 
-    vector<double> vec_emittance_x_mum_MC ;
-    vec_emittance_x_mum_MC.clear();
-    vector<double> vec_emittance_xprime_mum_MC;
-    vec_emittance_xprime_mum_MC.clear();
+    vector<double> vec_emittance_x_mum;
+    vec_emittance_x_mum.clear();
+    vector<double> vec_emittance_xprime_mum;
+    vec_emittance_xprime_mum.clear();
 
 
   
@@ -406,8 +406,8 @@ void emittanceUnc_bootstrap(){
         Double_t x_emittance_mup       = x_det30_atZref_mup;
         Double_t x_prime_emittance_mup = x_prime_ondet30_mup;
         // --- fill vectors
-        vec_emittance_x_mup_MC     .push_back(x_emittance_mup);
-        vec_emittance_xprime_mup_MC.push_back(x_prime_emittance_mup);
+        vec_emittance_x_mup     .push_back(x_emittance_mup);
+        vec_emittance_xprime_mup.push_back(x_prime_emittance_mup);
 
 
 
@@ -453,8 +453,8 @@ void emittanceUnc_bootstrap(){
         Double_t x_emittance_mum       = x_det30_atZref_mum;
         Double_t x_prime_emittance_mum = x_prime_ondet30_mum;
         // --- fill vectors
-        vec_emittance_x_mum_MC     .push_back(x_emittance_mum);
-        vec_emittance_xprime_mum_MC.push_back(x_prime_emittance_mum);
+        vec_emittance_x_mum     .push_back(x_emittance_mum);
+        vec_emittance_xprime_mum.push_back(x_prime_emittance_mum);
 
 
 	nEvents++;
@@ -469,8 +469,11 @@ void emittanceUnc_bootstrap(){
     //  compute emittance from vectors
     // ---------------------------------
 
-    hist_emittanceValue_mup->Fill(getemittance(vec_emittance_x_mup_MC, vec_emittance_xprime_mup_MC)); 
-    hist_emittanceValue_mum->Fill(getemittance(vec_emittance_x_mum_MC, vec_emittance_xprime_mum_MC)); 
+    hist_emittanceValue_mup->Fill(getemittance(vec_emittance_x_mup, vec_emittance_xprime_mup)); 
+    hist_emittanceValue_mum->Fill(getemittance(vec_emittance_x_mum, vec_emittance_xprime_mum)); 
+
+    cout<<"muP "<<getemittance(vec_emittance_x_mup, vec_emittance_xprime_mup)<<endl;
+    cout<<"muM "<<getemittance(vec_emittance_x_mum, vec_emittance_xprime_mum)<<endl;
 
 
   }//end for cycle from 0 to 100 repeating the procedure 100 times
