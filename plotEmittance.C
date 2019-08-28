@@ -843,6 +843,15 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist1D_emittance_x_prime_mum_MC->Draw();
     c_x_prime_emittance_1D_mum->SaveAs((plotOutputPath + "/" + c_x_prime_emittance_1D_mum->GetName() + ".png"));
 
+    //save 1D x_prime histos in root file
+    TFile* fOutHistos = new TFile("plotEmittance_Output_xPrime.root","recreate");
+    fOutHistos->cd();
+    hist1D_emittance_x_prime_mum_MC->Write(hist1D_emittance_x_prime_mum_MC->GetName());
+    hist1D_emittance_x_prime_mup_MC->Write(hist1D_emittance_x_prime_mup_MC->GetName());
+    fOutHistos->Close();
+    
+
+
     // -------------------------------------- 
     // save 1D emittance plots in root file
     TFile* fOut_1DemittanceHistos = new TFile("fout_1DemittancePlots_Sep.root","recreate");
