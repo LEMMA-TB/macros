@@ -205,6 +205,8 @@ Double_t getemittance(vector<Double_t> xv, vector<Double_t> xpv){
 // doTheHistos function: read root file and do histos 
 void doTheHistos(TString inputFileName, TString label, double zEndTarget, double zPosDet20, TString plotOutputPath){
 
+  TH1::SetDefaultSumw2(true);
+
   cout << label << endl;
   bool isMC = false;                        // for Data
   if(label.Contains("MC") ){ isMC = true; } // for MC
