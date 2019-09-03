@@ -941,6 +941,74 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   }
   c_pTot_smear->Update();
   c_pTot_smear->SaveAs((plotDataMCOutputPath + "/" + c_pTot_smear->GetName() + ".png"));
+
+
+
+  // ------------------
+  // pTot 1 smear only
+  // ------------------
+  TCanvas* c_pTot_1smearOnly = new TCanvas("c_pTot_1smearOnly","c_pTot_1smearOnly");
+  c_pTot_1smearOnly->cd();
+  Double_t normMC_pTot_smear03_bias000_1smearOnly = 1.;
+  Double_t normDATA_pTot_1smearOnly = 1.;
+  TString  yaxLabel_pTot_1smearOnly = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_pTot_smear03_bias000_1smearOnly = hist_pTot_Data->Integral() / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to Data
+    normDATA_pTot_1smearOnly = 1.;   // normalization of Data remains invariate
+    yaxLabel_pTot_1smearOnly = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_pTot_smear03_bias000_1smearOnly = 1. / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to 1.
+    normDATA_pTot_1smearOnly = 1. / hist_pTot_Data->Integral(); // normalize Data to 1.
+    yaxLabel_pTot_1smearOnly = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_pTot_smear03_bias000_1smearOnly = 1.; // normalization of MC smear remains invariate
+    normDATA_pTot_1smearOnly = 1.; // normalization of Data remains invariate
+    yaxLabel_pTot_1smearOnly = "events"; 
+  }
+  hist_pTot_smear03_bias000_MC->SetTitle("p #mu^{+} + p #mu^{-}");
+  hist_pTot_smear03_bias000_MC->GetXaxis()->SetTitle("p #mu^{+} + p #mu^{-} [MeV]");
+  hist_pTot_smear03_bias000_MC->GetYaxis()->SetTitle(yaxLabel_pTot_1smearOnly);
+  hist_pTot_smear03_bias000_MC->SetLineColor(kGreen+2);
+  hist_pTot_smear03_bias000_MC->SetFillColor(kGreen-9);
+  hist_pTot_Data->SetMarkerStyle(20);
+  hist_pTot_Data->SetMarkerColor(kBlack);
+  hist_pTot_Data->SetLineColor(kBlack);
+  hist_pTot_Data->Scale(normDATA_pTot_1smearOnly); //normalize data hist
+  hist_pTot_smear03_bias000_MC->Scale(normMC_pTot_smear03_bias000_1smearOnly); //normalize MC smear hist
+  hist_pTot_smear03_bias000_MC->SetMaximum(1.2 * max(hist_pTot_Data->GetMaximum(),hist_pTot_smear03_bias000_MC->GetMaximum()));
+  hist_pTot_smear03_bias000_MC->Draw("histsame");
+  hist_pTot_Data->Draw("samepe");
+  // legend
+  if(WriteHistStat){
+    TLegend* l_pTot_1smearOnly = new TLegend(0.76,0.57,0.98,0.96);
+    l_pTot_1smearOnly->AddEntry((TObject*)0,"gauss(0.00,0.03)","");
+    l_pTot_1smearOnly->AddEntry((TObject*)0,Form("entries: %.2f",hist_pTot_smear03_bias000_MC->GetEntries()),"");
+    l_pTot_1smearOnly->AddEntry((TObject*)0,Form("mean: %.2f",hist_pTot_smear03_bias000_MC->GetMean()),"");
+    l_pTot_1smearOnly->AddEntry(hist_pTot_Data, "Data", "pl");
+    l_pTot_1smearOnly->AddEntry((TObject*)0,Form("entries: %.2f",hist_pTot_Data->GetEntries()),"");
+    l_pTot_1smearOnly->AddEntry((TObject*)0,Form("mean: %.2f",hist_pTot_Data->GetMean()),"");
+    l_pTot_1smearOnly->SetFillColor(kWhite);
+    l_pTot_1smearOnly->SetLineColor(kBlack);
+    l_pTot_1smearOnly->SetTextFont(43);
+    l_pTot_1smearOnly->SetTextSize(14);
+    l_pTot_1smearOnly->Draw();
+  } else{
+    TLegend* l_pTot_1smearOnly = new TLegend(0.78,0.77,0.98,0.96);
+    l_pTot_1smearOnly->AddEntry(hist_pTot_smear03_bias000_MC,"MC smear","f");
+    l_pTot_1smearOnly->AddEntry((TObject*)0,"gauss(0.00,0.03)","");
+    l_pTot_1smearOnly->AddEntry(hist_pTot_Data, "Data", "pl");
+    l_pTot_1smearOnly->SetFillColor(kWhite);
+    l_pTot_1smearOnly->SetLineColor(kBlack);
+    l_pTot_1smearOnly->SetTextFont(43);
+    l_pTot_1smearOnly->SetTextSize(14);
+    l_pTot_1smearOnly->Draw();
+  }
+  c_pTot_1smearOnly->Update();
+  c_pTot_1smearOnly->SaveAs((plotDataMCOutputPath + "/" + c_pTot_1smearOnly->GetName() + ".png"));
+
+
  
  
   // ---------------
