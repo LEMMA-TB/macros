@@ -318,8 +318,8 @@ void emittanceUnc_bootstrap(){
   Double_t z_ref  = zEndTarget; // [mm] z ref (end of the target)
 
 
-  // repeat 100 times the procedure
-  for(Int_t j=0; j<100; j++){
+  // repeat 300 times the procedure
+  for(Int_t j=0; j<300; j++){
 
     if(j%10 == 0) { cout<<" Running iteration n "<<j<<endl; }
 
@@ -476,21 +476,28 @@ void emittanceUnc_bootstrap(){
     cout<<"muM "<<getemittance(vec_emittance_x_mum, vec_emittance_xprime_mum)<<endl;
 
 
-  }//end for cycle from 0 to 100 repeating the procedure 100 times
+  }//end for cycle from 0 to 300 repeating the procedure 300 times
 
 
   
   TCanvas* c_emittanceValue_mup = new TCanvas("c_emittanceValue_mup","c_emittanceValue_mup");
   c_emittanceValue_mup->cd();
   hist_emittanceValue_mup->Draw();
-  c_emittanceValue_mup->SaveAs("emittanceUnc_mup.png");
+  if(isMC){
+    c_emittanceValue_mup->SaveAs("emittanceUnc_mup_MC.png");
+  }else{
+    c_emittanceValue_mup->SaveAs("emittanceUnc_mup.png");
+  }
 
 
   TCanvas* c_emittanceValue_mum = new TCanvas("c_emittanceValue_mum","c_emittanceValue_mum");
   c_emittanceValue_mum->cd();
   hist_emittanceValue_mum->Draw();
-  c_emittanceValue_mum->SaveAs("emittanceUnc_mum.png");
-
+  if(isMC){
+    c_emittanceValue_mum->SaveAs("emittanceUnc_mum_MC.png");
+  }else{
+    c_emittanceValue_mum->SaveAs("emittanceUnc_mum.png");
+  }
 
 
 }

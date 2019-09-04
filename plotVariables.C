@@ -977,7 +977,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_pTot_Data->SetLineColor(kBlack);
   hist_pTot_Data->Scale(normDATA_pTot_1smearOnly); //normalize data hist
   hist_pTot_smear03_bias000_MC->Scale(normMC_pTot_smear03_bias000_1smearOnly); //normalize MC smear hist
-  hist_pTot_smear03_bias000_MC->SetMaximum(1.2 * max(hist_pTot_Data->GetMaximum(),hist_pTot_smear03_bias000_MC->GetMaximum()));
+  hist_pTot_smear03_bias000_MC->SetMaximum(1.4 * max(hist_pTot_Data->GetMaximum(),hist_pTot_smear03_bias000_MC->GetMaximum()));
   hist_pTot_smear03_bias000_MC->Draw("histsame");
   hist_pTot_Data->Draw("samepe");
   // legend
@@ -995,9 +995,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     l_pTot_1smearOnly->SetTextSize(14);
     l_pTot_1smearOnly->Draw();
   } else{
-    TLegend* l_pTot_1smearOnly = new TLegend(0.78,0.77,0.98,0.96);
-    l_pTot_1smearOnly->AddEntry(hist_pTot_smear03_bias000_MC,"MC smear","f");
-    l_pTot_1smearOnly->AddEntry((TObject*)0,"gauss(0.00,0.03)","");
+    TLegend* l_pTot_1smearOnly = new TLegend(0.80,0.80,0.98,0.96);
+    l_pTot_1smearOnly->AddEntry(hist_pTot_smear03_bias000_MC,"MC ","f");
     l_pTot_1smearOnly->AddEntry(hist_pTot_Data, "Data", "pl");
     l_pTot_1smearOnly->SetFillColor(kWhite);
     l_pTot_1smearOnly->SetLineColor(kBlack);
