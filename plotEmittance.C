@@ -649,7 +649,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
   //  plot histos
   // ------------------
 
-  gStyle->SetOptStat(1);
+  gStyle->SetOptStat(0);
  
   
 
