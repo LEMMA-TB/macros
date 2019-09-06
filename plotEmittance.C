@@ -299,6 +299,10 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
   vector<double> vec_emittanceControl_emittance_x_mum_MC;
   vector<double> vec_emittanceControl_emittance_xprime_mum_MC;
 
+  // MC vectors -TOT-
+  vector<double> vec_x_tot_MC;
+  vector<double> vec_xprime_tot_MC;
+
 
 
   // def histos limits
@@ -382,6 +386,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
   TH2D* hist2D_emittanceControl_emittance_positron_MC = new TH2D("hist2D_emittanceControl_emittance_positron_MC","hist2D_emittanceControl_emittance_positron_MC",h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
   TH2D* hist2D_emittanceControl_emittance_mup_MC      = new TH2D("hist2D_emittanceControl_emittance_mup_MC"     ,"hist2D_emittanceControl_emittance_mup_MC"     ,h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
   TH2D* hist2D_emittanceControl_emittance_mum_MC      = new TH2D("hist2D_emittanceControl_emittance_mum_MC"     ,"hist2D_emittanceControl_emittance_mum_MC"     ,h_n_bins_rawEmitt,h_min_x_rawEmitt,h_max_x_rawEmitt,h_n_bins_rawEmitt,h_min_xprime_rawEmitt,h_max_xprime_rawEmitt);
+
+
+
 
   // -9999. -> extrapolate_track_x, to be used to process MC as if data and data
   // 0.     -> track points @ 30 and 31, FOR TEST PURPOSES
@@ -635,6 +642,14 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
         vec_emittance_xprime_mum_MC.push_back(x_prime_emittance_mum);
 
 
+        // fill -TOT- vectors
+        vec_x_tot_MC     .push_back(x_det30_atZref_mup);
+        vec_x_tot_MC     .push_back(x_det30_atZref_mum);
+        vec_xprime_tot_MC.push_back(x_prime_ondet30_mup);
+        vec_xprime_tot_MC.push_back(x_prime_ondet30_mum);
+
+
+
         //cout<<x_prime_atZref_eplus<<"    "<<x_prime_ondet30_mup<<"    "<<x_prime_ondet30_mum<<endl;
 
       } // true
@@ -650,6 +665,12 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
   // ------------------
 
   gStyle->SetOptStat(0);
+
+  // print -TOT- emittance
+  float emittance_mu_TOT_ = getemittance(vec_x_tot_MC, vec_xprime_tot_MC); 
+  cout<<"************************"<<endl;
+  cout<<" TOT emittance mu: "<<emittance_mu_TOT_<<endl;
+  cout<<"************************"<<endl;
  
   
 
@@ -1079,9 +1100,9 @@ void plotEmittance(){
   // --- call do the histos function
   // arguments: input file, label for data or MC
 
-  doTheHistos(inputFile_Data_Aug2018_Be6cm, "reclev",   zEndTarget, zPosDet20, plotOutputPath);
+  //  doTheHistos(inputFile_Data_Aug2018_Be6cm, "reclev",   zEndTarget, zPosDet20, plotOutputPath);
   //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",       zEndTarget, zPosDet20, plotOutputPath);
-  //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MCreclev", zEndTarget, zPosDet20, plotOutputPath);
+  doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MCreclev", zEndTarget, zPosDet20, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",       zEndTarget, zPosDet20, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_C6cm,    "MC",       zEndTarget, zPosDet20, plotOutputPath); 
   //doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",       zEndTarget, zPosDet20, plotOutputPath);
