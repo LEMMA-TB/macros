@@ -630,7 +630,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
 
   
 
-  gStyle->SetOptStat(1);
+  gStyle->SetOptStat(0);
  
   //plot histos
 
@@ -643,6 +643,16 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   c_pos->cd(3); hist_the_positrons_Data->Draw();
   c_pos->SaveAs((plotDataMCOutputPath + "/" + c_pos->GetName() + ".png"));
   // end beam info (DATA ONLY)
+
+
+  gStyle->SetOptStat(0);
+  // --- separate canvas for number of positrons - DATA ONLY
+  TCanvas* c_pos_new = new TCanvas("c_pos_new","c_pos_new");
+  c_pos_new->cd();
+  hist_npos_Data->Draw();
+  c_pos_new->SaveAs(plotDataMCOutputPath + "/" + c_pos_new->GetName() + ".png");
+  // ---   
+  
 
 
   gStyle->SetOptStat(0);
