@@ -329,6 +329,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
 
 
   // def histos 
+
+  // --- MC generated x vertex distribution
+  TH1F* hist_x_vtx_MC = new TH1F("hist_x_vtx_MC","generated x vertex distribution",30,-15.,15.);
  
   // --- DATA HISTOS
   TH1F* hist_npos_Data = new TH1F("hist_npos_Data", "N positrons", 11, -0.5, 10.5);                                           
@@ -462,6 +465,12 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
         if( chi2Si5MuP>500. ) continue;
         if( chi2Si5MuM>500. ) continue;
       }
+      if( isMC ){
+        // flat in the range [-10,8.]
+        if( gen_vtx_mup[0]>8. ) continue;
+      }
+
+      if( isMC ) hist_x_vtx_MC->Fill(gen_vtx_mup[0]); // gen_vtx_mup[0]=gen_vtx_mum[0]
 
       // -----------------------------
       // --- emittance in x 1D and 2D histos
@@ -672,7 +681,12 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
   cout<<" TOT emittance mu: "<<emittance_mu_TOT_<<endl;
   cout<<"************************"<<endl;
  
-  
+  // MC x vertex distribution
+  if( isMC ){
+    TCanvas * c_x_vtx_MC = new TCanvas("c_x_vtx_MC","c_x_vtx_MC");
+    c_x_vtx_MC->cd(); hist_x_vtx_MC->Draw();
+    c_x_vtx_MC->SaveAs((plotOutputPath + "/" + c_x_vtx_MC->GetName() + ".png"));
+  }
 
   // beam info 
   // DATA ONLY
