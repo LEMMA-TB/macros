@@ -242,6 +242,7 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   TH1F* hist_pTot_smear03_bias000 = new TH1F("hist_pTot_smear03_bias000", "hist_pTot_smear03_bias000", 80,24800.,56800.); // used for MC only
   TH1F* hist_pTot_smear03_bias099 = new TH1F("hist_pTot_smear03_bias099", "hist_pTot_smear03_bias099", 80,24800.,56800.); // used for MC only
   TH1F* hist_pTot_smear03_bias101 = new TH1F("hist_pTot_smear03_bias101", "hist_pTot_smear03_bias101", 80,24800.,56800.); // used for MC only
+  TH1F* hist_pTot_smearNONGAUSS_bias000 = new TH1F("hist_pTot_smearNONGAUSS_bias000", "hist_pTot_smearNONGAUSS_bias000", 80,24800.,56800.); // used for MC only
   TH1F* hist_chi2MuPlus  = new TH1F("hist_chi2MuPlus", "hist_chi2MuPlus", 20,0.,500.);
   TH1F* hist_chi2MuMinus = new TH1F("hist_chi2MuMinus","hist_chi2MuMinus",20,0.,500.);
   // TH1F* hist_ThetaMuPlus  = new TH1F("hist_ThetaMuPlus","hist_ThetaMuPlus",10,0.,10.);    //angle in bending plane
@@ -355,6 +356,12 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
         pSum2+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(r2->Gaus(1.01,0.03));
         hist_pTot_smear03_bias101->Fill(pSum2);
         delete r2;
+
+        TRandom3* r3 = new TRandom3(0);
+        Float_t pSum3=0.;
+        pSum3+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(r3->Gaus(1.01,0.03)); //FIXME
+        pSum3+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(r3->Gaus(1.01,0.03));   
+        hist_pTot_smearNONGAUSS_bias000->Fill(pSum3);
       }
 
       // histos for DTs
@@ -464,6 +471,7 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
     hist_pTot_smear03_bias000->Write(hist_pTot_smear03_bias000->GetName());  delete hist_pTot_smear03_bias000;
     hist_pTot_smear03_bias099->Write(hist_pTot_smear03_bias099->GetName());  delete hist_pTot_smear03_bias099;
     hist_pTot_smear03_bias101->Write(hist_pTot_smear03_bias101->GetName());  delete hist_pTot_smear03_bias101;
+    hist_pTot_smearNONGAUSS_bias000->Write(hist_pTot_smearNONGAUSS_bias000->GetName()); delete hist_pTot_smearNONGAUSS_bias000;
   }    
   hist_chi2MuPlus->Write(hist_chi2MuPlus->GetName());   delete hist_chi2MuPlus;
   hist_chi2MuMinus->Write(hist_chi2MuMinus->GetName()); delete hist_chi2MuMinus;
@@ -587,7 +595,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   TH1F* hist_pTot_MC        = (TH1F*)inFile_MC->Get("hist_pTot");      
   TH1F* hist_pTot_smear03_bias000_MC = (TH1F*)inFile_MC->Get("hist_pTot_smear03_bias000");      
   TH1F* hist_pTot_smear03_bias099_MC = (TH1F*)inFile_MC->Get("hist_pTot_smear03_bias099");    
-  TH1F* hist_pTot_smear03_bias101_MC = (TH1F*)inFile_MC->Get("hist_pTot_smear03_bias101");        
+  TH1F* hist_pTot_smear03_bias101_MC = (TH1F*)inFile_MC->Get("hist_pTot_smear03_bias101");       
+  TH1F* hist_pTot_smearNONGAUSS_bias000_MC = (TH1F*)inFile_MC->Get("hist_pTot_smearNONGAUSS_bias000");
   TH1F* hist_chi2MuPlus_MC  = (TH1F*)inFile_MC->Get("hist_chi2MuPlus");
   TH1F* hist_chi2MuMinus_MC = (TH1F*)inFile_MC->Get("hist_chi2MuMinus");
 
@@ -1017,6 +1026,82 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   c_pTot_1smearOnly->Update();
   c_pTot_1smearOnly->SaveAs((plotDataMCOutputPath + "/" + c_pTot_1smearOnly->GetName() + ".png"));
 
+
+
+  // ---------------------------------------
+  // pTot 1 smear GAUSS + 1 smear NON GAUSS
+  // ---------------------------------------
+  TCanvas* c_pTot_smearGaussAndNONGauss = new TCanvas("c_pTot_smearGaussAndNONGauss","c_pTot_smearGaussAndNONGauss");
+  c_pTot_smearGaussAndNONGauss->cd();
+  Double_t normMC_pTot_smearGauss = 1.;
+  Double_t normMC_pTot_smearNONGauss = 1.;
+  Double_t normDATA_pTot_smearGaussAndNONGauss = 1.;
+  TString  yaxLabel_pTot_smearGaussAndNONGauss = "";
+  if(normalizationOption == "normMCtoDATA"){ 
+    normMC_pTot_smearGauss    = hist_pTot_Data->Integral() / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to Data
+    normMC_pTot_smearNONGauss = hist_pTot_Data->Integral() / hist_pTot_smearNONGAUSS_bias000_MC->Integral(); //normalize MC NON Gauss smear to Data
+    normDATA_pTot_smearGaussAndNONGauss = 1.;   // normalization of Data remains invariate
+    yaxLabel_pTot_smearGaussAndNONGauss = "events"; 
+  } 
+  else if(normalizationOption == "normMCandDATAto1"){
+    normMC_pTot_smearGauss    = 1. / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to 1.
+    normMC_pTot_smearNONGauss = 1. / hist_pTot_smearNONGAUSS_bias000_MC->Integral(); // normalize MC NON Gauss smear to 1.
+    normDATA_pTot_smearGaussAndNONGauss = 1. / hist_pTot_Data->Integral(); // normalize Data to 1.
+    yaxLabel_pTot_smearGaussAndNONGauss = "a.u."; 
+  }  
+  else if(normalizationOption == "normMCandDATAoutofthebox"){
+    normMC_pTot_smearGauss    = 1.; // normalization of MC smear remains invariate
+    normMC_pTot_smearNONGauss = 1.; // normalization of MC NON Gauss smear remains invariate
+    normDATA_pTot_smearGaussAndNONGauss = 1.; // normalization of Data remains invariate
+    yaxLabel_pTot_smearGaussAndNONGauss = "events"; 
+  }
+  hist_pTot_smear03_bias000_MC->SetTitle("p #mu^{+} + p #mu^{-}");
+  hist_pTot_smear03_bias000_MC->GetXaxis()->SetTitle("p #mu^{+} + p #mu^{-} [MeV]");
+  hist_pTot_smear03_bias000_MC->GetYaxis()->SetTitle(yaxLabel_pTot_smearGaussAndNONGauss);
+  hist_pTot_smear03_bias000_MC->SetLineColor(kGreen+2);
+  hist_pTot_smear03_bias000_MC->SetFillColor(kGreen-9);
+  hist_pTot_smearNONGAUSS_bias000_MC->SetLineColor(kBlack);
+  hist_pTot_smearNONGAUSS_bias000_MC->SetLineStyle(2);
+  hist_pTot_Data->SetMarkerStyle(20);
+  hist_pTot_Data->SetMarkerColor(kBlack);
+  hist_pTot_Data->SetLineColor(kBlack);
+  hist_pTot_Data->Scale(normDATA_pTot_1smearOnly); //normalize data hist
+  hist_pTot_smear03_bias000_MC->Scale(normMC_pTot_smearGauss); //normalize MC smear hist
+  hist_pTot_smearNONGAUSS_bias000_MC->Scale(normMC_pTot_smearNONGauss); //normalize NON Gauss Smear hist
+  hist_pTot_smear03_bias000_MC->SetMaximum(1.4 * max(hist_pTot_Data->GetMaximum(),max(hist_pTot_smear03_bias000_MC->GetMaximum(),hist_pTot_smearNONGAUSS_bias000_MC->GetMaximum())));
+  hist_pTot_smear03_bias000_MC->Draw("hist");
+  hist_pTot_smearNONGAUSS_bias000_MC->Draw("histsame");
+  hist_pTot_Data->Draw("samepe");
+  // legend
+  if(WriteHistStat){
+    TLegend* l_pTot_smearGaussAndNONGauss = new TLegend(0.76,0.57,0.98,0.96);
+    l_pTot_smearGaussAndNONGauss->AddEntry((TObject*)0,"gauss(0.00,0.03)","");
+    l_pTot_smearGaussAndNONGauss->AddEntry((TObject*)0,Form("entries: %.2f",hist_pTot_smear03_bias000_MC->GetEntries()),"");
+    l_pTot_smearGaussAndNONGauss->AddEntry((TObject*)0,Form("mean: %.2f",hist_pTot_smear03_bias000_MC->GetMean()),"");
+    l_pTot_smearGaussAndNONGauss->AddEntry((TObject*)0,"NON gauss","");
+    l_pTot_smearGaussAndNONGauss->AddEntry((TObject*)0,Form("entries: %.2f",hist_pTot_smearNONGAUSS_bias000_MC->GetEntries()),"");
+    l_pTot_smearGaussAndNONGauss->AddEntry((TObject*)0,Form("mean: %.2f",hist_pTot_smearNONGAUSS_bias000_MC->GetMean()),"");
+    l_pTot_smearGaussAndNONGauss->AddEntry(hist_pTot_Data, "Data", "pl");
+    l_pTot_smearGaussAndNONGauss->AddEntry((TObject*)0,Form("entries: %.2f",hist_pTot_Data->GetEntries()),"");
+    l_pTot_smearGaussAndNONGauss->AddEntry((TObject*)0,Form("mean: %.2f",hist_pTot_Data->GetMean()),"");
+    l_pTot_smearGaussAndNONGauss->SetFillColor(kWhite);
+    l_pTot_smearGaussAndNONGauss->SetLineColor(kBlack);
+    l_pTot_smearGaussAndNONGauss->SetTextFont(43);
+    l_pTot_smearGaussAndNONGauss->SetTextSize(14);
+    l_pTot_smearGaussAndNONGauss->Draw();
+  } else{
+    TLegend* l_pTot_smearGaussAndNONGauss = new TLegend(0.80,0.80,0.98,0.96);
+    l_pTot_smearGaussAndNONGauss->AddEntry(hist_pTot_smear03_bias000_MC,"MC ","f");
+    l_pTot_smearGaussAndNONGauss->AddEntry(hist_pTot_smearNONGAUSS_bias000_MC,"MC Non Gauss","f");
+    l_pTot_smearGaussAndNONGauss->AddEntry(hist_pTot_Data, "Data", "pl");
+    l_pTot_smearGaussAndNONGauss->SetFillColor(kWhite);
+    l_pTot_smearGaussAndNONGauss->SetLineColor(kBlack);
+    l_pTot_smearGaussAndNONGauss->SetTextFont(43);
+    l_pTot_smearGaussAndNONGauss->SetTextSize(14);
+    l_pTot_smearGaussAndNONGauss->Draw();
+  }
+  c_pTot_smearGaussAndNONGauss->Update();
+  c_pTot_smearGaussAndNONGauss->SaveAs((plotDataMCOutputPath + "/" + c_pTot_smearGaussAndNONGauss->GetName() + ".png"));
 
  
  
