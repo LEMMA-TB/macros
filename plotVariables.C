@@ -287,7 +287,13 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   TH1F* hist_xbe_positrons = new TH1F("hist_xbe_positrons", "Positron: Be exit point (mm)", 100, -30.0, 30.0);      // only for DATA
   TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)",  100, -0.002, 0.002);    // only for DATA
 
-  
+
+  // -----------------------------------------
+  // open histogram for NON gaussian smearing
+  TFile* inFileSmearing = TFile::Open("psmearing-full.root");
+  TH1F*  inHistNONGaussSmearing = (TH1F*)inFileSmearing->Get("psmearing");
+
+
 
   // ---------------------------
   // --- loop over tree entries 
@@ -357,10 +363,9 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
         hist_pTot_smear03_bias101->Fill(pSum2);
         delete r2;
 
-        TRandom3* r3 = new TRandom3(0);
         Float_t pSum3=0.;
-        pSum3+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(r3->Gaus(1.01,0.03)); //FIXME
-        pSum3+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(r3->Gaus(1.01,0.03));   
+        pSum3+= sqrt(gen_pos_mum[3]*gen_pos_mum[3] + gen_pos_mum[4]*gen_pos_mum[4] + gen_pos_mum[5]*gen_pos_mum[5])*(inHistNONGaussSmearing->GetRandom());
+        pSum3+= sqrt(gen_pos_mup[3]*gen_pos_mup[3] + gen_pos_mup[4]*gen_pos_mup[4] + gen_pos_mup[5]*gen_pos_mup[5])*(inHistNONGaussSmearing->GetRandom());   
         hist_pTot_smearNONGAUSS_bias000->Fill(pSum3);
       }
 
@@ -1062,6 +1067,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_pTot_smear03_bias000_MC->SetFillColor(kGreen-9);
   hist_pTot_smearNONGAUSS_bias000_MC->SetLineColor(kBlack);
   hist_pTot_smearNONGAUSS_bias000_MC->SetLineStyle(2);
+  hist_pTot_smearNONGAUSS_bias000_MC->SetLineWidth(2);
   hist_pTot_Data->SetMarkerStyle(20);
   hist_pTot_Data->SetMarkerColor(kBlack);
   hist_pTot_Data->SetLineColor(kBlack);
