@@ -276,8 +276,8 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   TH1F* hist_xext_MuMinus = new TH1F("hist_xext_MuMinus","hist_xext_MuMinus",20,-50.,50.);
   TH1F* hist_xext_MuPlus  = new TH1F("hist_xext_MuPlus", "hist_xext_MuPlus", 20,-50.,50.);
 
-  TH1F* hist_theta_xz_mup    = new TH1F("hist_theta_xz_mup", "hist_theta_xz_mup", 100,-0.025,0.025); //[rad]
-  TH1F* hist_theta_xz_mum    = new TH1F("hist_theta_xz_mum", "hist_theta_xz_mum", 100,-0.025,0.025); //[rad]
+  TH1F* hist_theta_xz_mup    = new TH1F("hist_theta_xz_mup", "hist_theta_xz_mup", 40, -0.01, 0.01); //100,-0.025,0.025); //[rad]
+  TH1F* hist_theta_xz_mum    = new TH1F("hist_theta_xz_mum", "hist_theta_xz_mum", 40, -0.01, 0.01); //100,-0.025,0.025); //[rad]
   TH1F* hist_InvMass_mupmum  = new TH1F("hist_InvMass_mupmum", "hist_InvMass_mupmum", 100,100.,300.);
 
   TH1F* hist_xcross = new TH1F("hist_xcross", "hist_xcross", 15,-30.,30.);    // [mm]
