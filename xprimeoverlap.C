@@ -74,12 +74,14 @@ void xprimeoverlap(){
   x_prime_mup_data->SetMarkerColor(kBlack);
   x_prime_mup_data->SetLineColor(kBlack);
 
-  x_prime_mup_MC->SetLineColor(kBlue);
+  x_prime_mup_MC->SetLineColor(kGreen+2);
+  x_prime_mup_MC->SetFillColor(kGreen-9);
 
   TCanvas *c_out = new TCanvas();
   c_out->cd();
   x_prime_mup_data->Draw("pe"); 
   x_prime_mup_MC->Draw("samehisto");
+  x_prime_mup_data->Draw("samepe");
 
   TLegend* l = new TLegend(0.80,0.84,0.98,0.97);
   l->AddEntry(x_prime_mup_data,"Data","pl");
