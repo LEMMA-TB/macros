@@ -283,7 +283,10 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
   TH1F* hist_xcross = new TH1F("hist_xcross", "hist_xcross", 15,-30.,30.);    // [mm]
   TH1F* hist_zcross = new TH1F("hist_zcross", "hist_zcross", 50,2000.,7000.); // [mm]
 
-  TH1F* hist_npos = new TH1F("hist_npos", "N positrons", 11, -0.5, 10.5);                                           // only for DATA
+  TH1F* hist_npos = new TH1F("hist_npos", "number of positrons", 10, 0.5, 10.5);
+  hist_npos->GetXaxis()->SetTitle("number of positrons");
+  hist_npos->GetYaxis()->SetTitle("a.u.");
+ // only for DATA
   TH1F* hist_xbe_positrons = new TH1F("hist_xbe_positrons", "Positron: Be exit point (mm)", 100, -30.0, 30.0);      // only for DATA
   TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)",  100, -0.002, 0.002);    // only for DATA
 
@@ -663,7 +666,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   // --- separate canvas for number of positrons - DATA ONLY
   TCanvas* c_pos_new = new TCanvas("c_pos_new","c_pos_new");
   c_pos_new->cd();
-  hist_npos_Data->Draw();
+  hist_npos_Data->DrawNormalized();
   c_pos_new->SaveAs(plotDataMCOutputPath + "/" + c_pos_new->GetName() + ".png");
   // ---   
   
