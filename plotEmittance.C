@@ -51,7 +51,7 @@ Double_t extrapolate_track_x(TString inputFileName, Double_t z0, Double_t x_pos_
     zM=17193-846;
     B=1.7476;
   }
-  if( inputFileName.Contains("sep18") ){
+  if( inputFileName.Contains("sep18") || inputFileName.Contains("Next") ){
     zM=10.*(1573.79+0.5*(1773.79-1573.79)-82.78);
     B=2.01;
   }
@@ -207,7 +207,8 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
 
   TH1::SetDefaultSumw2(true);
 
-  cout << label << endl;
+  cout << "processing: " << inputFileName << endl;
+  cout << "with label: " << label << endl;
   bool isMC = false;                        // for Data
   if(label.Contains("MC") ){ isMC = true; } // for MC
   
@@ -465,7 +466,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
         if( chi2Si5MuP>500. ) continue;
         if( chi2Si5MuM>500. ) continue;
       }
-      if( isMC ){
+      if( isMC && !inputFileName.Contains("2021") ){
         // flat in the range [-10,8.]
         if( gen_vtx_mup[0]>8. ) continue;
       }
@@ -673,7 +674,7 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
   //  plot histos
   // ------------------
 
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(1);
 
   // print -TOT- emittance
   float emittance_mu_TOT_ = getemittance(vec_x_tot_MC, vec_xprime_tot_MC); 
@@ -1087,18 +1088,14 @@ void plotEmittance(){
   // define input files 
   TString inputFile_Data_Aug2018_Be6cm = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-aug18.root";
   TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum.root";
-  TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/with_vtx_fit/reco-mupmum-Be6cm.root";
+  // needed to compare with Next setup
+  // TString inputFile_MC_Aug2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/aug18/reco-mupmum-10k-aug18tuning.root";
+  TString inputFile_MC_Sep2018_Be6cm   = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-10k.root";
   TString inputFile_MC_Sep2018_C6cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C6cm.root";
   TString inputFile_MC_Sep2018_C2cm    = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/reco-mupmum-C2cm.root";
-  TString inputFile_MC_Sep2018_Be6cm_new = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/sep18/with_vtx_fit/reco-mupmum-Be6cm-GausGaus.root"; 
+  TString inputFile_MC_2021_Be6cm      = "/afs/cern.ch/user/a/abertoli/public/lemma/reco/Next/reco-mupmum-10k.root";
   
   // define output path and make output directory
-  //TString plotOutputPath = "190327_Emittance_August2018_targetBe6cm_DATA";
-  //TString plotOutputPath = "Emittance_August2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190327_Emittance_September2018_targetBe6cm_MC";
-  //TString plotOutputPath = "190327_Emittance_September2018_targetC6cm_MC";
-  //TString plotOutputPath = "190327_Emittance_September2018_targetC2cm_MC";
-  //TString plotOutputPath = "190516_Emittance_Sep18_Be6cm_GausGaus";
   TString plotOutputPath = "test_plotEmittance";
   gSystem->Exec(("mkdir -p "+plotOutputPath));
 
@@ -1109,18 +1106,23 @@ void plotEmittance(){
 
   // choose configuration
   double zPosDet20 = 10.*(444.5-84.6); // [mm] - AUGUST 2018
-  // double zPosDet20 = 10.*(441.63-82.78); // [mm] - SEPTEMBER 2018
+  //double zPosDet20 = 10.*(441.63-82.78); // [mm] - SEPTEMBER 2018
  
   // --- call do the histos function
   // arguments: input file, label for data or MC
 
-  //  doTheHistos(inputFile_Data_Aug2018_Be6cm, "reclev",   zEndTarget, zPosDet20, plotOutputPath);
+  doTheHistos(inputFile_Data_Aug2018_Be6cm, "reclev",   zEndTarget, zPosDet20, plotOutputPath);
   //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MC",       zEndTarget, zPosDet20, plotOutputPath);
-  doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MCreclev", zEndTarget, zPosDet20, plotOutputPath);
+  //doTheHistos(inputFile_MC_Aug2018_Be6cm,   "MCreclev", zEndTarget, zPosDet20, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MC",       zEndTarget, zPosDet20, plotOutputPath);
+  //doTheHistos(inputFile_MC_Sep2018_Be6cm,   "MCreclev", zEndTarget, zPosDet20, plotOutputPath);
   //doTheHistos(inputFile_MC_Sep2018_C6cm,    "MC",       zEndTarget, zPosDet20, plotOutputPath); 
   //doTheHistos(inputFile_MC_Sep2018_C2cm,    "MC",       zEndTarget, zPosDet20, plotOutputPath);
   // gauss profile of input beam
   //doTheHistos(inputFile_MC_Sep2018_Be6cm_new, "MC",     zEndTarget, zPosDet20, plotOutputPath);
+
+  // 2021 studies
+  //doTheHistos(inputFile_MC_2021_Be6cm,   "MC",       zEndTarget, zPosDet20, plotOutputPath);
+  //doTheHistos(inputFile_MC_2021_Be6cm,   "MCreclev", zEndTarget, zPosDet20, plotOutputPath);
 
 }
