@@ -285,7 +285,7 @@ void doTheHistos(TString inputFileName, TString label, float zEndTarget){
 
   TH1F* hist_npos = new TH1F("hist_npos", "number of positrons", 10, 0.5, 10.5);
   hist_npos->GetXaxis()->SetTitle("number of positrons");
-  hist_npos->GetYaxis()->SetTitle("a.u.");
+  hist_npos->GetYaxis()->SetTitle("arbitrary units");
  // only for DATA
   TH1F* hist_xbe_positrons = new TH1F("hist_xbe_positrons", "Positron: Be exit point (mm)", 100, -30.0, 30.0);      // only for DATA
   TH1F* hist_the_positrons = new TH1F("hist_the_positrons", "Positron: theta exit (urad)",  100, -0.002, 0.002);    // only for DATA
@@ -689,7 +689,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_pMuPlus   = 1. / hist_pMuPlus_MC->Integral();   // normalize MC to 1.
     normDATA_pMuPlus = 1. / hist_pMuPlus_Data->Integral(); // normalize Data to 1.
-    yaxLabel_pMuPlus = "a.u."; 
+    yaxLabel_pMuPlus = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_pMuPlus   = 1.; // normalization of MC remains invariate
@@ -699,6 +699,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_pMuPlus_MC->SetTitle("p #mu^{+}");
   hist_pMuPlus_MC->GetXaxis()->SetTitle("p #mu^{+} [MeV]");
   hist_pMuPlus_MC->GetYaxis()->SetTitle(yaxLabel_pMuPlus);
+  hist_pMuPlus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_pMuPlus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_pMuPlus_MC->SetLineColor(kRed);
   hist_pMuPlus_MC->SetFillColor(kRed-10);
   hist_pMuPlus_Data->SetMarkerStyle(20);
@@ -752,7 +754,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_pMuMinus   = 1. / hist_pMuMinus_MC->Integral();   // normalize MC to 1.
     normDATA_pMuMinus = 1. / hist_pMuMinus_Data->Integral(); // normalize Data to 1.
-    yaxLabel_pMuMinus = "a.u."; 
+    yaxLabel_pMuMinus = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_pMuMinus   = 1.; // normalization of MC remains invariate
@@ -762,6 +764,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_pMuMinus_MC->SetTitle("p #mu^{-}");
   hist_pMuMinus_MC->GetXaxis()->SetTitle("p #mu^{-} [MeV]");
   hist_pMuMinus_MC->GetYaxis()->SetTitle(yaxLabel_pMuMinus);
+  hist_pMuMinus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_pMuMinus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_pMuMinus_MC->SetLineColor(kBlue);
   hist_pMuMinus_MC->SetFillColor(kBlue-10);
   hist_pMuMinus_Data->SetMarkerStyle(20);
@@ -818,7 +822,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normMC_pTot       = 1. / hist_pTot_MC->Integral();   // normalize MC to 1.
     normMC_pTot_smear = 1. / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to 1.
     normDATA_pTot     = 1. / hist_pTot_Data->Integral(); // normalize Data to 1.
-    yaxLabel_pTot = "a.u."; 
+    yaxLabel_pTot = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_pTot       = 1.; // normalization of MC remains invariate
@@ -829,6 +833,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_pTot_MC->SetTitle("p #mu^{+} + p #mu^{-}");
   hist_pTot_MC->GetXaxis()->SetTitle("p #mu^{+} + p #mu^{-} [MeV]");
   hist_pTot_MC->GetYaxis()->SetTitle(yaxLabel_pTot);
+  hist_pTot_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_pTot_MC->GetYaxis()->SetTitleSize(0.045);
   hist_pTot_MC->SetLineColor(kViolet+1);
   hist_pTot_MC->SetLineWidth(2);
   hist_pTot_smear03_bias000_MC->SetLineColor(kOrange+7);
@@ -898,7 +904,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normMC_pTot_smear03_bias000 = 1. / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to 1.
     normMC_pTot_smear03_bias101 = 1. / hist_pTot_smear03_bias101_MC->Integral(); //normalize MC smear to 1.
     normDATA_pTot_smear = 1. / hist_pTot_Data->Integral(); // normalize Data to 1.
-    yaxLabel_pTot_smear = "a.u."; 
+    yaxLabel_pTot_smear = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_pTot_smear03_bias099 = 1.; // normalization of MC smear remains invariate
@@ -910,6 +916,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_pTot_smear03_bias099_MC->SetTitle("p #mu^{+} + p #mu^{-}");
   hist_pTot_smear03_bias099_MC->GetXaxis()->SetTitle("p #mu^{+} + p #mu^{-} [MeV]");
   hist_pTot_smear03_bias099_MC->GetYaxis()->SetTitle(yaxLabel_pTot_smear);
+  hist_pTot_smear03_bias099_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_pTot_smear03_bias099_MC->GetYaxis()->SetTitleSize(0.045);
   hist_pTot_smear03_bias099_MC->SetLineColor(kGreen+1);
   hist_pTot_smear03_bias099_MC->SetLineWidth(2);
   hist_pTot_smear03_bias101_MC->SetLineColor(kAzure-3);
@@ -987,7 +995,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_pTot_smear03_bias000_1smearOnly = 1. / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to 1.
     normDATA_pTot_1smearOnly = 1. / hist_pTot_Data->Integral(); // normalize Data to 1.
-    yaxLabel_pTot_1smearOnly = "a.u."; 
+    yaxLabel_pTot_1smearOnly = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_pTot_smear03_bias000_1smearOnly = 1.; // normalization of MC smear remains invariate
@@ -997,6 +1005,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_pTot_smear03_bias000_MC->SetTitle("p #mu^{+} + p #mu^{-}");
   hist_pTot_smear03_bias000_MC->GetXaxis()->SetTitle("p #mu^{+} + p #mu^{-} [MeV]");
   hist_pTot_smear03_bias000_MC->GetYaxis()->SetTitle(yaxLabel_pTot_1smearOnly);
+  hist_pTot_smear03_bias000_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_pTot_smear03_bias000_MC->GetYaxis()->SetTitleSize(0.045);
   hist_pTot_smear03_bias000_MC->SetLineColor(kGreen+2);
   hist_pTot_smear03_bias000_MC->SetFillColor(kGreen-9);
   hist_pTot_Data->SetMarkerStyle(20);
@@ -1055,7 +1065,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normMC_pTot_smearGauss    = 1. / hist_pTot_smear03_bias000_MC->Integral(); //normalize MC smear to 1.
     normMC_pTot_smearNONGauss = 1. / hist_pTot_smearNONGAUSS_bias000_MC->Integral(); // normalize MC NON Gauss smear to 1.
     normDATA_pTot_smearGaussAndNONGauss = 1. / hist_pTot_Data->Integral(); // normalize Data to 1.
-    yaxLabel_pTot_smearGaussAndNONGauss = "a.u."; 
+    yaxLabel_pTot_smearGaussAndNONGauss = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_pTot_smearGauss    = 1.; // normalization of MC smear remains invariate
@@ -1066,6 +1076,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_pTot_smear03_bias000_MC->SetTitle("p #mu^{+} + p #mu^{-}");
   hist_pTot_smear03_bias000_MC->GetXaxis()->SetTitle("p #mu^{+} + p #mu^{-} [MeV]");
   hist_pTot_smear03_bias000_MC->GetYaxis()->SetTitle(yaxLabel_pTot_smearGaussAndNONGauss);
+  hist_pTot_smear03_bias000_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_pTot_smear03_bias000_MC->GetYaxis()->SetTitleSize(0.045);
   hist_pTot_smear03_bias000_MC->SetLineColor(kGreen+2);
   hist_pTot_smear03_bias000_MC->SetFillColor(kGreen-9);
   hist_pTot_smearNONGAUSS_bias000_MC->SetLineColor(kBlack);
@@ -1130,7 +1142,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_chi2MuPlus   = 1. / hist_chi2MuPlus_MC->Integral();   // normalize MC to 1.
     normDATA_chi2MuPlus = 1. / hist_chi2MuPlus_Data->Integral(); // normalize Data to 1.
-    yaxLabel_chi2MuPlus = "a.u."; 
+    yaxLabel_chi2MuPlus = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_chi2MuPlus   = 1.; // normalization of MC remains invariate
@@ -1140,6 +1152,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_chi2MuPlus_MC->SetTitle("#Chi^{2} #mu^{+}");
   hist_chi2MuPlus_MC->GetXaxis()->SetTitle("#Chi^{2} #mu^{+}");
   hist_chi2MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_chi2MuPlus);
+  hist_chi2MuPlus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_chi2MuPlus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_chi2MuPlus_MC->SetLineColor(kRed);   
   hist_chi2MuPlus_MC->SetFillColor(kRed-10);
   hist_chi2MuPlus_Data->SetMarkerStyle(20);  
@@ -1193,7 +1207,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_chi2MuMinus   = 1. / hist_chi2MuMinus_MC->Integral();   // normalize MC to 1.
     normDATA_chi2MuMinus = 1. / hist_chi2MuMinus_Data->Integral(); // normalize Data to 1.
-    yaxLabel_chi2MuMinus = "a.u."; 
+    yaxLabel_chi2MuMinus = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_chi2MuMinus   = 1.; // normalization of MC remains invariate
@@ -1203,6 +1217,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_chi2MuMinus_MC->SetTitle("#Chi^{2} #mu^{-}");
   hist_chi2MuMinus_MC->GetXaxis()->SetTitle("#Chi^{2} #mu^{-}");
   hist_chi2MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_chi2MuMinus);
+  hist_chi2MuMinus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_chi2MuMinus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_chi2MuMinus_MC->SetLineColor(kBlue);   
   hist_chi2MuMinus_MC->SetFillColor(kBlue-10);
   hist_chi2MuMinus_Data->SetMarkerStyle(20);  
@@ -1256,7 +1272,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_theta_xz_mup   = 1. / hist_theta_xz_mup_MC->Integral();   // normalize MC to 1.
     normDATA_theta_xz_mup = 1. / hist_theta_xz_mup_Data->Integral(); // normalize Data to 1.
-    yaxLabel_theta_xz_mup = "a.u."; 
+    yaxLabel_theta_xz_mup = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_theta_xz_mup   = 1.; // normalization of MC remains invariate
@@ -1266,6 +1282,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_theta_xz_mup_MC->SetTitle("#theta xz #mu^{+}");
   hist_theta_xz_mup_MC->GetXaxis()->SetTitle("#theta [rad]");
   hist_theta_xz_mup_MC->GetYaxis()->SetTitle(yaxLabel_theta_xz_mup);
+  hist_theta_xz_mup_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_theta_xz_mup_MC->GetYaxis()->SetTitleSize(0.045);
   hist_theta_xz_mup_MC->SetLineColor(kRed);   
   hist_theta_xz_mup_MC->SetFillColor(kRed-10);
   hist_theta_xz_mup_Data->SetMarkerStyle(20);  
@@ -1319,7 +1337,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_theta_xz_mum   = 1. / hist_theta_xz_mum_MC->Integral();   // normalize MC to 1.
     normDATA_theta_xz_mum = 1. / hist_theta_xz_mum_Data->Integral(); // normalize Data to 1.
-    yaxLabel_theta_xz_mum = "a.u."; 
+    yaxLabel_theta_xz_mum = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_theta_xz_mum   = 1.; // normalization of MC remains invariate
@@ -1329,6 +1347,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_theta_xz_mum_MC->SetTitle("#theta xz #mu^{-}");
   hist_theta_xz_mum_MC->GetXaxis()->SetTitle("#theta [rad]");
   hist_theta_xz_mum_MC->GetYaxis()->SetTitle(yaxLabel_theta_xz_mum);
+  hist_theta_xz_mum_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_theta_xz_mum_MC->GetYaxis()->SetTitleSize(0.045);
   hist_theta_xz_mum_MC->SetLineColor(kBlue);   
   hist_theta_xz_mum_MC->SetFillColor(kBlue-10);
   hist_theta_xz_mum_Data->SetMarkerStyle(20);  
@@ -1383,7 +1403,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_InvMass_mupmum   = 1. / hist_InvMass_mupmum_MC->Integral();   // normalize MC to 1.
     normDATA_InvMass_mupmum = 1. / hist_InvMass_mupmum_Data->Integral(); // normalize Data to 1.
-    yaxLabel_InvMass_mupmum = "a.u."; 
+    yaxLabel_InvMass_mupmum = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_InvMass_mupmum   = 1.; // normalization of MC remains invariate
@@ -1393,6 +1413,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_InvMass_mupmum_MC->SetTitle("Invariant Mass #mu^{+} #mu^{-}");
   hist_InvMass_mupmum_MC->GetXaxis()->SetTitle("m #mu^{+} #mu^{-} [MeV]");
   hist_InvMass_mupmum_MC->GetYaxis()->SetTitle(yaxLabel_InvMass_mupmum);
+  hist_InvMass_mupmum_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_InvMass_mupmum_MC->GetYaxis()->SetTitleSize(0.045);
   hist_InvMass_mupmum_MC->SetLineColor(kGreen+2);   
   hist_InvMass_mupmum_MC->SetFillColor(kGreen-9);
   hist_InvMass_mupmum_Data->SetMarkerStyle(20);  
@@ -1446,7 +1468,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_xcross   = 1. / hist_xcross_MC->Integral();   // normalize MC to 1.
     normDATA_xcross = 1. / hist_xcross_Data->Integral(); // normalize Data to 1.
-    yaxLabel_xcross = "a.u."; 
+    yaxLabel_xcross = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_xcross   = 1.; // normalization of MC remains invariate
@@ -1456,6 +1478,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xcross_MC->SetTitle("x Primary Vertex");
   hist_xcross_MC->GetXaxis()->SetTitle("x cross [mm]");
   hist_xcross_MC->GetYaxis()->SetTitle(yaxLabel_xcross);
+  hist_xcross_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xcross_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xcross_MC->SetLineColor(kOrange+7);   
   hist_xcross_MC->SetFillColor(kOrange-3);
   hist_xcross_Data->SetMarkerStyle(20);  
@@ -1509,7 +1533,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   else if(normalizationOption == "normMCandDATAto1"){
     normMC_zcross   = 1. / hist_zcross_MC->Integral();   // normalize MC to 1.
     normDATA_zcross = 1. / hist_zcross_Data->Integral(); // normalize Data to 1.
-    yaxLabel_zcross = "a.u."; 
+    yaxLabel_zcross = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normMC_zcross   = 1.; // normalization of MC remains invariate
@@ -1519,6 +1543,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_zcross_MC->SetTitle("z Primary Vertex");
   hist_zcross_MC->GetXaxis()->SetTitle("z cross [mm]");
   hist_zcross_MC->GetYaxis()->SetTitle(yaxLabel_zcross);
+  hist_zcross_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_zcross_MC->GetYaxis()->SetTitleSize(0.045);
   hist_zcross_MC->SetLineColor(kOrange+7);   
   hist_zcross_MC->SetFillColor(kOrange-3);
   hist_zcross_Data->SetMarkerStyle(20);  
@@ -1582,7 +1608,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det30_MuMinus = 1. / hist_xh_det30_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det30_MuPlus    = 1. / hist_xh_det30_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det30_MuMinus   = 1. / hist_xh_det30_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det30 = "a.u."; 
+    yaxLabel_det30 = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det30_MuPlus  = 1.; // normalization of Data remains invariate
@@ -1594,6 +1620,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det30_MuMinus_MC->SetTitle("xh in det30");
   hist_xh_det30_MuMinus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det30_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det30);
+  hist_xh_det30_MuMinus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det30_MuMinus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det30_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det30_MuMinus_MC->SetFillColor(kBlue-10);
   hist_xh_det30_MuPlus_MC->SetTitle("");
@@ -1671,7 +1699,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det31_MuMinus = 1. / hist_xh_det31_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det31_MuPlus    = 1. / hist_xh_det31_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det31_MuMinus   = 1. / hist_xh_det31_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det31 = "a.u."; 
+    yaxLabel_det31 = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det31_MuPlus  = 1.; // normalization of Data remains invariate
@@ -1683,6 +1711,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det31_MuMinus_MC->SetTitle("xh in det31");
   hist_xh_det31_MuMinus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det31_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det31);
+  hist_xh_det31_MuMinus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det31_MuMinus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det31_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det31_MuMinus_MC->SetFillColor(kBlue-10);
   hist_xh_det31_MuPlus_MC->SetTitle("");
@@ -1760,7 +1790,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det32_MuMinus = 1. / hist_xh_det32_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det32_MuPlus    = 1. / hist_xh_det32_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det32_MuMinus   = 1. / hist_xh_det32_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det32 = "a.u."; 
+    yaxLabel_det32 = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det32_MuPlus  = 1.; // normalization of Data remains invariate
@@ -1772,6 +1802,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det32_MuMinus_MC->SetTitle("xh in det32");
   hist_xh_det32_MuMinus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det32_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det32);
+  hist_xh_det32_MuMinus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det32_MuMinus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det32_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det32_MuMinus_MC->SetFillColor(kBlue-10);
   hist_xh_det32_MuPlus_MC->SetTitle("");
@@ -1849,7 +1881,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det33_MuMinus = 1. / hist_xh_det33_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det33_MuPlus    = 1. / hist_xh_det33_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det33_MuMinus   = 1. / hist_xh_det33_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det33 = "a.u."; 
+    yaxLabel_det33 = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det33_MuPlus  = 1.; // normalization of Data remains invariate
@@ -1861,6 +1893,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det33_MuPlus_MC->SetTitle("xh in det33");
   hist_xh_det33_MuPlus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det33_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_det33);
+  hist_xh_det33_MuPlus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det33_MuPlus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det33_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det33_MuPlus_MC->SetFillColor(kRed-10);
   hist_xh_det33_MuMinus_MC->SetTitle("");
@@ -1938,7 +1972,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det34_MuMinus = 1. / hist_xh_det34_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det34_MuPlus    = 1. / hist_xh_det34_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det34_MuMinus   = 1. / hist_xh_det34_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det34 = "a.u."; 
+    yaxLabel_det34 = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det34_MuPlus  = 1.; // normalization of Data remains invariate
@@ -1950,6 +1984,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det34_MuMinus_MC->SetTitle("xh in det34");
   hist_xh_det34_MuMinus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det34_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det34);
+  hist_xh_det34_MuMinus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det34_MuMinus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det34_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det34_MuMinus_MC->SetFillColor(kBlue-10);
   hist_xh_det34_MuPlus_MC->SetTitle("");
@@ -2027,7 +2063,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det35_MuMinus = 1. / hist_xh_det35_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det35_MuPlus    = 1. / hist_xh_det35_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det35_MuMinus   = 1. / hist_xh_det35_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det35 = "a.u."; 
+    yaxLabel_det35 = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det35_MuPlus  = 1.; // normalization of Data remains invariate
@@ -2039,6 +2075,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det35_MuPlus_MC->SetTitle("xh in det35");
   hist_xh_det35_MuPlus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det35_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_det35);
+  hist_xh_det35_MuPlus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det35_MuPlus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det35_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det35_MuPlus_MC->SetFillColor(kRed-10);
   hist_xh_det35_MuMinus_MC->SetTitle("");
@@ -2116,7 +2154,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det36_MuMinus = 1. / hist_xh_det36_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det36_MuPlus    = 1. / hist_xh_det36_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det36_MuMinus   = 1. / hist_xh_det36_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det36 = "a.u."; 
+    yaxLabel_det36 = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det36_MuPlus  = 1.; // normalization of Data remains invariate
@@ -2128,6 +2166,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det36_MuMinus_MC->SetTitle("xh in det36");
   hist_xh_det36_MuMinus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det36_MuMinus_MC->GetYaxis()->SetTitle(yaxLabel_det36);
+  hist_xh_det36_MuMinus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det36_MuMinus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det36_MuMinus_MC->SetLineColor(kBlue);
   hist_xh_det36_MuMinus_MC->SetFillColor(kBlue-10);
   hist_xh_det36_MuPlus_MC->SetTitle("");
@@ -2205,7 +2245,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det37_MuMinus = 1. / hist_xh_det37_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det37_MuPlus    = 1. / hist_xh_det37_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det37_MuMinus   = 1. / hist_xh_det37_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det37 = "a.u."; 
+    yaxLabel_det37 = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det37_MuPlus  = 1.; // normalization of Data remains invariate
@@ -2217,6 +2257,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det37_MuPlus_MC->SetTitle("xh in det37");
   hist_xh_det37_MuPlus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det37_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_det37);
+  hist_xh_det37_MuPlus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det37_MuPlus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det37_MuPlus_MC->SetLineColor(kRed);
   hist_xh_det37_MuPlus_MC->SetFillColor(kRed-10);
   hist_xh_det37_MuMinus_MC->SetTitle("");
@@ -2294,7 +2336,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xh_det61_MuMinus = 1. / hist_xh_det61_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xh_det62_MuPlus    = 1. / hist_xh_det62_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xh_det61_MuMinus   = 1. / hist_xh_det61_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_det6x = "a.u."; 
+    yaxLabel_det6x = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xh_det62_MuPlus  = 1.; // normalization of Data remains invariate
@@ -2306,6 +2348,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xh_det62_MuPlus_MC->SetTitle("xh in DTs");   
   hist_xh_det62_MuPlus_MC->GetXaxis()->SetTitle("mm");
   hist_xh_det62_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_det6x);
+  hist_xh_det62_MuPlus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xh_det62_MuPlus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xh_det62_MuPlus_MC->SetLineColor(kRed); 
   hist_xh_det62_MuPlus_MC->SetFillColor(kRed-10);
   hist_xh_det61_MuMinus_MC->SetTitle("");	   
@@ -2384,7 +2428,7 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
     normDATA_xext_MuMinus = 1. / hist_xext_MuMinus_Data->Integral(); // normalize Data to 1.
     normMC_xext_MuPlus    = 1. / hist_xext_MuPlus_MC->Integral();    // normalize MC to 1.
     normMC_xext_MuMinus   = 1. / hist_xext_MuMinus_MC->Integral();   // normalize MC to 1.
-    yaxLabel_xext = "a.u."; 
+    yaxLabel_xext = "arbitrary units"; 
   }  
   else if(normalizationOption == "normMCandDATAoutofthebox"){
     normDATA_xext_MuPlus  = 1.; // normalization of Data remains invariate
@@ -2396,6 +2440,8 @@ void dataMCComparison(TString plotDataMCOutputPath, TString normalizationOption,
   hist_xext_MuPlus_MC->SetTitle("x ext");
   hist_xext_MuPlus_MC->GetXaxis()->SetTitle("mm");
   hist_xext_MuPlus_MC->GetYaxis()->SetTitle(yaxLabel_xext);
+  hist_xext_MuPlus_MC->GetXaxis()->SetTitleSize(0.045);
+  hist_xext_MuPlus_MC->GetYaxis()->SetTitleSize(0.045);
   hist_xext_MuPlus_MC->SetLineColor(kRed);
   hist_xext_MuPlus_MC->SetFillColor(kRed-10);
   hist_xext_MuMinus_MC->SetTitle("");
