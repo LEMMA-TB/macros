@@ -736,7 +736,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist2D_PositronBeamEmittance_emitt__1eplus_Data->SetTitle("emittance: incoming beam with 1 e^{+}");
     hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetXaxis()->SetTitle("x [mm]");
     hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitle("x' [rad]");
-    hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitleOffset(1.4);
+    hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetXaxis()->SetTitleSize(0.045);
+    hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitleSize(0.045);
+    hist2D_PositronBeamEmittance_emitt__1eplus_Data->GetYaxis()->SetTitleOffset(1.1);
     gStyle->SetPalette(kCool);
     hist2D_PositronBeamEmittance_emitt__1eplus_Data->Draw("COLZ");
     // --- Binned formula
@@ -774,7 +776,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->SetTitle("emittance: incoming beam with more than 1 e^{+}");
     hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetXaxis()->SetTitle("x [mm]");
     hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitle("x' [rad]");
-    hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitleOffset(1.4);
+    hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetXaxis()->SetTitleSize(0.045);
+    hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitleSize(0.045);
+    hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->GetYaxis()->SetTitleOffset(1.1);
     gStyle->SetPalette(kCool);
     hist2D_PositronBeamEmittance_emitt__moreThan1eplus_Data->Draw("COLZ");
     // --- Binned formula
@@ -806,7 +810,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist2D_emittance_x_mup_MC->SetTitle("emittance #mu^{+}");
     hist2D_emittance_x_mup_MC->GetXaxis()->SetTitle("x [mm]");
     hist2D_emittance_x_mup_MC->GetYaxis()->SetTitle("x' [rad]");
-    hist2D_emittance_x_mup_MC->GetYaxis()->SetTitleOffset(1.4);
+    hist2D_emittance_x_mup_MC->GetXaxis()->SetTitleSize(0.045);
+    hist2D_emittance_x_mup_MC->GetYaxis()->SetTitleSize(0.045);
+    hist2D_emittance_x_mup_MC->GetYaxis()->SetTitleOffset(1.1);
     gStyle->SetPalette(kBird);
     hist2D_emittance_x_mup_MC->Draw("COLZ");
     // --- Binned formula
@@ -839,7 +845,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist2D_emittance_x_mum_MC->SetTitle("emittance #mu^{-}");
     hist2D_emittance_x_mum_MC->GetXaxis()->SetTitle("x [mm]");
     hist2D_emittance_x_mum_MC->GetYaxis()->SetTitle("x' [rad]");
-    hist2D_emittance_x_mum_MC->GetYaxis()->SetTitleOffset(1.4);
+    hist2D_emittance_x_mum_MC->GetXaxis()->SetTitleSize(0.045);
+    hist2D_emittance_x_mum_MC->GetYaxis()->SetTitleSize(0.045);
+    hist2D_emittance_x_mum_MC->GetYaxis()->SetTitleOffset(1.1);
     gStyle->SetPalette(kBird);
     hist2D_emittance_x_mum_MC->Draw("COLZ");
     // -- Binned formula
@@ -999,7 +1007,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist2D_emittanceControl_emittance_positron_MC->SetTitle("raw emittance e^{+}");
     hist2D_emittanceControl_emittance_positron_MC->GetXaxis()->SetTitle("x [mm]");
     hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitle("x' [rad]");
-    hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitleOffset(1.4);
+    hist2D_emittanceControl_emittance_positron_MC->GetXaxis()->SetTitleSize(0.045);
+    hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitleSize(0.045);
+    hist2D_emittanceControl_emittance_positron_MC->GetYaxis()->SetTitleOffset(1.1);
     gStyle->SetPalette(kCool);
     hist2D_emittanceControl_emittance_positron_MC->Draw("COLZ");
     // --- Binned formula
@@ -1025,7 +1035,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist2D_emittanceControl_emittance_mup_MC->SetTitle("raw emittance #mu^{+}");
     hist2D_emittanceControl_emittance_mup_MC->GetXaxis()->SetTitle("x [mm]");
     hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitle("x' [rad]");
-    hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitleOffset(1.4);
+    hist2D_emittanceControl_emittance_mup_MC->GetXaxis()->SetTitleSize(0.045);
+    hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitleSize(0.045);
+    hist2D_emittanceControl_emittance_mup_MC->GetYaxis()->SetTitleOffset(1.1);
     gStyle->SetPalette(kAvocado);
     hist2D_emittanceControl_emittance_mup_MC->Draw("COLZ");
     // --- Binned formula
@@ -1051,7 +1063,9 @@ void doTheHistos(TString inputFileName, TString label, double zEndTarget, double
     hist2D_emittanceControl_emittance_mum_MC->SetTitle("raw emittance #mu^{-}");
     hist2D_emittanceControl_emittance_mum_MC->GetXaxis()->SetTitle("x [mm]");
     hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitle("x' [rad]");
-    hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitleOffset(1.4);
+    hist2D_emittanceControl_emittance_mum_MC->GetXaxis()->SetTitleSize(0.045);
+    hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitleSize(0.045);
+    hist2D_emittanceControl_emittance_mum_MC->GetYaxis()->SetTitleOffset(1.1);
     gStyle->SetPalette(kAvocado);
     hist2D_emittanceControl_emittance_mum_MC->Draw("COLZ");
     // --- Binned formula
