@@ -69,7 +69,10 @@ void xprimeoverlap(){
   x_prime_mup_data->SetTitle("uncorrected x'");
   x_prime_mup_data->SetMaximum(0.15);
   x_prime_mup_data->GetXaxis()->SetTitle("x' [rad]");
-  x_prime_mup_data->GetYaxis()->SetTitle("a.u.");
+  x_prime_mup_data->GetYaxis()->SetTitle("arbitrary units");
+  x_prime_mup_data->GetXaxis()->SetTitleSize(0.045);
+  x_prime_mup_data->GetYaxis()->SetTitleSize(0.045);
+  x_prime_mup_data->GetYaxis()->SetTitleOffset(1.1);
   x_prime_mup_data->SetMarkerStyle(20);
   x_prime_mup_data->SetMarkerColor(kBlack);
   x_prime_mup_data->SetLineColor(kBlack);
